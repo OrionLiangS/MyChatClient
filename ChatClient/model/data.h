@@ -4,7 +4,146 @@
 
 #include <QIcon>
 
+#include <QDebug>
+
+#include <QUuid>
+
+#include <QDateTime>
+
+#include <QIcon>
+
+#include <QPixmap>
+
+#include <QFile>
+
+#include <QFileInfo>
+
 namespace model { // - namespace model
+
+
+////////////////////////////////////////////////////////////////////
+/// 工具类宏 - 日志相关
+////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief getFileName
+ * @param path 传入一个 __FILE__ 宏作为对应的路径
+ * @return 返回一个 QString 的 fileName 文件名
+ * @details
+ * 为 Log() 宏通过QFileInfo获取对应的文件名
+ * 不能直接在getFileName中使用__FILE__的原因是
+ * 若是在该函数中直接使用__FILE__, 那么获取到的path永远是data.h
+ */
+QString getFileName(const QString& path){
+    return QFileInfo(path).fileName();
+}
+
+// 为LOG()获取TAG标签
+#define TAG QString("[%1: %2]").arg(model::getFileName(__FILE__), QString::number(__LINE__))
+
+// 日志 - noquote() 为QDebug打印时不使用引号
+#define LOG() qDebug().noquote() << TAG
+
+
+////////////////////////////////////////////////////////////////////
+/// 工具类函数
+////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief formatTime
+ * @details
+ * 工具类函数 - 用于生成格式化的QString的时间
+ * 采用inline或static避免在链接阶段出现函数重定义问题
+ * @return 格式化的时间
+ */
+static inline QString formatTime(int64_t timestamp){
+    // 将时间戳转化为时间
+    QDateTime datetime = QDateTime::fromSecsSinceEpoch(timestamp);
+    // 格式化显示时间
+    return datetime.toString("MM-dd HH:mm:ss");
+}
+
+/**
+ * @brief getTime
+ * @details
+ * 工具类函数 - 获取一个秒级的时间戳(为formatTime()所准备)
+ * @return 返回一个秒级的时间戳
+ */
+static inline int64_t getTime(){
+    return QDateTime::currentSecsSinceEpoch();
+}
+
+/**
+ * @brief makeIcon
+ * @details
+ * 将二进制数据转化为Icon图标
+ * @param byteArray 传入一个 QByteArray 二进制数据对象
+ * @return 返回一个QIcon 对象
+ */
+static inline QIcon makeIcon(const QByteArray& byteArray){
+    // 通过QPixmap读取QByteArray数据
+    QPixmap pixmap;
+    pixmap.loadFromData(byteArray);
+    // 通过QPixmap来构造一个QIcon对象并返回
+    return QIcon(pixmap);
+}
+
+/**
+ * @brief loadFileToByteArray
+ * @details
+ * 工具类函数 读文件操作 - 将某个文件中的内容以二进制的方式进行读取并返回
+ * @param path 传入一个需要读取的文件路径
+ * @return 返回一个QByteArray对象
+ */
+static inline QByteArray loadFileToByteArray(const QString &path){
+    QFile file(path);
+    // 以只读的方式进行打开
+    bool ok  = file.open(QFile::ReadOnly);
+    // 判断打开失败
+    if(!ok){
+        LOG()<<"file open failed";
+        return QByteArray();
+    }
+    // 读取文件内容保存为QByteArray
+    QByteArray content = file.readAll();
+    // 关闭文件
+    file.close();
+    return content;
+}
+
+
+
+/**
+ * @brief writeFileToByteArray
+ * @details
+ * 工具类函数 写文件操作 - 将对应的内容写到对应路径上的文件
+ * @param path 传入一个需要写入文件的路径
+ * @param content 需要写入的内容
+ */
+static inline void writeFileToByteArray(const QString &path, const QByteArray& content){
+    QFile file(path);
+    // 以只写方式打开
+    bool ok = file.open(QFile::WriteOnly);
+    // 判断打开失败
+    if(!ok){
+        LOG()<<"file open failed";
+        return;
+    }
+    // 将内容写至对应的文件中
+    file.write(content);
+    // 刷盘操作(刷新缓冲区)
+    file.flush();
+    // 关闭文件
+    file.close();
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////
+/// 消息类型枚举
+////////////////////////////////////////////////////////////////////
+
 
 /**
  * @brief 消息类型枚举
@@ -28,6 +167,11 @@ enum MessageType {
 
 
 
+////////////////////////////////////////////////////////////////////
+/// 用户信息实体类
+////////////////////////////////////////////////////////////////////
+
+
 /**
  * @brief 用户信息实体类
  * @details
@@ -47,22 +191,28 @@ public:
     // ==================================
     // 支持登录方式
     // ==================================
-    QString nickname;      ///< 用户昵称
-    QString phone;         ///< 用户手机号
+    QString nickname = "";      ///< 用户昵称
+    QString phone = "";         ///< 用户手机号
 
     // ==================================
     // 唯一标识
     // ==================================
-    QString userId;        ///< 用户唯一id
+    QString userId = "";        ///< 用户唯一id
 
     // ==================================
     // 其他信息展示
     // ==================================
-    QString description;   ///< 用户签名
+    QString description = "";   ///< 用户签名
     QIcon avatar;          ///< 用户头像
 
 }; // UserInfo
 
+
+
+
+////////////////////////////////////////////////////////////////////
+/// 消息信息实体类
+////////////////////////////////////////////////////////////////////
 
 
 /**
@@ -91,14 +241,14 @@ public:
     // ==================================
     // 核心标识
     // ==================================
-    QString messageId;          ///< 消息id(消息唯一标识符)
-    QString chatSessionId;      ///< 会话id
+    QString messageId = "";          ///< 消息id(消息唯一标识符)
+    QString chatSessionId = "";      ///< 会话id
 
     // ==================================
     // 消息元数据
     // ==================================
     QString time;               ///< 消息时间
-    MessageType messageType;    ///< 消息类型
+    MessageType messageType = TEXT_TYPE;    ///< 消息类型
     UserInfo sender;            ///< 发送者的信息
 
     // ==================================
@@ -109,8 +259,8 @@ public:
     // ==================================
     // 文件消息类型
     // ==================================
-    QString fileId;             ///< 文件标识(文件/图片/语音)
-    QString fileName;           ///< 文件名称(纯文件类型)
+    QString fileId = "";             ///< 文件标识(文件/图片/语音)
+    QString fileName = "";           ///< 文件名称(纯文件类型)
 
 
     /**
@@ -140,6 +290,9 @@ public:
             return makeFileMessage(chatSessionId, sender, content, extraInfo);
         case SPEECH_TYPE:
             return makeSpeechMessage(chatSessionId, sender, content);
+        case UNKNOWN_TYPE:
+            LOG()<<"unknow type message";
+            return Message();
         }
     }
 
@@ -151,54 +304,100 @@ private:
     // 构造messageId生成器
     /**
      * @brief makeId
+     * @details
+     * 通过QUuid::createUuid创建对应的uuid
+     * 同时为了增加可读性 对uuid进行截取并加上'M'表示是一个message的uuid
      * @return 返回QString类型的messageId
      */
     static QString makeId(){
-        /**
-         * @todo
-         */
-        return "";
+        return 'M'+QUuid::createUuid().toString().sliced(25, 12);
     }
 
     // 构造常规消息
     static Message makeTextMessage(const QString&chatSessionId, const UserInfo&sender, const QByteArray&content){
+        // 创建类
         Message message;
+        // 进行赋值
         message.chatSessionId = chatSessionId;
         message.sender = sender;
         message.content = content;
-        message.fileId="";
         message.messageType = TEXT_TYPE;
-
-        /**
-         * @todo
-         */
-        message.time = ;
+        // 获取格式化时间
+        message.time = formatTime(getTime());
+        // 创建message唯一标识符
         message.messageId = makeId();
-
+        message.fileId="";
+        message.fileName = "";
+        return message;
     }
 
     // 构造图片消息
     static Message makeImageMessage(const QString&chatSessionId, const UserInfo&sender, const QByteArray&content){
-        /**
-         * @todo
-         */
+        // 创建类
+        Message message;
+        // 进行赋值
+        message.chatSessionId = chatSessionId;
+        message.sender = sender;
+        message.content = content;
+        message.messageType = IMAGE_TYPE;
+        // 获取格式化时间
+        message.time = formatTime(getTime());
+        // 创建message唯一标识符
+        message.messageId = makeId();
+        // 先设置为空 后期根据需求再进行设置
+        message.fileId="";
+        // 非FILE_TYPE
+        message.fileName = "";
+        return message;
     }
 
     // 构造文件消息
     static Message makeFileMessage(const QString&chatSessionId, const UserInfo&sender, const QByteArray&content, const QString&extraInfo){
-        /**
-         * @todo
-         */
+        // 创建类
+        Message message;
+        // 进行赋值
+        message.chatSessionId = chatSessionId;
+        message.sender = sender;
+        message.content = content;
+        message.messageType = FILE_TYPE;
+        // 获取格式化时间
+        message.time = formatTime(getTime());
+        // 创建message唯一标识符
+        message.messageId = makeId();
+        // 先设置为空 后期根据需求再进行设置
+        message.fileId="";
+        // 设置文件名
+        message.fileName = extraInfo;
+        return message;
     }
 
     // 构造语音消息
     static Message makeSpeechMessage(const QString&chatSessionId, const UserInfo&sender, const QByteArray&content){
-        /**
-         * @todo
-         */
+        // 创建类
+        Message message;
+        // 进行赋值
+        message.chatSessionId = chatSessionId;
+        message.sender = sender;
+        message.content = content;
+        message.messageType = SPEECH_TYPE;
+        // 获取格式化时间
+        message.time = formatTime(getTime());
+        // 创建message唯一标识符
+        message.messageId = makeId();
+        // 先设置为空 后期根据需求再进行设置
+        message.fileId="";
+        // 非 FILE_TYPE
+        message.fileName = "";
+        return message;
     }
 
 }; // Message
+
+
+
+////////////////////////////////////////////////////////////////////
+/// 会话信息实体类
+////////////////////////////////////////////////////////////////////
 
 
 /**
@@ -222,15 +421,15 @@ public:
     // ==================================
     // 唯一标识
     // ==================================
-    QString chatSessionId;      ///< 标识会话的唯一性
+    QString chatSessionId = "";      ///< 标识会话的唯一性
 
     // ==================================
     // 其他元数据
     // ==================================
     Message lastMessage;        ///< 当前会话中最新的消息
-    QString chatSessionName;    ///< 会话昵称(单聊/群聊)
+    QString chatSessionName = "";    ///< 会话昵称(单聊/群聊)
     QIcon avatar;               ///< 会话头像
-    QString userId;             ///< 用户id
+    QString userId = "";             ///< 用户id
 
 }; // ChatSessionInfo
 
