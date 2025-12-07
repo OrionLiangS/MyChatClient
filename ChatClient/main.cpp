@@ -11,9 +11,10 @@ void totest(){
 
 int main(int argc, char *argv[])
 {
-    // totest();
     QApplication a(argc, argv);
-    MainWidget w;
-    w.show();
+
+    // 获取单例
+    MainWidget *instance = MainWidget::getInstance();
+    instance->show();
     return a.exec();
 }
