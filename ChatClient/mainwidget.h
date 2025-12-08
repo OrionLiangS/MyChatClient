@@ -6,6 +6,8 @@
 
 #include <QPushButton>
 
+#include "model/data.h"
+
 /**
  * @brief The MainWidget class
  * @details
@@ -28,9 +30,9 @@ private:
     // 单例需要将构造私有化
     MainWidget(QWidget *parent = nullptr);
 
-    ///////////////////////////////////////////////
-    /// 设置UI布局 (左导航栏 中列表 右对话框)
-    ///////////////////////////////////////////////
+    // ============================================
+    // 设置UI布局 (左导航栏 中列表 右对话框)
+    // ============================================
 
     /**
      * @brief leftWindow 窗口左侧部分(导航栏)
@@ -48,9 +50,9 @@ private:
     QWidget* rightWindow;
 
 
-    ////////////////////////////////////////////////
-    /// 左侧窗口元素
-    ////////////////////////////////////////////////
+    // ============================================
+    // 左侧窗口元素
+    // ============================================
 
     /**
      * @brief userAvatar 用户头像
@@ -59,16 +61,51 @@ private:
      */
     QPushButton* userAvatar;
     QPushButton* sessionTabButton;  ///< 会话标签页
-    QPushButton* friendsTabButton;  ///< 好友标签页
+    QPushButton* friendTabButton;  ///< 好友标签页
     QPushButton* applyTabButton;    ///< 好友申请标签页
 
-    ///////////////////////////////////////////////
-    /// 窗口初始化
-    ///////////////////////////////////////////////
+    // ============================================
+    // 窗口初始化
+    // ============================================
 
     void initMainWindow();   ///< 初始化主窗口
     void initLeftWindow();   ///< 初始化左窗口
     void initMidWindow();    ///< 初始化中间窗口
     void initRightWindow();  ///< 初始化右窗口
+
+
+    // ============================================
+    // 枚举当前所激活标签页
+    // ============================================
+    enum ActiveTab{
+        SESSION_LIST,   ///< 会话标签页
+        FRIEND_LIST,    ///< 好友标签页
+        APPLY_LIST      ///< 好友申请标签页
+    };
+
+    //当前标签页(默认为SESSION_LIST)
+    ActiveTab activeTab = SESSION_LIST;
+
+    // ============================================
+    // 初始化信号槽
+    // ============================================
+
+    void initSignalSlots();     ///< 初始化信号槽
+
+    // 切换标签页
+    void switchTabToSession();  ///< 切换至会话标签页
+    void switchTabToFriend();   ///< 切换至好友标签页
+    void switchTabToApply();    ///< 切换至好友申请标签页
+
+
+    // ============================================
+    // 加载列表
+    // ============================================
+    void loadSessionList();
+    void loadFriendList();
+    void loadApplyList();
+
+
+
 };
 #endif // MAINWIDGET_H

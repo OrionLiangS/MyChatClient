@@ -53,6 +53,11 @@ MainWidget::MainWidget(QWidget *parent)
     initMidWindow();    // 初始化中间窗口
     initRightWindow();  // 初始化右窗口
 
+    // ===========================
+    //  初始化信号槽
+    // ===========================
+    initSignalSlots();
+
 }
 
 /**
@@ -132,14 +137,14 @@ void MainWidget::initLeftWindow()
     // 设置布局管理器
     QVBoxLayout *vlayout = new QVBoxLayout(leftWindow);
     leftWindow->setLayout(vlayout);
-    vlayout->setSpacing(10);
+    vlayout->setSpacing(20);
     vlayout->setContentsMargins(0,30,0,0);
 
     // 标签大小
-    QSize icon_size(27,27);
+    QSize icon_size(26, 26);
 
     // 头像大小
-    QSize default_size(45,45);
+    QSize default_size(45, 45);
 
     // ============================
     // 1) 创建头像
@@ -173,8 +178,8 @@ void MainWidget::initLeftWindow()
     };
 
 
-    sessionTabButton = createBtn("sessionTab", ":/resource/image/sessionTab.png");
-    friendsTabButton = createBtn("friendTab", ":/resource/image/friendTab.png");
+    sessionTabButton = createBtn("sessionTab", ":/resource/image/sessionTabTargeted.png");
+    friendTabButton = createBtn("friendTab", ":/resource/image/friendTab.png");
     applyTabButton = createBtn("applyTab", ":/resource/image/applyTab.png");
 
 
@@ -183,7 +188,7 @@ void MainWidget::initLeftWindow()
     // ============================
     vlayout->addWidget(userAvatar, 0, Qt::AlignHCenter);
     vlayout->addWidget(sessionTabButton, 0, Qt::AlignHCenter);
-    vlayout->addWidget(friendsTabButton, 0, Qt::AlignHCenter);
+    vlayout->addWidget(friendTabButton, 0, Qt::AlignHCenter);
     vlayout->addWidget(applyTabButton, 0, Qt::AlignHCenter);
 
     // 添加弹簧
@@ -209,6 +214,124 @@ void MainWidget::initRightWindow()
     /**
      * @todo
      */
+}
+
+
+/**
+ * @brief MainWidget::initSignalSlots
+ * @details
+ * 初始化信号槽(切换标签页)
+ */
+void MainWidget::initSignalSlots()
+{
+    // 绑定信号槽
+    connect(sessionTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToSession);
+    connect(friendTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToFriend);
+    connect(applyTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToApply);
+}
+
+
+
+/**
+ * @brief MainWidget::switchTabToSession
+ * @details
+ * 以下三个switchTab函数相同:
+ * 用于切换标签页至会话页
+ * 记录当前标签页
+ */
+void MainWidget::switchTabToSession()
+{
+    // 1) 记录当前标签页
+    activeTab = SESSION_LIST;
+    // 2) 设置Icon变化
+    sessionTabButton->setIcon(QIcon(":/resource/image/sessionTabTargeted.png"));
+    friendTabButton->setIcon(QIcon(":/resource/image/friendTab.png"));
+    applyTabButton->setIcon(QIcon(":/resource/image/applyTab.png"));
+    // 3) midWindow部分加载会话列表
+    loadSessionList();
+
+}
+
+/**
+ * @brief MainWidget::switchTabToFriend
+ * @details
+ * 用于切换标签页至好友页
+ */
+void MainWidget::switchTabToFriend()
+{
+    // 1) 记录当前标签页
+    activeTab = FRIEND_LIST;
+    // 2) 设置Icon变化
+    sessionTabButton->setIcon(QIcon(":/resource/image/sessionTab.png"));
+    friendTabButton->setIcon(QIcon(":/resource/image/friendTabTargeted.png"));
+    applyTabButton->setIcon(QIcon(":/resource/image/applyTab.png"));
+    // 3) midWindow部分加载好友列表
+    loadFriendList();
+
+}
+
+
+/**
+ * @brief MainWidget::switchTabToApply
+ * @details
+ * 用于切换标签页至好友申请页
+ */
+void MainWidget::switchTabToApply()
+{
+    // 1) 记录当前标签页
+    activeTab = APPLY_LIST;
+    // 2) 设置Icon变化
+    sessionTabButton->setIcon(QIcon(":/resource/image/sessionTab.png"));
+    friendTabButton->setIcon(QIcon(":/resource/image/friendTab.png"));
+    applyTabButton->setIcon(QIcon(":/resource/image/applyTabTargeted.png"));
+    // 3) midWindow部分加载好友申请列表
+    loadApplyList();
+
+}
+
+
+
+/**
+ * @brief MainWidget::loadSessionList
+ * @details
+ * midWindow部分加载会话列表
+ */
+void MainWidget::loadSessionList()
+{
+    /**
+     * @todo
+     */
+    LOG()<<"INFO - loadSessionList()";
+}
+
+
+/**
+ * @brief MainWidget::loadFriendList
+ * @details
+ * midWindow部分加载好友列表
+ */
+void MainWidget::loadFriendList()
+{
+    /**
+     * @todo
+     */
+    LOG()<<"INFO - loadFriendList()";
+
+}
+
+
+/**
+ * @brief MainWidget::loadApplyList
+ * @details
+ * midWindow部分加载好友申请列表
+ */
+void MainWidget::loadApplyList()
+{
+    /**
+     * @todo
+     */
+    LOG()<<"INFO - loadApplyList()";
+
 }
 
 MainWidget::~MainWidget() {}

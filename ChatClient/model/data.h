@@ -34,7 +34,7 @@ namespace model { // - namespace model
  * 不能直接在getFileName中使用__FILE__的原因是
  * 若是在该函数中直接使用__FILE__, 那么获取到的path永远是data.h
  */
-QString getFileName(const QString& path){
+inline static QString getFileName(const QString& path){
     return QFileInfo(path).fileName();
 }
 
