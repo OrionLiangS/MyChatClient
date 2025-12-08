@@ -81,3 +81,45 @@ QSplitter#mainSplitter::handle {
     /* 设置为透明，或者跟你想要的分割线颜色一致 */
     background-color: transparent;
 }
+
+
+
+/* ========================================================
+   中间窗口区域 (midWindow)
+   ======================================================== */
+/*搜索部分widget*/
+QWidget#searchWidget {
+    background-color: #F7F7F7; 
+}
+
+/*列表部分widget*/
+SessionFriendArea#sessionArea{
+    background-color: #cc4935;
+}
+
+/*搜索框*/
+QLineEdit#searchEdit{
+    border: none;
+    border-radius: 5px;
+    background-color: #EAEAEA;
+    font-size: 13px;
+    font-family: "华文楷体";
+}
+
+/*焦点于搜索框内*/
+QLineEdit#searchEdit:focus{
+    background-color: #FFFFFF;
+}
+
+/*添加好友按钮*/
+QPushButton#addFriendBtn{
+    border:none;
+    margin:0px;
+    border-radius: 5px;
+    background-color: #EAEAEA;
+}
+
+/*添加好友按钮悬停*/
+QPushButton#addFriendBtn:hover{
+    background-color: #E3E3E3;
+}

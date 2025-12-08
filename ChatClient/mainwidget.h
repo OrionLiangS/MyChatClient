@@ -3,10 +3,13 @@
 
 #include <QWidget>
 
-
 #include <QPushButton>
 
+#include <QLineEdit>
+
 #include "model/data.h"
+
+#include "sessionfriendarea.h"
 
 /**
  * @brief The MainWidget class
@@ -99,11 +102,24 @@ private:
 
 
     // ============================================
+    // midWindow 所需控件元素
+    // ============================================
+    QWidget *searchWidget;          ///< 搜索 Widget 限定高度66
+    QLineEdit *searchEdit;          ///< 搜索框
+    QPushButton *addFriendBtn;      ///< 搜索按钮
+    SessionFriendArea *sessionArea; ///< 好友列表部分
+    // ...
+
+
+    // ============================================
     // 加载列表
     // ============================================
-    void loadSessionList();
-    void loadFriendList();
-    void loadApplyList();
+    void loadSessionList();     ///< 加载会话列表
+    void loadFriendList();      ///< 加载好友列表
+    void loadApplyList();       ///< 加载好友申请列表
+
+
+
 
 
 

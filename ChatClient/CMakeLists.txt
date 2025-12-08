@@ -7,6 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)  # <--- 必须显式为 ON，强制编译 .qrc
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
@@ -17,6 +18,7 @@ qt_add_executable(ChatClient
     mainwidget.h
     model/data.h
     resource.qrc
+    sessionfriendarea.h sessionfriendarea.cpp
 )
 
 target_link_libraries(ChatClient
@@ -24,6 +26,7 @@ target_link_libraries(ChatClient
         Qt::Core
         Qt::Widgets
 )
+target_link_libraries(ChatClient PRIVATE Qt6::Widgets)
 
 include(GNUInstallDirs)
 

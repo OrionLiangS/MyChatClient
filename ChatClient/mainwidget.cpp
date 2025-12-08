@@ -198,12 +198,69 @@ void MainWidget::initLeftWindow()
 
 /**
  * @brief MainWidget::initMidWindow 初始化中间窗口
+ * @details
+ * 布局方式为:
+ * 1) 外层Widget(默认midWindow)
+ * 2) 内层垂直布局管理器(QVBoxLayout)
+ * 3) 分上下两个Widget(searchWidget, sessionListWidget)
+ * 4) searchWidget固定高度 , sessionListWidget享有剩下的所有高度
+ * 5) 设置Icon与QSS
  */
 void MainWidget::initMidWindow()
 {
-    /**
-     * @todo
-     */
+    // ============================
+    // 1) 创建垂直布局管理
+    // ============================
+    // 垂直布局管理器创建
+    QVBoxLayout* layout = new QVBoxLayout(midWindow);
+    midWindow->setLayout(layout);
+    // 四周空白为0
+    layout->setContentsMargins(0,0,0,0);
+    // 控件间隔为0
+    layout->setSpacing(0);
+
+    // ============================
+    // 2) 实例化searchWidget并设置进layout中
+    // ============================
+    searchWidget = new QWidget(midWindow);
+    searchWidget->setObjectName("searchWidget");
+    searchWidget->setFixedHeight(66); // 固定widget高度
+    // searchWidget->setAttribute(Qt::WA_StyledBackground); // 强制描绘背景(用于测试)
+    layout->addWidget(searchWidget);
+
+    // ========================================================
+    // 3) searchWidget中创建水平布局并设置QLineEdit与Button
+    // ========================================================
+    // 创建横向布局 放置搜索与按钮
+    QHBoxLayout *searchLayout = new QHBoxLayout(searchWidget);
+    searchWidget->setLayout(searchLayout);
+    searchLayout->setContentsMargins(20,5,20,5);
+
+    // 实例化搜索框
+    searchEdit = new QLineEdit(searchWidget);
+    searchEdit->setObjectName("searchEdit");
+    searchEdit->setFixedHeight(30);
+    searchEdit->setPlaceholderText("此处输入进行搜索....");
+
+    // 实例化搜索按钮
+    addFriendBtn = new QPushButton(searchWidget);
+    addFriendBtn->setObjectName("addFriendBtn");
+    addFriendBtn->setFixedSize(30,30);
+    searchLayout->addWidget(searchEdit);
+    searchLayout->addWidget(addFriendBtn);
+    addFriendBtn->setIconSize(QSize(20,20));
+    addFriendBtn->setIcon(QIcon(":/resource/image/addFriend.png"));
+
+
+    // ========================================================
+    // 4) 创建FriendlistWidget
+    // ========================================================
+    sessionArea = new SessionFriendArea(midWindow);
+    sessionArea->setObjectName("sessionArea");
+    // sessionArea->setAttribute(Qt::WA_StyledBackground);  // 强制描绘背景(用于测试)
+    layout->addWidget(sessionArea);
+
+
 }
 
 /**

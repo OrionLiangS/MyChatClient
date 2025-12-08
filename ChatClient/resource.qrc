@@ -9,5 +9,6 @@
         <file>resource/image/sessionTab.png</file>
         <file>resource/image/sessionTabTargeted.png</file>
         <file>resource/image/friendTab.png.png</file>
+        <file>resource/image/addFriend.png</file>
     </qresource>
 </RCC>
