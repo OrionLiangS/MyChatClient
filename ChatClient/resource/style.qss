@@ -1,0 +1,83 @@
+/* ========================================================
+   全局样式
+   ======================================================== */
+QWidget {
+    font-family: "Microsoft YaHei"; /* 全局微软雅黑 */
+    font-size: 14px;
+}
+
+/* ========================================================
+   主窗口区域 (MainWidget)
+   ======================================================== */
+
+/* 主窗口MainWindow */
+QWidget#MainWidget{
+    border-radius: 10px;
+}
+
+
+/* 左侧侧边栏 */
+QWidget#leftWindow {
+    background-color: #ECECEC; 
+    border: none; 
+    border-right: 1px solid #D5D5D5;}
+
+/* 中间列表栏 */
+QWidget#midWindow {
+    background-color: #F7F7F7; 
+    border: none; 
+    border-right: 1px solid #D5D5D5;
+}
+
+/* 右侧聊天栏 */
+QWidget#rightWindow {
+    background-color: #EDEDED; 
+    border: none;
+}
+
+/* ========================================================
+   左侧按钮组 (Avatar & Tabs)
+   ======================================================== */
+/* 1. 头像按钮 */
+QPushButton#userAvatar {
+    border: none; 
+    margin: 0px; 
+    padding:0px;
+    background-size: 100% 100%; 
+    border-radius: 5px;
+}
+
+/* 2. 通用 Tab 按钮样式 (会话、好友、申请) */
+/* 这里的技巧是：给这三个按钮设置相同的 Class 属性，或者直接列举 ID */
+QPushButton#sessionTab,
+QPushButton#friendTab,
+QPushButton#applyTab {
+    border: none;
+    background-color: transparent;
+    border-radius: 5px;
+    margin: 0px 0px;
+}
+
+/* 鼠标悬停效果 */
+QPushButton#sessionTab:hover,
+QPushButton#friendTab:hover,
+QPushButton#applyTab:hover {
+    background-color: #DCDBDB; /* 微微发亮 */
+}
+
+
+/* ========================================================
+   分割器样式 (Splitter)
+   ======================================================== */
+
+/* 选中名字叫 mainSplitter 的分割器 */
+QSplitter#mainSplitter {
+    /* 这里可以写 Splitter 本身的背景，通常留空 */
+    border: none;
+}
+
+/* 选中 mainSplitter 里面的 "把手" (Handle) */
+QSplitter#mainSplitter::handle {
+    /* 设置为透明，或者跟你想要的分割线颜色一致 */
+    background-color: transparent;
+}
