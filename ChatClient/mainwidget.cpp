@@ -61,12 +61,17 @@ void MainWidget::initMainWindow()
     // 1. 窗口基础设置
     this->resize(1000, 600);
     this->setMinimumSize(627, 570);
+    // 隐藏标题栏 - 暂不考虑实现
+    // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
+    // this->setAttribute(Qt::WA_TranslucentBackground);
+    this->setStyleSheet("MainWidget{border-radius: 10px;}");
+
 
 
     // A. 创建外层的大布局 (水平)
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0); //设置Layout内控件四周的空白
+    mainLayout->setSpacing(0); // 设置布局中各个控件紧密布局
 
     // B. 创建左侧窗口 (独立于 Splitter 之外)
     leftWindow = new QWidget(this);
@@ -87,7 +92,7 @@ void MainWidget::initMainWindow()
     rightWindow->setStyleSheet("background-color: #EDEDED; border: none;");
 
     // ============================================================
-    // ⚙️ 组装核心
+    //  组装核心
     // ============================================================
 
     // 1. 把 中、右 塞进 Splitter
