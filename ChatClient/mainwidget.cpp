@@ -6,6 +6,8 @@
 
 #include <QHBoxLayout>
 
+#include <QVBoxLayout>
+
 #include <QSplitter>
 
 /**
@@ -39,7 +41,7 @@ MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
 {
     this->setWindowTitle("聊天室");
-    qDebug() << "Icon exists?" << QFile::exists(":/resource/image/logo.png");
+    // qDebug() << "Icon exists?" << QFile::exists(":/resource/image/logo.png");
     this->setWindowIcon(QIcon(":/resource/image/logo.png"));
 
 
@@ -64,7 +66,8 @@ void MainWidget::initMainWindow()
     // 隐藏标题栏 - 暂不考虑实现
     // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
     // this->setAttribute(Qt::WA_TranslucentBackground);
-    this->setStyleSheet("MainWidget{border-radius: 10px;}");
+    this->setObjectName("MainWidget");
+    this->setStyleSheet("MainWidget");
 
 
 
@@ -76,20 +79,24 @@ void MainWidget::initMainWindow()
     // B. 创建左侧窗口 (独立于 Splitter 之外)
     leftWindow = new QWidget(this);
     leftWindow->setFixedWidth(70); // 彻底固定
-    leftWindow->setStyleSheet("background-color: #ECECEC; border: none; border-right: 1px solid #D5D5D5;");
+    leftWindow->setObjectName("leftWindow");
+    leftWindow->setStyleSheet("leftWindow");
 
     // C. 创建右侧的 Splitter (只用来管理 中间 和 右侧)
     QSplitter* splitter = new QSplitter(Qt::Horizontal, this);
     splitter->setHandleWidth(1);
-    splitter->setStyleSheet("QSplitter::handle { background-color: transparent; }"); // 透明把手
+    splitter->setObjectName("mainSplitter");
+    splitter->setStyleSheet("mainSplitter::handle"); // 透明把手
 
     // D. 创建中间和右侧窗口
     midWindow = new QWidget(this);
+    midWindow->setObjectName("midWindow");
     rightWindow = new QWidget(this);
+    rightWindow->setObjectName("rightWindow");
 
     // 样式设置
-    midWindow->setStyleSheet("background-color: #F7F7F7; border: none; border-right: 1px solid #D5D5D5;");
-    rightWindow->setStyleSheet("background-color: #EDEDED; border: none;");
+    midWindow->setStyleSheet("midWindow");
+    rightWindow->setStyleSheet("rightWindow");
 
     // ============================================================
     //  组装核心
@@ -122,9 +129,66 @@ void MainWidget::initMainWindow()
  */
 void MainWidget::initLeftWindow()
 {
-    /**
-     * @todo
-     */
+    // 设置布局管理器
+    QVBoxLayout *vlayout = new QVBoxLayout(leftWindow);
+    leftWindow->setLayout(vlayout);
+    vlayout->setSpacing(10);
+    vlayout->setContentsMargins(0,30,0,0);
+
+    // 标签大小
+    QSize icon_size(27,27);
+
+    // 头像大小
+    QSize default_size(45,45);
+
+    // ============================
+    // 1) 创建头像
+    // ============================
+
+    userAvatar = new QPushButton(leftWindow);
+    userAvatar->setFixedSize(default_size);
+    userAvatar->setIcon(QIcon(":/resource/image/defaultAvatar.png"));
+    userAvatar->setIconSize(default_size);
+    // 设置ObjectName
+    userAvatar->setObjectName("userAvatar");
+    // 设置样式
+    userAvatar->setStyleSheet("userAvatar");
+
+
+
+    // ============================
+    // 2) 创建标签按钮
+    // ============================
+
+    // lamdba 表达式 - 创建QPushButton对象
+    auto createBtn = [&](const QString& objName, const QString& iconPath = "")->QPushButton*{
+        QPushButton* btn = new QPushButton(leftWindow);
+        btn->setFixedSize(default_size);
+        btn->setIconSize(icon_size);
+
+        btn->setObjectName(objName);
+        btn->setIcon(QIcon(iconPath));
+        btn->setStyleSheet(objName);
+        return btn;
+    };
+
+
+    sessionTabButton = createBtn("sessionTab", ":/resource/image/sessionTab.png");
+    friendsTabButton = createBtn("friendTab", ":/resource/image/friendTab.png");
+    applyTabButton = createBtn("applyTab", ":/resource/image/applyTab.png");
+
+
+    // ============================
+    // 3) 添加到布局
+    // ============================
+    vlayout->addWidget(userAvatar, 0, Qt::AlignHCenter);
+    vlayout->addWidget(sessionTabButton, 0, Qt::AlignHCenter);
+    vlayout->addWidget(friendsTabButton, 0, Qt::AlignHCenter);
+    vlayout->addWidget(applyTabButton, 0, Qt::AlignHCenter);
+
+    // 添加弹簧
+    vlayout->addStretch();
+
 }
 
 /**
