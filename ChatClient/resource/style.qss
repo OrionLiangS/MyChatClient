@@ -2,124 +2,116 @@
    全局样式
    ======================================================== */
 QWidget {
-    font-family: "Microsoft YaHei"; /* 全局微软雅黑 */
-    font-size: 14px;
+    font-family: "Microsoft YaHei"; /* 全局字体: 微软雅黑 */
+    font-size: 14px;                /* 全局字号 */
 }
 
 /* ========================================================
    主窗口区域 (MainWidget)
    ======================================================== */
-
-/* 主窗口MainWindow */
-QWidget#MainWidget{
+/* 主窗口圆角 */
+QWidget#MainWidget {
     border-radius: 10px;
 }
 
-
-/* 左侧侧边栏 */
+/* 左侧侧边栏: 深灰色背景 + 右侧分割线 */
 QWidget#leftWindow {
     background-color: #ECECEC; 
     border: none; 
-    border-right: 1px solid #D5D5D5;}
+    border-right: 1px solid #D5D5D5;
+}
 
-/* 中间列表栏 */
+/* 中间列表栏: 浅白色背景 + 右侧分割线 */
 QWidget#midWindow {
     background-color: #F7F7F7; 
     border: none; 
     border-right: 1px solid #D5D5D5;
 }
 
-/* 右侧聊天栏 */
+/* 右侧聊天栏: 浅灰色背景 */
 QWidget#rightWindow {
     background-color: #EDEDED; 
     border: none;
 }
 
 /* ========================================================
-   左侧按钮组 (Avatar & Tabs)
+   左侧按钮组 (头像 & 标签页)
    ======================================================== */
-/* 1. 头像按钮 */
+/* 用户头像按钮 */
 QPushButton#userAvatar {
     border: none; 
     margin: 0px; 
-    padding:0px;
-    background-size: 100% 100%; 
-    border-radius: 5px;
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
 }
 
-/* 2. 通用 Tab 按钮样式 (会话、好友、申请) */
-/* 这里的技巧是：给这三个按钮设置相同的 Class 属性，或者直接列举 ID */
+/* 侧边栏三大金刚: 会话、好友、申请 */
 QPushButton#sessionTab,
 QPushButton#friendTab,
 QPushButton#applyTab {
     border: none;
-    background-color: transparent;
+    background-color: transparent; /* 平时透明 */
     border-radius: 5px;
     margin: 0px 0px;
 }
 
-/* 鼠标悬停效果 */
+/* 鼠标悬停时的反馈 (微微变深) */
 QPushButton#sessionTab:hover,
 QPushButton#friendTab:hover,
 QPushButton#applyTab:hover {
-    background-color: #DCDBDB; /* 微微发亮 */
+    background-color: #DCDBDB; 
 }
-
 
 /* ========================================================
    分割器样式 (Splitter)
    ======================================================== */
-
-/* 选中名字叫 mainSplitter 的分割器 */
+/* 分割器主体 */
 QSplitter#mainSplitter {
-    /* 这里可以写 Splitter 本身的背景，通常留空 */
     border: none;
 }
 
-/* 选中 mainSplitter 里面的 "把手" (Handle) */
+/* 分割器把手 (透明，不可见但可拖动) */
 QSplitter#mainSplitter::handle {
-    /* 设置为透明，或者跟你想要的分割线颜色一致 */
     background-color: transparent;
 }
 
-
-
 /* ========================================================
-   中间窗口区域 (midWindow)
+   中间窗口区域组件 (搜索 & 列表)
    ======================================================== */
-/*搜索部分widget*/
+/* 搜索栏背景容器 */
 QWidget#searchWidget {
-    background-color: #F7F7F7; 
+    background:transparent;
 }
 
-/*列表部分widget*/
-SessionFriendArea#sessionArea{
-    background-color: #cc4935;
-}
-
-/*搜索框*/
-QLineEdit#searchEdit{
+/* 搜索输入框 */
+QLineEdit#searchEdit {
     border: none;
     border-radius: 5px;
-    background-color: #EAEAEA;
-    font-size: 13px;
+    background-color: #EAEAEA; /* 输入框底色偏灰 */
+    font-size: 15px;
     font-family: "华文楷体";
 }
 
-/*焦点于搜索框内*/
-QLineEdit#searchEdit:focus{
+/* 搜索框获得焦点时变亮 (纯白) */
+QLineEdit#searchEdit:focus {
     background-color: #FFFFFF;
 }
 
-/*添加好友按钮*/
-QPushButton#addFriendBtn{
-    border:none;
-    margin:0px;
+/* 添加好友按钮 (+) */
+QPushButton#addFriendBtn {
+    border: none;
+    margin: 0px;
     border-radius: 5px;
-    background-color: #EAEAEA;
+    background-color: #EAEAEA; /* 与搜索框同色 */
 }
 
-/*添加好友按钮悬停*/
-QPushButton#addFriendBtn:hover{
+/* 添加好友按钮悬停 */
+QPushButton#addFriendBtn:hover {
     background-color: #E3E3E3;
 }
+
+/* ========================================================
+   垂直滚动条样式 (核心修复部分) 此处的QSS样式通过函数setStyleSheet硬编码
+   ======================================================== */
+/* 注意: 这里使用的是 ID 选择器 #SfArea 

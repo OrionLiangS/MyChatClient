@@ -107,7 +107,7 @@ private:
     QWidget *searchWidget;          ///< 搜索 Widget 限定高度66
     QLineEdit *searchEdit;          ///< 搜索框
     QPushButton *addFriendBtn;      ///< 搜索按钮
-    SessionFriendArea *sessionArea; ///< 好友列表部分
+    SessionFriendArea *sessionFriendArea; ///< 好友列表部分
     // ...
 
 
