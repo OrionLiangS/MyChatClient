@@ -253,12 +253,11 @@ void MainWidget::initMidWindow()
 
 
     // ========================================================
-    // 4) 创建FriendlistWidget
+    // 4) 创建FriendlistWidget(QScrollArea)
     // ========================================================
-    sessionArea = new SessionFriendArea(midWindow);
-    sessionArea->setObjectName("sessionArea");
-    // sessionArea->setAttribute(Qt::WA_StyledBackground);  // 强制描绘背景(用于测试)
-    layout->addWidget(sessionArea);
+    sessionFriendArea = new SessionFriendArea(midWindow);
+    // sessionFriendArea->setAttribute(Qt::WA_StyledBackground);  // 强制描绘背景(用于测试)
+    layout->addWidget(sessionFriendArea);
 
 
 }
