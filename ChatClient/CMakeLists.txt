@@ -19,6 +19,7 @@ qt_add_executable(ChatClient
     model/data.h
     resource.qrc
     sessionfriendarea.h sessionfriendarea.cpp
+    debug.h
 )
 
 target_link_libraries(ChatClient

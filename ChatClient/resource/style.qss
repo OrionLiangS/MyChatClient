@@ -93,7 +93,7 @@ QLineEdit#searchEdit {
     font-family: "华文楷体";
 }
 
-/* 搜索框获得焦点时变亮 (纯白) */
+/* 搜索框获得焦点时 */
 QLineEdit#searchEdit:focus {
     background-color: #FFFFFF;
 }
@@ -114,4 +114,47 @@ QPushButton#addFriendBtn:hover {
 /* ========================================================
    垂直滚动条样式 (核心修复部分) 此处的QSS样式通过函数setStyleSheet硬编码
    ======================================================== */
-/* 注意: 这里使用的是 ID 选择器 #SfArea 
+ 
+
+/* ========================================================
+    SessionFriendItem 样式
+    ======================================================== */
+
+
+/* 条目样式 */
+SessionFriendItem#sessionFriendItem {
+    border: none;
+    background-color: #F7F7F7;
+    margin: 0;
+}
+
+/* 条目样式(悬停) */
+SessionFriendItem#sessionFriendItem:hover {
+        background-color: #DEDEDE;
+}
+
+
+/* 头像样式 */
+QPushButton#avatarBtn {
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+
+/* 姓名样式 */
+QLabel#nameLabel {
+    color: #161616;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* 消息内容样式*/
+QLabel#messageLabel {
+    color: #9e9e9e;
+    font-size: 12px;
+    font-weight: normal;
+}
+
