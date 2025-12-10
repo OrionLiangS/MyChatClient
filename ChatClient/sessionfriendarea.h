@@ -15,6 +15,8 @@
 
 #include <QPainter>
 
+#include <QMouseEvent>
+
 // 继承自QScrollArea滚动区域
 class SessionFriendArea : public QScrollArea
 {
@@ -84,20 +86,32 @@ public:
 
 signals:
 protected:
-    QPushButton* avatarBtn; ///< 头像部分
+    QPushButton* avatarBtn;             ///< 头像部分
 
-    QLabel* nameLabel; ///< 名字标签
+    QLabel* nameLabel;                  ///< 名字标签
 
     // 当继承为ApplyItem时需要对该控件进行移除
-    QLabel* messageLabel; ///< 文本标签 (用于显示签名或最后一条消息)
+    QLabel* messageLabel;               ///< 文本标签 (用于显示签名或最后一条消息)
 
     // -- 在子类中定义 --
-    // QPushButton* accept = nullptr; ///< 同意按钮
-    // QPushButton* reject = nullptr; ///< 拒绝按钮
+    // 父类中不能定义子类属性
+    // QPushButton* accept = nullptr;   ///< 同意按钮
+    // QPushButton* reject = nullptr;   ///< 拒绝按钮
+
+
+protected:
+// =======================================
+// 事件重写
+// =======================================
+
+    void mousePressEvent(QMouseEvent *event) override;
+
+
 private:
-    QWidget *owner; ///< 所属者
-    bool selected = false; ///< 是否选中状态 默认为false - 为后期选中样式进行监控
-    void paintEvent(QPaintEvent *event);
+    QWidget *owner;                     ///< 所属者
+    bool selected = false;              ///< 是否选中状态 默认为false - 为后期选中样式进行监控
+    void paintEvent(QPaintEvent *event) override;
+    void select();
 
 }; // SessionFriendItem
 

@@ -4,6 +4,7 @@
 
 #include <QPushButton>
 
+#include "model/data.h"
 
 #include<QScrollArea>
 
@@ -223,6 +224,29 @@ SessionFriendItem::SessionFriendItem(QWidget *owner, const QIcon &avatar, const 
 
 }
 
+void SessionFriendItem::mousePressEvent(QMouseEvent *event)
+{
+    switch(event->button()){
+    case Qt::LeftButton:
+
+#if TEST_UI
+        LOG()<<"LeftButton pressed";
+#endif
+        select();
+        break;
+    case Qt::RightButton:
+#if TEST_UI
+        LOG()<<"RightButton pressed";
+#endif
+        break;
+    default:
+#if TEST_UI
+        LOG()<<"Other Button pressed";
+#endif
+        break;
+    }
+}
+
 /**
  * @brief SessionFriendItem::paintEvent
  * @param event
@@ -241,4 +265,36 @@ void SessionFriendItem::paintEvent(QPaintEvent *event)
     // 3. 核心代码：使用 Qt 的样式引擎绘制这个控件
     // PE_Widget 表示绘制一个通用的 Widget 背景
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void SessionFriendItem::select()
+{
+    // 获取父元素的孩子
+    const QObjectList& childrens = this->parentWidget()->children();
+    for(QObject* child:childrens){
+        if(!child->isWidgetType()){
+            continue;
+        }
+        SessionFriendItem* item = qobject_cast<SessionFriendItem*>(child);
+        item->selected = false;
+
+        // 刷新对应的样式
+        item->setProperty("selected", false);
+        item->style()->unpolish(item);
+        item->style()->polish(item);
+        this->update();
+        item->update();
+    /**
+     * @todo
+     */
+    }
+    // 设置自己为选中
+    if (!this->selected) { // 只有状态变了才刷新
+        this->selected = true;
+        this->setProperty("selected", true);
+
+        this->style()->unpolish(this);
+        this->style()->polish(this);
+        this->update();
+    }
 }

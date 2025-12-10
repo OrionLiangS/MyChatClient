@@ -89,8 +89,9 @@ QLineEdit#searchEdit {
     border: none;
     border-radius: 5px;
     background-color: #EAEAEA; /* 输入框底色偏灰 */
-    font-size: 15px;
-    font-family: "华文楷体";
+    font-size: 13px;
+    font-family: "雅黑";
+    font-weight: 2px;
 }
 
 /* 搜索框获得焦点时 */
@@ -158,3 +159,13 @@ QLabel#messageLabel {
     font-weight: normal;
 }
 
+
+
+/* 选中状态  */
+SessionFriendItem#sessionFriendItem[selected = "true"]{
+    background-color: #dddddd;
+}
+
+SessionFriendItem#sessionFriendItem[selected = "true"]:hover{
+    background-color: #d1d1d1;
+}
