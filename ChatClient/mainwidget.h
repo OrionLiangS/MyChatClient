@@ -11,6 +11,7 @@
 
 #include "sessionfriendarea.h"
 
+
 /**
  * @brief The MainWidget class
  * @details
