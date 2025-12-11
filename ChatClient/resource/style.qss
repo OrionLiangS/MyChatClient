@@ -131,7 +131,7 @@ SessionFriendItem#sessionFriendItem {
 
 /* 条目样式(悬停) */
 SessionFriendItem#sessionFriendItem:hover {
-        background-color: #DEDEDE;
+        background-color: #eaeaea;
 }
 
 
