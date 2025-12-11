@@ -10,5 +10,9 @@
         <file>resource/image/sessionTabTargeted.png</file>
         <file>resource/image/friendTab.png.png</file>
         <file>resource/image/addFriend.png</file>
+        <file>resource/image/accept.png</file>
+        <file>resource/image/accept_hover.png</file>
+        <file>resource/image/reject.png</file>
+        <file>resource/image/reject_hover.png</file>
     </qresource>
 </RCC>

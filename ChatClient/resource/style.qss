@@ -169,3 +169,48 @@ SessionFriendItem#sessionFriendItem[selected = "true"]{
 SessionFriendItem#sessionFriendItem[selected = "true"]:hover{
     background-color: #d1d1d1;
 }
+
+
+
+
+
+/* ========================================================
+    ApplyItem acceptBtn/rejectBtn样式
+    ======================================================== */
+
+    QPushButton#acceptBtn {
+    border: none;
+    /* 默认状态图片 - 读取 qrc 资源 */
+    border-image: url(:/resource/image/accept.png);
+    width: 19px;
+    height: 19px;
+}
+
+/* 悬停状态 - 换一张图 */
+QPushButton#acceptBtn:hover {
+    border-image: url(:/resource/image/accept_hover.png);
+}
+
+
+QPushButton#rejectBtn {
+    border: none;
+    border-image: url(:/resource/image/reject.png);
+    width: 19px;
+    height: 19px;
+}
+
+QPushButton#rejectBtn:hover {
+    border-image: url(:/resource/image/reject_hover.png);
+}
+
+
+QPushButton#rejectBtn:pressed {
+    margin-top: 1px; 
+    margin-left: 1px;
+}
+
+QPushButton#acceptBtn:pressed {
+    /* border-image: url(:/resource/image/accept_press.png); */
+    margin-top: 1px; 
+    margin-left: 1px;
+}
