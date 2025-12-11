@@ -17,6 +17,21 @@
 
 #include <QMouseEvent>
 
+
+/**
+ * @brief The ItemType enum
+ * @details
+ * 用于分类不停的Item (如AddItem时需要指定类型)
+ */
+enum ItemType{
+    SessionItemType,
+    FriendItemType,
+    ApplyItemType
+};
+
+
+
+
 // 继承自QScrollArea滚动区域
 class SessionFriendArea : public QScrollArea
 {
@@ -30,10 +45,35 @@ public:
      */
     explicit SessionFriendArea(QWidget *parent = nullptr);
 
+    /**
+     * @brief clear 清除列表
+     * @details
+     * 清除当前列表中的所有Item
+     */
     void clear();
 
-    void addItem(const QIcon &avatar, const QString &name, const QString &text);
 
+    /**
+     * @brief addItem 增加Item
+     * @param itemType Item的类型
+     * @param itemId Item的ID(不同的Item其ID含义不同)
+     * @param avatar 头像
+     * @param name 姓名
+     * @param text 文本内容
+     * @details
+     * 向列表项中添加一个Item
+     * 所添加的Item根据类型进行分别, 不同类型的Item, 其id含义不相同
+     */
+    void addItem(ItemType itemType, const QString &itemId,const QIcon &avatar, const QString &name, const QString &text);
+
+
+    /**
+     * @brief clickItem 点击Item(非鼠标点击)
+     * @param index 传入Item的索引(首元素为0)
+     * @details
+     * 通过索引以代码的方式实现对某个Item的点击
+     */
+    void clickItem(int index);
 
 signals:
 
@@ -84,6 +124,10 @@ public:
      */
     explicit SessionFriendItem(QWidget *owner,const QIcon &avatar, const QString &name, const QString &text);
 
+
+
+    void select();
+
 signals:
 protected:
     QPushButton* avatarBtn;             ///< 头像部分
@@ -92,6 +136,8 @@ protected:
 
     // 当继承为ApplyItem时需要对该控件进行移除
     QLabel* messageLabel;               ///< 文本标签 (用于显示签名或最后一条消息)
+
+
 
     // -- 在子类中定义 --
     // 父类中不能定义子类属性
@@ -111,9 +157,55 @@ private:
     QWidget *owner;                     ///< 所属者
     bool selected = false;              ///< 是否选中状态 默认为false - 为后期选中样式进行监控
     void paintEvent(QPaintEvent *event) override;
-    void select();
+
+
+
 
 }; // SessionFriendItem
+
+
+/**
+ * @brief The SessionItem class
+ * @details
+ * SessionFriendItem的子类, 会话Item
+ */
+class SessionItem:public SessionFriendItem{
+    Q_OBJECT
+public:
+    SessionItem(QWidget *owner, const QString &chatSessionId, const QIcon &avatar, const QString &name, const QString &message);
+private:
+    QString chatSessionId;
+}; // SessionItem
+
+
+
+/**
+ * @brief The FriendItem class
+ * @details
+ * SessionFriendItem的子类, 好友Item
+ */
+class FriendItem:public SessionFriendItem{
+    Q_OBJECT
+public:
+    FriendItem(QWidget *owner, const QString &friendId, const QIcon &avatar, const QString &name, const QString &signature);
+private:
+    QString friendId;
+}; // FriendItem
+
+
+/**
+ * @brief The ApplyItem class
+ * @details
+ * SessionFriendItem的子类, 好友申请Item
+ * * 该Item并不存在Text部分, 但存在对应的申请按钮部分, 即一个Accept与一个Reject
+ */
+class ApplyItem:public SessionFriendItem{
+    Q_OBJECT
+public:
+    ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar, const QString &name);
+private:
+    QString applyId;
+}; // ApplyItem
 
 
 #endif // SESSIONFRIENDAREA_H

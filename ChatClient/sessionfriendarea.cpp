@@ -64,14 +64,19 @@ SessionFriendArea::SessionFriendArea(QWidget *parent)
 #if TEST_UI
     // ================ test begin ================
 
+    // 测试添加Item
     for(int i=0;i<30;++i){
         // QString name = "测试用户"+QString::number(i);
         // QString text = "最后一条消息"+QString::number(i);
         // SessionFriendItem *item = new SessionFriendItem(this, QIcon(":/resource/image/defaultAvatar.png"), name, text);
         // this->container->layout()->addWidget(item);
-        addItem(QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+        addItem(SessionItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
     }
 
+    // 测试点击首元素
+    clickItem(0);
+
+    // 测试清除Item
     // clear();
 
     // ================ test end ================
@@ -83,10 +88,16 @@ SessionFriendArea::SessionFriendArea(QWidget *parent)
 // ============================================
 void SessionFriendArea::clear()
 {
+    // 获取layout布局
     QLayout* layout = container->layout();
+
+    // 获取计数
     int count = layout->count();
+
+    // 由后往前遍历item并进行删除
     for(int i = count-1;i>=0;--i){
         QLayoutItem *item = layout->takeAt(i);
+        // 判断是否释放内存
         if(item->widget()) delete item->widget();
     }
 }
@@ -95,10 +106,42 @@ void SessionFriendArea::clear()
 // ============================================
 // 在SessionFriendArea中添加一个Item
 // ============================================
-void SessionFriendArea::addItem(const QIcon &avatar, const QString &name, const QString &text)
+void SessionFriendArea::addItem(ItemType itemType, const QString &itemId,const QIcon &avatar, const QString &name, const QString &text)
 {
-    SessionFriendItem* item = new SessionFriendItem(this, avatar, name, text);
+    SessionFriendItem* item = nullptr;
+    switch(itemType){
+    case SessionItemType:
+        item = new SessionItem(this,itemId ,avatar, name, text);
+        break;
+    case FriendItemType:
+        item = new FriendItem(this,itemId ,avatar, name, text);
+        break;
+    case ApplyItemType:
+        item = new ApplyItem(this,itemId ,avatar, name);
+        break;
+    default:
+        LOG()<<"未知的Item类型  itemType: "<<itemType;
+    }
     container->layout()->addWidget(item);
+}
+
+
+// ============================================
+// 通过index索引选中Item
+// ============================================
+void SessionFriendArea::clickItem(int index)
+{
+    // 获取判断索引是否越界
+    if(index < 0 || index >= container->layout()->count()){
+        LOG()<<"点击元素下标越界  index: "<<index <<"当前Item数: "<<container->layout()->count();
+    }
+    QLayoutItem *Layoutitem = container->layout()->itemAt(index);
+    if(!Layoutitem || !Layoutitem->widget()){
+        LOG()<<"指定元素不存在    index: "<<index;
+    }
+    SessionFriendItem* item = qobject_cast<SessionFriendItem*>(Layoutitem->widget());
+    // 调用select进行选中
+    item->select();
 }
 
 
@@ -297,4 +340,27 @@ void SessionFriendItem::select()
         this->style()->polish(this);
         this->update();
     }
+}
+
+
+
+// SessionItem 的构造函数
+SessionItem::SessionItem(QWidget *owner, const QString &chatSessionId, const QIcon &avatar, const QString &name, const QString &message)
+    :SessionFriendItem(owner, avatar, name, message), chatSessionId(chatSessionId)
+{
+
+}
+
+// FriendItem 的构造
+FriendItem::FriendItem(QWidget *owner, const QString &friendId, const QIcon &avatar, const QString &name, const QString &signature)
+    :SessionFriendItem(owner, avatar, name, signature),friendId(friendId)
+{
+
+}
+
+// ApplyItem 的构造
+ApplyItem::ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar, const QString &name)
+:SessionFriendItem(owner, avatar, name, ""),applyId(applyId)
+{
+
 }
