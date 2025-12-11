@@ -174,7 +174,7 @@ class SessionItem:public SessionFriendItem{
 public:
     SessionItem(QWidget *owner, const QString &chatSessionId, const QIcon &avatar, const QString &name, const QString &message);
 private:
-    QString chatSessionId;
+    QString chatSessionId; ///< 消息列表ID
 }; // SessionItem
 
 
@@ -189,7 +189,7 @@ class FriendItem:public SessionFriendItem{
 public:
     FriendItem(QWidget *owner, const QString &friendId, const QIcon &avatar, const QString &name, const QString &signature);
 private:
-    QString friendId;
+    QString friendId; ///< 好友列表ID
 }; // FriendItem
 
 
@@ -204,7 +204,10 @@ class ApplyItem:public SessionFriendItem{
 public:
     ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar, const QString &name);
 private:
-    QString applyId;
+    QString applyId; ///< 好友申请条目ID
+    QPushButton *acceptBtn; ///< 接受按钮
+    QPushButton *rejectBtn; ///< 拒绝按钮
+
 }; // ApplyItem
 
 

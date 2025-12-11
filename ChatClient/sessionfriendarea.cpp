@@ -70,7 +70,11 @@ SessionFriendArea::SessionFriendArea(QWidget *parent)
         // QString text = "最后一条消息"+QString::number(i);
         // SessionFriendItem *item = new SessionFriendItem(this, QIcon(":/resource/image/defaultAvatar.png"), name, text);
         // this->container->layout()->addWidget(item);
-        addItem(SessionItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+
+        // addItem(SessionItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+
+        addItem(ApplyItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+
     }
 
     // 测试点击首元素
@@ -362,5 +366,42 @@ FriendItem::FriendItem(QWidget *owner, const QString &friendId, const QIcon &ava
 ApplyItem::ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar, const QString &name)
 :SessionFriendItem(owner, avatar, name, ""),applyId(applyId)
 {
+    // 获取布局
+    QGridLayout* layout = qobject_cast<QGridLayout*>(this->layout());
 
+    // ========================
+    // 去除其中的Label
+    // ========================
+
+    // 从布局中去除
+    layout->removeWidget(this->messageLabel);
+
+    // 释放内存
+    delete messageLabel;
+
+    // ========================
+    // 初始化PushButton按钮
+    // ========================
+
+    acceptBtn = new QPushButton();
+    rejectBtn = new QPushButton();
+
+    // 设置按钮大小
+    // acceptBtn->setFixedSize(20,20);
+    // rejectBtn->setFixedSize(20,20);
+
+
+
+    // // 进入控件指针变成手指指向 - 暂不考虑(割裂感过强)
+    // acceptBtn->setCursor(Qt::PointingHandCursor);
+    // rejectBtn->setCursor(Qt::PointingHandCursor);
+
+
+    // 设置对象名
+    acceptBtn->setObjectName("acceptBtn");
+    rejectBtn->setObjectName("rejectBtn");
+
+    // 设置按钮布局
+    layout->addWidget(acceptBtn, 0, 2, 2, 1);
+    layout->addWidget(rejectBtn, 0, 3, 2, 1);
 }
