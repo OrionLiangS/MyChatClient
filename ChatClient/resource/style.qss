@@ -233,3 +233,26 @@ QPushButton#titleExtraBtn:hover{
     background-color: #e0e0e0;
 }
 
+/* ========================================================
+        ShowMessageArea 样式
+    ======================================================== */
+
+QWidget#messageShowContainer{
+    background:transparent;
+}
+
+
+QWidget#messageEidtArea{
+    background: transparent;
+}
+
+/* ========================================================
+        ShowMessageAreaItem样式
+    ======================================================== */
+QPushButton#messageAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
