@@ -291,11 +291,10 @@ void MainWidget::initRightWindow()
 
     // 消息展示区
     messageShowArea = new MessageShowArea();
-    messageShowArea->setObjectName("messageShowArea");
 
     // 消息编辑区
     messageEditArea = new MessageEditArea();
-    messageEditArea->setObjectName("messageEidtArea");
+    // messageEditArea->setObjectName("messageEidtArea");
 
 
     // 设置布局

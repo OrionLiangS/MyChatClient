@@ -8,6 +8,8 @@ class MessageEditArea : public QWidget
     Q_OBJECT
 public:
     explicit MessageEditArea(QWidget *parent = nullptr);
+private:
+    void paintEvent(QPaintEvent *event) override;
 
 signals:
 };
