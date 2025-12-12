@@ -126,7 +126,15 @@ public:
 
 
 
+    /**
+     * @brief select - 选择Item的函数
+     * @details
+     * 若是有需要选择Item的操作, 将通过事件驱动调用该函数
+     */
     void select();
+
+
+    virtual void active();
 
 signals:
 protected:
@@ -172,7 +180,23 @@ private:
 class SessionItem:public SessionFriendItem{
     Q_OBJECT
 public:
+    /**
+     * @brief SessionItem
+     * @param owner 父Widget
+     * @param chatSessionId 会话id
+     * @param avatar 头像
+     * @param name 姓名
+     * @param message 最后一条消息
+     */
     SessionItem(QWidget *owner, const QString &chatSessionId, const QIcon &avatar, const QString &name, const QString &message);
+
+    /**
+     * @brief active
+     * @details
+     * 重写父类对象的active
+     */
+    void active()override;
+
 private:
     QString chatSessionId; ///< 消息列表ID
 }; // SessionItem
@@ -187,7 +211,22 @@ private:
 class FriendItem:public SessionFriendItem{
     Q_OBJECT
 public:
+    /**
+     * @brief FriendItem
+     * @param owner 父Widget
+     * @param friendId 好友ID
+     * @param avatar 头像
+     * @param name 名字
+     * @param signature 个性签名
+     */
     FriendItem(QWidget *owner, const QString &friendId, const QIcon &avatar, const QString &name, const QString &signature);
+
+    /**
+     * @brief active
+     * @details
+     * 重写父类对象的active
+     */
+    void active()override;
 private:
     QString friendId; ///< 好友列表ID
 }; // FriendItem
@@ -202,7 +241,22 @@ private:
 class ApplyItem:public SessionFriendItem{
     Q_OBJECT
 public:
+
+    /**
+     * @brief ApplyItem
+     * @param owner 父Widget
+     * @param applyId 好友申请ID
+     * @param avatar 头像
+     * @param name 名字
+     */
     ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar, const QString &name);
+
+    /**
+     * @brief active
+     * @details
+     * 重写父类对象的active
+     */
+    void active()override;
 private:
     QString applyId; ///< 好友申请条目ID
     QPushButton *acceptBtn; ///< 接受按钮

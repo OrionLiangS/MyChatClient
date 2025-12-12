@@ -314,6 +314,10 @@ void SessionFriendItem::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
+
+// ============================================
+// 点击时的焦点聚焦功能 内部调用active来实行业务逻辑
+// ============================================
 void SessionFriendItem::select()
 {
     // 获取父元素的孩子
@@ -327,9 +331,11 @@ void SessionFriendItem::select()
 
         // 刷新对应的样式
         item->setProperty("selected", false);
+        // 丢弃原有样式
         item->style()->unpolish(item);
+        // 设置新样式
         item->style()->polish(item);
-        this->update();
+        // 更新
         item->update();
     /**
      * @todo
@@ -344,6 +350,18 @@ void SessionFriendItem::select()
         this->style()->polish(this);
         this->update();
     }
+
+    active();
+}
+
+
+// ============================================
+// 不进行实现 主要为子类提供可重写的基本语法
+// ============================================
+void SessionFriendItem::active()
+{
+    // nothing todo
+    // 只需要为子类提供可重写即可
 }
 
 
@@ -355,11 +373,35 @@ SessionItem::SessionItem(QWidget *owner, const QString &chatSessionId, const QIc
 
 }
 
+
+
+// ============================================
+// 调用SessionItem的点击逻辑
+// ============================================
+void SessionItem::active()
+{
+    LOG()<<"调用SessionItem的点击逻辑";
+    /**
+     * @todo
+     */
+}
+
 // FriendItem 的构造
 FriendItem::FriendItem(QWidget *owner, const QString &friendId, const QIcon &avatar, const QString &name, const QString &signature)
     :SessionFriendItem(owner, avatar, name, signature),friendId(friendId)
 {
 
+}
+
+// ============================================
+// 调用FriendItem的点击逻辑
+// ============================================
+void FriendItem::active()
+{
+    LOG()<<"调用FriendItem的点击逻辑";
+    /**
+     * @todo
+     */
 }
 
 // ApplyItem 的构造
@@ -404,4 +446,17 @@ ApplyItem::ApplyItem(QWidget *owner, const QString &applyId, const QIcon &avatar
     // 设置按钮布局
     layout->addWidget(acceptBtn, 0, 2, 2, 1);
     layout->addWidget(rejectBtn, 0, 3, 2, 1);
+}
+
+
+
+// ============================================
+// 调用ApplyItem的点击逻辑
+// ============================================
+void ApplyItem::active()
+{
+    LOG()<<"调用ApplyItem的点击逻辑";
+    /**
+     * @todo
+     */
 }
