@@ -11,6 +11,11 @@
 
 #include "sessionfriendarea.h"
 
+#include <QSplitter>
+
+#include "MessageShowArea.h"
+
+#include "messageeditarea.h"
 
 /**
  * @brief The MainWidget class
@@ -110,6 +115,21 @@ private:
     QPushButton *addFriendBtn;      ///< 搜索按钮
     SessionFriendArea *sessionFriendArea; ///< 好友列表部分
     // ...
+
+
+    // ============================================
+    // rightWindow 所需控件元素
+    // ============================================
+    QWidget *titleWidget;                   ///< 顶部栏
+    QSplitter* rightWindowSplitter;         ///< 右侧窗口的分割器
+    MessageShowArea* messageShowArea;       ///< 消息展示区
+    MessageEditArea* messageEditArea;       ///< 消息编辑区
+
+    QLabel *titleWidgetTitle;               ///< 顶部栏的标题
+    QPushButton *titleExtraBtn;             ///< 顶部标题栏的右侧按钮
+
+
+
 
 
     // ============================================

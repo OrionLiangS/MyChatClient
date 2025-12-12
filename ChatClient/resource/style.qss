@@ -173,7 +173,6 @@ SessionFriendItem#sessionFriendItem[selected = "true"]:hover{
 
 
 
-
 /* ========================================================
     ApplyItem acceptBtn/rejectBtn样式
     ======================================================== */
@@ -214,3 +213,23 @@ QPushButton#acceptBtn:pressed {
     margin-top: 1px; 
     margin-left: 1px;
 }
+
+
+
+
+
+/* ========================================================
+        rightWindowTitle 样式
+    ======================================================== */
+QPushButton#titleExtraBtn{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+QPushButton#titleExtraBtn:hover{
+    background-color: #e0e0e0;
+}
+

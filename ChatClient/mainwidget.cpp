@@ -10,6 +10,8 @@
 
 #include <QSplitter>
 
+#include "debug.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -117,7 +119,7 @@ void MainWidget::initMainWindow()
 
     midWindow->setMinimumWidth(200);    // 中间最小宽
     midWindow->setMaximumWidth(400);    // 中间最大宽
-    rightWindow->setMinimumWidth(500);  // 右侧最小宽
+    rightWindow->setMinimumWidth(200);  // 右侧最小宽
 
     // 拉伸策略：拖动窗口时，增量全给右侧
     splitter->setStretchFactor(0, 0);
@@ -267,9 +269,83 @@ void MainWidget::initMidWindow()
  */
 void MainWidget::initRightWindow()
 {
-    /**
-     * @todo
-     */
+
+    // ============================
+    // 1) 整体布局
+    // ============================
+    //
+    QVBoxLayout *rightWindowlayout = new QVBoxLayout(rightWindow);
+    rightWindowlayout->setSpacing(0);
+    rightWindowlayout->setContentsMargins(0,0,0,0);
+    rightWindow->setLayout(rightWindowlayout);
+
+    // 标题Widget
+    titleWidget = new QWidget(rightWindow);
+    titleWidget->setObjectName("titleWidget");
+    titleWidget->setFixedHeight(67);
+
+    // 下部分割器
+    rightWindowSplitter = new QSplitter(Qt::Vertical, rightWindow);
+    rightWindowSplitter->setObjectName("rightWIndowSplitter");
+
+
+    // 消息展示区
+    messageShowArea = new MessageShowArea();
+    messageShowArea->setObjectName("messageShowArea");
+
+    // 消息编辑区
+    messageEditArea = new MessageEditArea();
+    messageEditArea->setObjectName("messageEidtArea");
+
+
+    // 设置布局
+    rightWindowlayout->addWidget(titleWidget);
+    rightWindowlayout->addWidget(rightWindowSplitter);
+
+    // 分割器增加内容
+    rightWindowSplitter->addWidget(messageShowArea);
+    rightWindowSplitter->addWidget(messageEditArea);
+    rightWindowSplitter->setCollapsible(1,false); // 防止折叠
+    rightWindowSplitter->setCollapsible(0,false); // 防止折叠
+
+    // 设置启动时的默认比例
+    rightWindowSplitter->setStretchFactor(0, 7); // 第0个控件(展示区) 占 7份
+    rightWindowSplitter->setStretchFactor(1, 3); // 第1个控件(编辑区) 占 3份
+
+
+    // ============================
+    // 2) TitleWidget 设置布局
+    // ============================
+    QHBoxLayout* titleLayout = new QHBoxLayout(titleWidget);
+    titleExtraBtn = new QPushButton(titleWidget);
+    titleExtraBtn->setObjectName("titleExtraBtn");
+    titleWidgetTitle = new QLabel(titleWidget);
+    titleWidgetTitle->setObjectName("titleWidgetTitle");
+
+    // 1. 设置按钮固定大小
+    titleExtraBtn->setFixedSize(40,40);
+    titleExtraBtn->setIconSize(QSize(20,20));
+    titleExtraBtn->setIcon(QIcon(":/resource/image/TitleExtraBtn.png"));
+    titleExtraBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+
+    // 如果不加这一行，当文字很长时（如 "For Test Long Text..."），Label 依然会因为不想被截断而把按钮挤出去。
+    titleWidgetTitle->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+    titleWidgetTitle->setMinimumWidth(0);
+
+#if TEST_UI
+    titleWidgetTitle->setText("For Test Long Text Long Text Long Text");
+    // titleExtraBtn->setText("...");
+#endif
+
+    titleWidget->setLayout(titleLayout);
+    titleLayout->setContentsMargins(10,0,10,0);
+
+    // Label 权重为 1 (拿走所有剩余空间)
+    titleLayout->addWidget(titleWidgetTitle, 1);
+
+    // Button 权重为 0 (只占用固定大小，不参与拉伸)
+    titleLayout->addWidget(titleExtraBtn, 0);
 }
 
 

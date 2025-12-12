@@ -14,5 +14,6 @@
         <file>resource/image/accept_hover.png</file>
         <file>resource/image/reject.png</file>
         <file>resource/image/reject_hover.png</file>
+        <file>resource/image/TitleExtraBtn.png</file>
     </qresource>
 </RCC>
