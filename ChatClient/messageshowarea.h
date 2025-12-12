@@ -46,11 +46,40 @@ private:
 class MessageItem : public QWidget{
     Q_OBJECT
 public:
-    MessageItem(bool isLeft);
 
+    /**
+     * @brief makeMessageItem 创建消息Item
+     * @param isLeft 判断是否为左侧消息
+     * @param message 消息数据内容
+     * @return 返回一个MessageItem指针
+     */
     static MessageItem* makeMessageItem(bool isLeft, const Message &message);
 
+protected:
+
+    // ==============================
+    // 为不同的消息类型创建不同的消息体 (暂未完成)
+    // ==============================
+
+    static MessageItem*  makeTextMessageItem();     ///< @todo
+
+    static MessageItem* makeImageMessageItem();     ///< @todo
+
+    static MessageItem* makeFileMessageItem();     ///< @todo
+
+    static MessageItem* makeSpeechMessageItem();     ///< @todo
+
+
 private:
+
+    /**
+     * @brief MessageItem 构造函数
+     * @param isLeft 判断是否为左侧消息Item
+     * @details
+     * 采用工厂模式创建对象 因此设置为构造函数私有化 防止构造函数被调用
+     */
+    MessageItem(bool isLeft);
+
     bool isLeft; ///< 判断是否为左侧消息
 
 }; // MessageItem
