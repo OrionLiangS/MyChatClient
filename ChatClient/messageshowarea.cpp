@@ -4,7 +4,11 @@
 
 #include <QVBoxLayout>
 
-#include<QGridLayout>
+#include <QGridLayout>
+
+#include <QLabel>
+
+using namespace model;
 
 /**
  * @brief MessageShowArea::MessageShowArea
@@ -135,9 +139,14 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
 
     // 2) 创建头像
     QPushButton *messageAvatar = new QPushButton(item);
+
+    // 头像设置固定大小
     messageAvatar->setFixedSize(33,33);
+    // 头像Icon固定大小
     messageAvatar->setIconSize(QSize(33,33));
+    // 设置头像(从message对象中获取)
     messageAvatar->setIcon(message.sender.avatar);
+    // 设置ObjectName方便设置QSS样式
     messageAvatar->setObjectName("messageAvatar");
 
     // 3) 设置头像进布局(根据情况设置)
@@ -148,9 +157,46 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     }
 
 
+    // 4) 设置名字和时间
+    QLabel *nameAndTimeLabel = new QLabel();
+    nameAndTimeLabel->setObjectName("nameAndTimeLabel");
+    // 设置字符串
+    nameAndTimeLabel->setText(message.sender.nickname + " | " + message.time);
+    nameAndTimeLabel->setAlignment(Qt::AlignBottom);
 
+    // 根据左右设置在Layout中的位置
+    if(isLeft){
+        layout->addWidget(nameAndTimeLabel, 0,1, Qt::AlignLeft);
+    }
+    else{
+        layout->addWidget(nameAndTimeLabel,0,0, Qt::AlignRight);
+    }
 
+    // 5) 创建消息体 (调用工厂函数 - 创建不同消息类型的消息体)
+    QWidget *contentWidget = nullptr;
+    switch(message.messageType){
+        case TEXT_TYPE:
+            contentWidget = makeTextMessageItem();
+            break;
+        case IMAGE_TYPE:
+            contentWidget = makeImageMessageItem();
+            break;
+        case FILE_TYPE:
+            contentWidget = makeFileMessageItem();
+            break;
+        case SPEECH_TYPE:
+            contentWidget = makeSpeechMessageItem();
 
+            break;
+        default:
+            LOG()<<"未知消息类型 messageType:"<<message.messageType;
+    }
+        if(isLeft){
+            layout->addWidget(contentWidget, 1, 1);
+        }
+        else{
+            layout->addWidget(contentWidget, 1, 0);
+        }
 
     // 返回消息
     return item;
