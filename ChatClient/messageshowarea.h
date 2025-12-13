@@ -2,13 +2,9 @@
 #define MESSAGESHOWAREA_H
 
 #include <QScrollArea>
-
 #include <QWidget>
-
 #include "model/data.h"
-
 #include <QPushButton>
-
 #include <QLabel>
 
 // 通常情况下 在头文件中尽量避免完全展开命名空间 而是采用局部展开
@@ -29,15 +25,11 @@ public:
      * @brief addMessage - 从列表的最下部进行插入
      * @param isLeft - 判断为左侧消息还是右侧消息
      * @param message - 消息体
-     * @details
-     * - 从列表中的尾部插入一条数据(message)
      */
     void addMessage(bool isLeft, const Message& message);
 
     /**
      * @brief addFrontMessage
-     * @param isLeft
-     * @param message
      */
     void addFrontMessage(bool isLeft, const Message& message);
 
@@ -46,11 +38,6 @@ public:
      */
     void clearMessage();
 private:
-    /**
-     * @brief container
-     * @details
-     * 消息展示区的容器
-     */
     QWidget *container;
     void AreaSetStyle();
 
@@ -60,9 +47,7 @@ private:
 /**
  * @brief The MessageItem class
  * @details
- * 单条消息的Item, 即单条消息元素
- * * 通常情况下需要同时支持 文本/语音/文件/图片
- * * 当前只考虑文本消息 - from 2025.12.12
+ * 单条消息的Item
  */
 class MessageItem : public QWidget{
     Q_OBJECT
@@ -70,46 +55,31 @@ public:
 
     /**
      * @brief makeMessageItem 创建消息Item
-     * @param isLeft 判断是否为左侧消息
-     * @param message 消息数据内容
-     * @return 返回一个MessageItem指针
      */
     static MessageItem* makeMessageItem(bool isLeft, const Message &message);
 
 protected:
-
     // ==============================
-    // 为不同的消息类型创建不同的消息体 (暂未完成)
+    // 工厂方法
     // ==============================
+    static QWidget* makeTextMessageItem(bool isLeft, const QString& message);
+    static QWidget* makeImageMessageItem();
+    static QWidget* makeFileMessageItem();
+    static QWidget* makeSpeechMessageItem();
 
-    /**
-     * @brief makeTextMessageItem
-     * @param isLeft
-     * @param message
-     * @return 返回一个QWidget的对象
-     * @details
-     * - 用于创建一个TextType的Message对象
-     */
-    static QWidget*  makeTextMessageItem(bool isLeft, const QString& message);     ///< @todo
-
-    static QWidget* makeImageMessageItem();     ///< @todo
-
-    static QWidget* makeFileMessageItem();     ///< @todo
-
-    static QWidget* makeSpeechMessageItem();     ///< @todo
-
+    // 【关键修复】新增：声明 resizeEvent，否则 cpp 里没法实现！
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
-
     /**
      * @brief MessageItem 构造函数
-     * @param isLeft 判断是否为左侧消息Item
-     * @details
-     * 采用工厂模式创建对象 因此设置为构造函数私有化 防止构造函数被调用
      */
     MessageItem(bool isLeft);
 
-    bool isLeft; ///< 判断是否为左侧消息
+    bool isLeft;
+
+    // 【关键修复】新增：持有中间内容的指针，否则 cpp 里找不到这个变量！
+    QWidget* contentWidget = nullptr;
 
 }; // MessageItem
 
@@ -117,34 +87,31 @@ private:
 /**
  * @brief The MessageContentLabel class
  * @details
- * - 该类用于创建表示文本消息的正文部分
- * - 即消息中的气泡框
- * - 需要采用绘图API进行创建
- * - 由于该项目/客户端需要采用一定的主题色
- * - 因此文本框若是为右侧消息(本用户所发送)选择使用与项目类似的蓝色色系 暂定 #269cdb
+ * 文本消息气泡
  */
 class MessageContentLabel : public QWidget{
     Q_OBJECT
 public:
     /**
      * @brief MessageContentLabel
-     * @param text - 文本中所需要显示的内容
-     * @param isLeft - 判断当前消息是否为左侧消息
      */
     MessageContentLabel(const QString &text, bool isLeft);
 
+    // 【关键修复】新增：手动计算并设置大小的函数
+    void updateContentSize(int parentWidth);
+
     /**
      * @brief paintEvent - 重写事件
-     * @param event 事件
-     * @details 重写绘画事件以保证可以进行绘图
-     * - 重写绘画事件进行绘制TEXT_MESSAGE的消息气泡框
      */
     void paintEvent(QPaintEvent *event) override;
+
 private:
     QLabel *messageContentLabel;     ///< 用于容纳消息的内容部分
     bool isLeft;                     ///< 用于判断当前消息为左侧消息还是右侧消息
+
+    // 【关键修复】新增：保存计算后的宽高
+    int m_contentWidth = 0;
+    int m_contentHeight = 0;
 };
-
-
 
 #endif // MESSAGESHOWAREA_H

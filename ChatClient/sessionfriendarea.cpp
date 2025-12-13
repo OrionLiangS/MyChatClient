@@ -71,9 +71,9 @@ SessionFriendArea::SessionFriendArea(QWidget *parent)
         // SessionFriendItem *item = new SessionFriendItem(this, QIcon(":/resource/image/defaultAvatar.png"), name, text);
         // this->container->layout()->addWidget(item);
 
-        // addItem(SessionItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+        addItem(SessionItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
 
-        addItem(ApplyItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
+        // addItem(ApplyItemType, QString::number(i),QIcon(":/resource/image/defaultAvatar.png"), "测试用户"+QString::number(i), "最后一条消息"+QString::number(i));
 
     }
 
