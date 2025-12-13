@@ -25,6 +25,26 @@ class MessageShowArea : public QScrollArea
 public:
     MessageShowArea();
 
+    /**
+     * @brief addMessage - 从列表的最下部进行插入
+     * @param isLeft - 判断为左侧消息还是右侧消息
+     * @param message - 消息体
+     * @details
+     * - 从列表中的尾部插入一条数据(message)
+     */
+    void addMessage(bool isLeft, const Message& message);
+
+    /**
+     * @brief addFrontMessage
+     * @param isLeft
+     * @param message
+     */
+    void addFrontMessage(bool isLeft, const Message& message);
+
+    /**
+     * @brief clearMessage
+     */
+    void clearMessage();
 private:
     /**
      * @brief container
@@ -62,13 +82,21 @@ protected:
     // 为不同的消息类型创建不同的消息体 (暂未完成)
     // ==============================
 
-    static MessageItem*  makeTextMessageItem();     ///< @todo
+    /**
+     * @brief makeTextMessageItem
+     * @param isLeft
+     * @param message
+     * @return 返回一个QWidget的对象
+     * @details
+     * - 用于创建一个TextType的Message对象
+     */
+    static QWidget*  makeTextMessageItem(bool isLeft, const QString& message);     ///< @todo
 
-    static MessageItem* makeImageMessageItem();     ///< @todo
+    static QWidget* makeImageMessageItem();     ///< @todo
 
-    static MessageItem* makeFileMessageItem();     ///< @todo
+    static QWidget* makeFileMessageItem();     ///< @todo
 
-    static MessageItem* makeSpeechMessageItem();     ///< @todo
+    static QWidget* makeSpeechMessageItem();     ///< @todo
 
 
 private:
