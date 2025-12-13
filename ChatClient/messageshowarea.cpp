@@ -10,6 +10,10 @@
 
 #include <QFontMetrics>
 
+#include <QPainter> ///< 画家对象
+
+#include <QPainterPath> ///< 用于绘制不规则形状
+
 using namespace model;
 
 /**
@@ -268,12 +272,16 @@ MessageContentLabel::MessageContentLabel(const QString &text, bool isLeft)
 // 该函数将会在控件被显示时调用, 无需手动调用
 void MessageContentLabel::paintEvent(QPaintEvent *event)
 {
+
+    // 处理Warning
+
+    (void)event;
     // 1) 获取父元素的宽度
     // 文本需要在占据父元素60%的位置进行换行
     // 因此需要先获取父元素的宽度
     // 其父元素为消息框
     QObject* parentWidget = this->parent();
-    if(parentWidget->isWidgetType()){
+    if(!parentWidget->isWidgetType()){
         // 父元素的类型为一个QWidget类型(MessageItem) 因此若是不是Widget类型则说明不是父元素
         return;
     }
@@ -302,6 +310,81 @@ void MessageContentLabel::paintEvent(QPaintEvent *event)
     // 20px为上下间距各为10px
     int height = rows * (this->messageContentLabel->font().pixelSize()*1.2)+20;
 
+
+
+    // 5) 绘制气泡
+    // 设置画家对象
+    QPainter painter(this);
+
+    // 设置对象用来绘制不规则图形
+    QPainterPath path;
+    // 设置抗锯齿
+    painter.setRenderHint(QPainter::Antialiasing);
+    // 通过左右分别绘制对应的气泡
+    if(isLeft){
+        // 设置画笔颜色 (线条边框)
+        painter.setPen(QPen(QColor(255, 255, 255)));
+        // 设置画刷 (填充)
+        painter.setBrush(QColor(255, 255, 255));
+
+        // =====================
+        // 绘制圆角矩形
+        // =====================
+        // 第一个参数设置为10, 其中这个绘画出来的控件是基于父元素的位置, 因此需要留出一定的位置给气泡尖尖
+        painter.drawRoundedRect(10,0,width,height,5,5);
+
+        // =====================
+        // 绘制小尖尖
+        // =====================
+        // 移动画笔
+        path.moveTo(10,15);
+        // 划线
+        path.lineTo(0,20);
+        path.lineTo(10,25);
+        // 闭合
+        path.closeSubpath();
+
+        // 移动Label的位置
+        this->setGeometry(10,0,width,height);
+
+    }else{
+        // 右侧为当前登录用户(本人) 为蓝色色系
+        painter.setPen(QPen(QColor(58, 188, 245)));
+        painter.setBrush(QColor(58, 188, 245));
+
+
+        // =====================
+        // 换算坐标
+        // =====================
+        int leftPos = this->width()-width-10;
+        int rightPos = this->width()-10;
+
+        // =====================
+        // 绘制圆角矩形
+        // =====================
+        painter.drawRoundedRect(leftPos,0,width,height,5,5);
+
+        // =====================
+        // 绘制小尖尖
+        // =====================
+        // 移动画笔
+        path.moveTo(rightPos,15);
+        // 划线
+        path.lineTo(rightPos+10,20);
+        path.lineTo(rightPos,25);
+        // 闭合
+        path.closeSubpath();
+
+        // 移动Label的位置
+        this->setGeometry(leftPos,0,width,height);
+
+    }
+
+    // 6) 将小三角进行绘画
+    painter.drawPath(path);
+
+    // 7) 重新设置父元素高度
+    parent->setFixedHeight(height+30);
 }
 
 
