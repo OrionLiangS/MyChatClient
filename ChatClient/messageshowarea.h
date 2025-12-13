@@ -9,6 +9,7 @@
 
 #include <QPushButton>
 
+#include <QLabel>
 
 // 通常情况下 在头文件中尽量避免完全展开命名空间 而是采用局部展开
 using model::Message;
@@ -83,5 +84,31 @@ private:
     bool isLeft; ///< 判断是否为左侧消息
 
 }; // MessageItem
+
+
+/**
+ * @brief The MessageContentLabel class
+ * @details
+ * - 该类用于创建表示文本消息的正文部分
+ * - 即消息中的气泡框
+ * - 需要采用绘图API进行创建
+ * - 由于该项目/客户端需要采用一定的主题色
+ * - 因此文本框若是为右侧消息(本用户所发送)选择使用与项目类似的蓝色色系 暂定 #269cdb
+ */
+class MessageContentLabel : public QWidget{
+    Q_OBJECT
+public:
+    /**
+     * @brief MessageContentLabel
+     * @param text - 文本中所需要显示的内容
+     * @param isLeft - 判断当前消息是否为左侧消息
+     */
+    MessageContentLabel(const QString &text, bool isLeft);
+private:
+    QLabel *messageContentLabel;     ///< 用于容纳消息的内容部分
+    bool isLeft;                     ///< 用于判断当前消息为左侧消息还是右侧消息
+};
+
+
 
 #endif // MESSAGESHOWAREA_H
