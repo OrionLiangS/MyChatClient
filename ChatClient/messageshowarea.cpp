@@ -8,6 +8,8 @@
 
 #include <QLabel>
 
+#include <QFontMetrics>
+
 using namespace model;
 
 /**
@@ -255,6 +257,51 @@ MessageContentLabel::MessageContentLabel(const QString &text, bool isLeft)
     this->messageContentLabel->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
     // 设置文本自动换行
     this->messageContentLabel->setWordWrap(true);
+}
+
+
+
+// ################################################
+// 重写paintEvent进行消息气泡的绘制
+// ###############################################
+
+// 该函数将会在控件被显示时调用, 无需手动调用
+void MessageContentLabel::paintEvent(QPaintEvent *event)
+{
+    // 1) 获取父元素的宽度
+    // 文本需要在占据父元素60%的位置进行换行
+    // 因此需要先获取父元素的宽度
+    // 其父元素为消息框
+    QObject* parentWidget = this->parent();
+    if(parentWidget->isWidgetType()){
+        // 父元素的类型为一个QWidget类型(MessageItem) 因此若是不是Widget类型则说明不是父元素
+        return;
+    }
+    QWidget *parent = qobject_cast<QWidget*>(parentWidget);
+    // 获取宽度
+    int width = parent->width()*0.6;
+
+
+    // 2) 计算当前文本一行放置有多宽
+    // 获取字体的度量值
+    QFontMetrics metric(this->messageContentLabel->font());
+    // 通过度量值与单行字体的宽度计算一行的宽度
+    int totalWidth = metric.horizontalAdvance(this->messageContentLabel->text());
+
+    // 3) 计算行数
+    // 减去40是因为其中总宽度包含左右间距
+    // +1 表示确保至少有一行文本
+    int rows = (totalWidth/(width-40))+1;
+    if(rows == 1){
+        // 当行数真的只有一行时 其宽度即为真正的文本宽度+40(40为margin宽度)
+        width = totalWidth+40;
+    }
+
+    // 4) 根据行数计算得到高度
+    // font().pixelSize()*1.2 为字体高度 其中1.2为系数
+    // 20px为上下间距各为10px
+    int height = rows * (this->messageContentLabel->font().pixelSize()*1.2)+20;
+
 }
 
 
