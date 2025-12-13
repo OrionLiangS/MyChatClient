@@ -104,6 +104,14 @@ public:
      * @param isLeft - 判断当前消息是否为左侧消息
      */
     MessageContentLabel(const QString &text, bool isLeft);
+
+    /**
+     * @brief paintEvent - 重写事件
+     * @param event 事件
+     * @details 重写绘画事件以保证可以进行绘图
+     * - 重写绘画事件进行绘制TEXT_MESSAGE的消息气泡框
+     */
+    void paintEvent(QPaintEvent *event) override;
 private:
     QLabel *messageContentLabel;     ///< 用于容纳消息的内容部分
     bool isLeft;                     ///< 用于判断当前消息为左侧消息还是右侧消息
