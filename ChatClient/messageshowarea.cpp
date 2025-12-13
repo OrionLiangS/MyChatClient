@@ -49,6 +49,41 @@ MessageShowArea::MessageShowArea() {
 }
 
 
+// ################################################
+// 从MessageShowArea中插入一条消息(尾部插入)
+// ###############################################
+void MessageShowArea::addMessage(bool isLeft, const Message &message)
+{
+    MessageItem* messageItem = MessageItem::makeMessageItem(isLeft, message);
+    this->container->layout()->addWidget(messageItem);
+}
+
+
+// ################################################
+// 从MessageShowArea中插入一条消息(头部插入)
+// ###############################################
+void MessageShowArea::addFrontMessage(bool isLeft, const Message &message)
+{
+    MessageItem* messageItem = MessageItem::makeMessageItem(isLeft, message);
+    QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(this->container->layout());
+    layout->insertWidget(0, messageItem);
+}
+
+// ################################################
+// 清空MessageShowArea中的所有消息数据
+// ###############################################
+void MessageShowArea::clearMessage()
+{
+    QLayout *layout = this->container->layout();
+    for(int i = layout->count()-1;i>=0;--i){
+        QLayoutItem* item = layout->takeAt(i);
+        if(item && item->widget()){
+            delete item->widget();
+        }
+    }
+}
+
+
 /**
  * @brief MessageShowArea::AreaSetStyle
  *
@@ -182,7 +217,8 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     QWidget *contentWidget = nullptr;
     switch(message.messageType){
         case TEXT_TYPE:
-            contentWidget = makeTextMessageItem();
+            // 此处传入的是一个QByteArray参数, 不一定需要手动转换 本质上QString存在传入QByteArray的构造函数
+            contentWidget = makeTextMessageItem(isLeft, message.content);
             break;
         case IMAGE_TYPE:
             contentWidget = makeImageMessageItem();
@@ -208,8 +244,21 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     return item;
 }
 
+/**
+ * @brief MessageItem::makeTextMessageItem
+ * @param isLeft - 判断当前消息为左侧消息还是右侧消息
+ * @param message - 消息体
+ * @return 返回一个QWidget(主要是为了能够更好的适配其他返回值类型)
+ * @details
+ * 通过该函数返回一个QWidget主要是通过适应多态 父类指针调用子类方法形成多态
+ */
+QWidget *MessageItem::makeTextMessageItem(bool isLeft, const QString& message)
+{
+    MessageContentLabel *label = new MessageContentLabel(message, isLeft);
+    return label;
+}
 
-MessageItem *MessageItem::makeTextMessageItem()
+QWidget *MessageItem::makeImageMessageItem()
 {
     /**
      * @todo
@@ -217,15 +266,7 @@ MessageItem *MessageItem::makeTextMessageItem()
     return nullptr;
 }
 
-MessageItem *MessageItem::makeImageMessageItem()
-{
-    /**
-     * @todo
-     */
-    return nullptr;
-}
-
-MessageItem *MessageItem::makeFileMessageItem()
+QWidget *MessageItem::makeFileMessageItem()
 {
     /**
      * @todo
@@ -234,7 +275,7 @@ MessageItem *MessageItem::makeFileMessageItem()
 }
 
 
-MessageItem *MessageItem::makeSpeechMessageItem()
+QWidget *MessageItem::makeSpeechMessageItem()
 {
     /**
      * @todo
