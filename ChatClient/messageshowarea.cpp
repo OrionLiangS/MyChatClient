@@ -201,3 +201,84 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     // 返回消息
     return item;
 }
+
+
+MessageItem *MessageItem::makeTextMessageItem()
+{
+    /**
+     * @todo
+     */
+    return nullptr;
+}
+
+MessageItem *MessageItem::makeImageMessageItem()
+{
+    /**
+     * @todo
+     */
+    return nullptr;
+}
+
+MessageItem *MessageItem::makeFileMessageItem()
+{
+    /**
+     * @todo
+     */
+    return nullptr;
+}
+
+
+MessageItem *MessageItem::makeSpeechMessageItem()
+{
+    /**
+     * @todo
+     */
+    return nullptr;
+}
+
+
+// ################################################
+// 创建消息体(文本消息的气泡框与其对应的内容显示)
+// ###############################################
+MessageContentLabel::MessageContentLabel(const QString &text, bool isLeft)
+    :isLeft(isLeft)
+{
+
+    // 1) 设置Label与对应样式
+    QFont font;
+    // 此处所设置的字体需要使用 因此暂时不考虑使用QSS(需要计算字体的大小)
+    font.setFamily("微软雅黑");
+    font.setPixelSize(16);
+    this->messageContentLabel = new QLabel(text, this);
+    this->messageContentLabel->setObjectName("messageContentLabel");
+    // 设置文本靠左, 高度居中
+    this->messageContentLabel->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+    // 设置文本自动换行
+    this->messageContentLabel->setWordWrap(true);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
