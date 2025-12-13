@@ -14,6 +14,8 @@
 
 #include <QPainterPath> ///< 用于绘制不规则形状
 
+#include "debug.h"
+
 using namespace model;
 
 /**
@@ -45,6 +47,22 @@ MessageShowArea::MessageShowArea() {
     // 为容器设置布局
     container->setLayout(messageContainerLayout);
 
+
+    // #########################
+    // 添加测试数据
+    // #########################
+#if TEST_UI
+    for(int i=0;i<15;++i){
+        UserInfo userinfo;
+        userinfo.avatar = QIcon(":/resource/image/defaultAvatar.png");
+        userinfo.nickname = "测试用户"+QString::number(i);
+        QString text ="This is a test Message  This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message";
+        Message message = Message::makeMessage(TEXT_TYPE, QString::number(i), userinfo,text.toUtf8(),"");
+        addMessage(true, message);
+        addMessage(false, message);
+    }
+
+#endif
 
 }
 
@@ -154,93 +172,126 @@ void MessageShowArea::AreaSetStyle()
  * @details
  * 构造函数
  */
+// 构造函数
 MessageItem::MessageItem(bool isLeft)
     :isLeft(isLeft)
 {
-
+    // 这里的 contentWidget 初始化为空
 }
 
-/**
- * @brief MessageItem::makeMessageItem
- * @param isLeft 判断当前是否为左侧消息
- * @param message message消息对象
- * @return 返回一个构造好的message对象
- * @details
- * 建造者模式, 用来构造对应不同的消息对象
- */
+// 【核心新增】响应窗口大小变化
+void MessageItem::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+
+    // 如果当前持有的是文本气泡，通知它重新计算大小
+    if (contentWidget) {
+        // 尝试转换成 MessageContentLabel
+        if (auto textBubble = qobject_cast<MessageContentLabel*>(contentWidget)) {
+            // 传入当前 Item 的宽度，让气泡自己算该多宽
+            textBubble->updateContentSize(this->width());
+
+            // 重新设置 Item 的高度，因为气泡高度变了，Item 也要撑开
+            // 70 是预留给头像、名字和上下边距的空间
+            int newItemHeight = textBubble->height() + 40;
+            if (newItemHeight < 80) newItemHeight = 80; // 最小高度
+            this->setFixedHeight(newItemHeight);
+        }
+    }
+}
+
 MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
 {
-    // 1) 创建布局并设置
     MessageItem* item = new MessageItem(isLeft);
     QGridLayout* layout = new QGridLayout(item);
     item->setLayout(layout);
 
-    // 设置最小高度
-    item->setMinimumHeight(53);
+    // 1. 布局设置 (紧凑一点)
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setVerticalSpacing(5);
+    layout->setHorizontalSpacing(10); // 头像和气泡的间距
 
-    // 2) 创建头像
+    // 2. 创建头像
     QPushButton *messageAvatar = new QPushButton(item);
-
-    // 头像设置固定大小
-    messageAvatar->setFixedSize(33,33);
-    // 头像Icon固定大小
-    messageAvatar->setIconSize(QSize(33,33));
-    // 设置头像(从message对象中获取)
-    messageAvatar->setIcon(message.sender.avatar);
-    // 设置ObjectName方便设置QSS样式
     messageAvatar->setObjectName("messageAvatar");
+    messageAvatar->setFixedSize(40,40); // 微信标准头像大小
+    messageAvatar->setIconSize(QSize(40,40));
+    messageAvatar->setIcon(message.sender.avatar);
+    messageAvatar->setFlat(true); // 去掉按钮边框
+    messageAvatar->setFocusPolicy(Qt::NoFocus);
 
-    // 3) 设置头像进布局(根据情况设置)
-    if(isLeft){
-        layout->addWidget(messageAvatar, 0,0,2,1, Qt::AlignLeft|Qt::AlignTop);
-    }else{
-        layout->addWidget(messageAvatar, 0,1,2,1, Qt::AlignRight|Qt::AlignTop);
+    // 3. 创建名字和时间
+    QLabel *nameLabel = new QLabel();
+    nameLabel->setText(message.sender.nickname + " | " + message.time);
+    nameLabel->setStyleSheet("color: #B2B2B2; font-size: 12px;");
+    nameLabel->setFixedHeight(15); // 固定高度
+
+    // 4. 创建消息体
+    QWidget *contentWidget = nullptr;
+    if (message.messageType == TEXT_TYPE) {
+        contentWidget = makeTextMessageItem(isLeft, message.content);
+    }
+    // ... 其他类型 ...
+
+    // 将创建好的 contentWidget 保存到 item 成员变量中，供 resizeEvent 使用
+    item->contentWidget = contentWidget;
+
+    // 5. 初始化一次大小 (防止刚出来是0)
+    if (auto textBubble = qobject_cast<MessageContentLabel*>(contentWidget)) {
+        textBubble->updateContentSize(600); // 先给个大概值
     }
 
+    // ============================================================
+    // 布局核心逻辑 (解决左右不对齐问题)
+    // ============================================================
 
-    // 4) 设置名字和时间
-    QLabel *nameAndTimeLabel = new QLabel();
-    nameAndTimeLabel->setObjectName("nameAndTimeLabel");
-    // 设置字符串
-    nameAndTimeLabel->setText(message.sender.nickname + " | " + message.time);
-    nameAndTimeLabel->setAlignment(Qt::AlignBottom);
-
-    // 根据左右设置在Layout中的位置
     if(isLeft){
-        layout->addWidget(nameAndTimeLabel, 0,1, Qt::AlignLeft);
+        // === 左侧布局 ===
+        // Row 0: 头像 | 名字 | 弹簧
+        // Row 1: (空) | 气泡 | 弹簧
+
+        // 头像 (第0列，跨2行，靠左上)
+        layout->addWidget(messageAvatar, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignLeft);
+
+        // 名字 (第1列，靠左)
+        layout->addWidget(nameLabel, 0, 1, Qt::AlignLeft | Qt::AlignTop);
+
+        // 气泡 (第1列，靠左)
+        layout->addWidget(contentWidget, 1, 1, Qt::AlignLeft | Qt::AlignTop);
+
+        // 关键：设置第2列为弹簧，把内容往左挤
+        layout->setColumnStretch(2, 1);
+        layout->setColumnStretch(0, 0);
+        layout->setColumnStretch(1, 0);
     }
     else{
-        layout->addWidget(nameAndTimeLabel,0,0, Qt::AlignRight);
+        // === 右侧布局 ===
+        // Row 0: 弹簧 | 名字 | 头像
+        // Row 1: 弹簧 | 气泡 | (空)
+
+        // 名字靠右
+        nameLabel->setAlignment(Qt::AlignRight);
+
+        // 弹簧 (第0列) - 必须设为 stretch 1
+        layout->setColumnStretch(0, 1);
+        layout->setColumnStretch(1, 0);
+        layout->setColumnStretch(2, 0);
+
+        // 名字 (第1列，靠右)
+        layout->addWidget(nameLabel, 0, 1, Qt::AlignRight | Qt::AlignTop);
+
+        // 气泡 (第1列，靠右)
+        layout->addWidget(contentWidget, 1, 1, Qt::AlignRight | Qt::AlignTop);
+
+        // 头像 (第2列，跨2行，靠右上)
+        layout->addWidget(messageAvatar, 0, 2, 2, 1, Qt::AlignTop | Qt::AlignRight);
     }
 
-    // 5) 创建消息体 (调用工厂函数 - 创建不同消息类型的消息体)
-    QWidget *contentWidget = nullptr;
-    switch(message.messageType){
-        case TEXT_TYPE:
-            // 此处传入的是一个QByteArray参数, 不一定需要手动转换 本质上QString存在传入QByteArray的构造函数
-            contentWidget = makeTextMessageItem(isLeft, message.content);
-            break;
-        case IMAGE_TYPE:
-            contentWidget = makeImageMessageItem();
-            break;
-        case FILE_TYPE:
-            contentWidget = makeFileMessageItem();
-            break;
-        case SPEECH_TYPE:
-            contentWidget = makeSpeechMessageItem();
+    // 初始化高度
+    int itemHeight = contentWidget->height() + 40;
+    if (itemHeight < 80) itemHeight = 80;
+    item->setFixedHeight(itemHeight);
 
-            break;
-        default:
-            LOG()<<"未知消息类型 messageType:"<<message.messageType;
-    }
-        if(isLeft){
-            layout->addWidget(contentWidget, 1, 1);
-        }
-        else{
-            layout->addWidget(contentWidget, 1, 0);
-        }
-
-    // 返回消息
     return item;
 }
 
@@ -285,149 +336,115 @@ QWidget *MessageItem::makeSpeechMessageItem()
 
 
 // ################################################
-// 创建消息体(文本消息的气泡框与其对应的内容显示)
+// 构造函数
 // ###############################################
 MessageContentLabel::MessageContentLabel(const QString &text, bool isLeft)
     :isLeft(isLeft)
 {
+    // 改为 Fixed，我们要手动控制它的大小
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // 1) 设置Label与对应样式
     QFont font;
-    // 此处所设置的字体需要使用 因此暂时不考虑使用QSS(需要计算字体的大小)
     font.setFamily("微软雅黑");
     font.setPixelSize(16);
     this->messageContentLabel = new QLabel(text, this);
     this->messageContentLabel->setObjectName("messageContentLabel");
-    // 设置文本靠左, 高度居中
+    this->messageContentLabel->setFont(font);
     this->messageContentLabel->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
-    // 设置文本自动换行
     this->messageContentLabel->setWordWrap(true);
+    // 让 Label 背景透明，不要遮挡我们画的气泡
+    this->messageContentLabel->setStyleSheet("background: transparent; border: none;");
 }
-
-
 
 // ################################################
-// 重写paintEvent进行消息气泡的绘制
+// 【核心修复】新增：专门计算大小，不画图
 // ###############################################
-
-// 该函数将会在控件被显示时调用, 无需手动调用
-void MessageContentLabel::paintEvent(QPaintEvent *event)
+void MessageContentLabel::updateContentSize(int parentWidth)
 {
+    // 1. 限制最大宽度 (比如父控件宽度的 55%，稍微窄一点更像微信)
+    // 限制最小 200px
+    int maxWidth = (parentWidth > 200) ? parentWidth * 0.55 : 200;
 
-    // 处理Warning
-
-    (void)event;
-    // 1) 获取父元素的宽度
-    // 文本需要在占据父元素60%的位置进行换行
-    // 因此需要先获取父元素的宽度
-    // 其父元素为消息框
-    QObject* parentWidget = this->parent();
-    if(!parentWidget->isWidgetType()){
-        // 父元素的类型为一个QWidget类型(MessageItem) 因此若是不是Widget类型则说明不是父元素
-        return;
-    }
-    QWidget *parent = qobject_cast<QWidget*>(parentWidget);
-    // 获取宽度
-    int width = parent->width()*0.6;
-
-
-    // 2) 计算当前文本一行放置有多宽
-    // 获取字体的度量值
+    // 2. 计算文本尺寸
     QFontMetrics metric(this->messageContentLabel->font());
-    // 通过度量值与单行字体的宽度计算一行的宽度
-    int totalWidth = metric.horizontalAdvance(this->messageContentLabel->text());
+    // 获取文本的理想矩形大小
+    QRect textRect = metric.boundingRect(0, 0, maxWidth - 30, 0,
+                                         Qt::AlignLeft | Qt::TextWordWrap,
+                                         this->messageContentLabel->text());
 
-    // 3) 计算行数
-    // 减去40是因为其中总宽度包含左右间距
-    // +1 表示确保至少有一行文本
-    int rows = (totalWidth/(width-40))+1;
-    if(rows == 1){
-        // 当行数真的只有一行时 其宽度即为真正的文本宽度+40(40为margin宽度)
-        width = totalWidth+40;
+    // 3. 计算气泡最终宽高
+    // 宽度 = 文字宽 + 左右内边距 (30px)
+    // 高度 = 文字高 + 上下内边距 (20px)
+    m_contentWidth = textRect.width() + 30;
+    m_contentHeight = textRect.height() + 20;
+
+    // 4. 确保最小尺寸 (防止文字太少时气泡太小)
+    if (m_contentWidth < 60) m_contentWidth = 60;
+    if (m_contentHeight < 40) m_contentHeight = 40;
+
+    // 设置自己的固定大小
+    this->setFixedSize(m_contentWidth, m_contentHeight);
+
+    // 5. 调整内部 Label 的位置 (解决文本居中问题)
+    if(isLeft) {
+        // 左侧消息：左边留 20px (10px尖角 + 10px空隙)，右边留 10px
+        this->messageContentLabel->setGeometry(20, 10, textRect.width(), textRect.height());
+    } else {
+        // 右侧消息：左边留 10px，右边留 20px (10px尖角 + 10px空隙)
+        this->messageContentLabel->setGeometry(10, 10, textRect.width(), textRect.height());
     }
-
-    // 4) 根据行数计算得到高度
-    // font().pixelSize()*1.2 为字体高度 其中1.2为系数
-    // 20px为上下间距各为10px
-    int height = rows * (this->messageContentLabel->font().pixelSize()*1.2)+20;
-
-
-
-    // 5) 绘制气泡
-    // 设置画家对象
-    QPainter painter(this);
-
-    // 设置对象用来绘制不规则图形
-    QPainterPath path;
-    // 设置抗锯齿
-    painter.setRenderHint(QPainter::Antialiasing);
-    // 通过左右分别绘制对应的气泡
-    if(isLeft){
-        // 设置画笔颜色 (线条边框)
-        painter.setPen(QPen(QColor(255, 255, 255)));
-        // 设置画刷 (填充)
-        painter.setBrush(QColor(255, 255, 255));
-
-        // =====================
-        // 绘制圆角矩形
-        // =====================
-        // 第一个参数设置为10, 其中这个绘画出来的控件是基于父元素的位置, 因此需要留出一定的位置给气泡尖尖
-        painter.drawRoundedRect(10,0,width,height,5,5);
-
-        // =====================
-        // 绘制小尖尖
-        // =====================
-        // 移动画笔
-        path.moveTo(10,15);
-        // 划线
-        path.lineTo(0,20);
-        path.lineTo(10,25);
-        // 闭合
-        path.closeSubpath();
-
-        // 移动Label的位置
-        this->setGeometry(10,0,width,height);
-
-    }else{
-        // 右侧为当前登录用户(本人) 为蓝色色系
-        painter.setPen(QPen(QColor(58, 188, 245)));
-        painter.setBrush(QColor(58, 188, 245));
-
-
-        // =====================
-        // 换算坐标
-        // =====================
-        int leftPos = this->width()-width-10;
-        int rightPos = this->width()-10;
-
-        // =====================
-        // 绘制圆角矩形
-        // =====================
-        painter.drawRoundedRect(leftPos,0,width,height,5,5);
-
-        // =====================
-        // 绘制小尖尖
-        // =====================
-        // 移动画笔
-        path.moveTo(rightPos,15);
-        // 划线
-        path.lineTo(rightPos+10,20);
-        path.lineTo(rightPos,25);
-        // 闭合
-        path.closeSubpath();
-
-        // 移动Label的位置
-        this->setGeometry(leftPos,0,width,height);
-
-    }
-
-    // 6) 将小三角进行绘画
-    painter.drawPath(path);
-
-    // 7) 重新设置父元素高度
-    parent->setFixedHeight(height+30);
 }
 
+// ################################################
+// 【核心修复】纯净的绘图，绝不改大小
+// ###############################################
+void MessageContentLabel::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    QPainter painter(this);
+    QPainterPath path;
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    // 使用当前实际的控件宽高，保证不被截断
+    int w = this->width();
+    int h = this->height();
+
+    if(isLeft){
+        // === 左侧气泡 (对方) ===
+        painter.setPen(QPen(QColor(255, 255, 255)));
+        painter.setBrush(QColor(255, 255, 255));
+
+        // 1. 绘制圆角矩形
+        // x=10: 留出左边 10px 给尖角
+        // w-10: 宽度减少 10px 防止右边出界
+        painter.drawRoundedRect(10, 0, w - 10, h, 5, 5);
+
+        // 2. 绘制小尖角 (在左边)
+        path.moveTo(10, 15);
+        path.lineTo(0, 20);   // 尖尖指向最左 (0, 20)
+        path.lineTo(10, 25);
+        path.closeSubpath();
+
+    } else {
+        // === 右侧气泡 (我) ===
+        painter.setPen(QPen(QColor(125, 197, 235))); //
+        painter.setBrush(QColor(125, 197, 235));
+
+        // 1. 绘制圆角矩形
+        // x=0: 从最左边开始
+        // w-10: 右边留出 10px 给尖角
+        painter.drawRoundedRect(0, 0, w - 10, h, 5, 5);
+
+        // 2. 绘制小尖角 (在右边)
+        path.moveTo(w - 10, 15);
+        path.lineTo(w, 20);      // 尖尖指向最右 (w, 20)
+        path.lineTo(w - 10, 25);
+        path.closeSubpath();
+    }
+
+    // 绘制路径 (填充尖角)
+    painter.drawPath(path);
+}
 
 
 

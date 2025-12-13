@@ -233,6 +233,10 @@ QPushButton#titleExtraBtn:hover{
     background-color: #e0e0e0;
 }
 
+QLabel#titleWidgetTitle{
+    font-size: 17px;
+}
+
 /* ========================================================
         ShowMessageArea 样式
     ======================================================== */
@@ -274,6 +278,7 @@ QLabel#messageContentLabel{
     line-height: 1.2;
 
 }
+
 
 
 
