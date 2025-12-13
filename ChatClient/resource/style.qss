@@ -268,7 +268,7 @@ QLabel#nameAndTimeLabel{
         ShowMessageAreaItem中的单条消息样式(TEXT_MESSAGE)
     ======================================================== */
 
-QLabel#QmessageContentLabel{
+QLabel#messageContentLabel{
     background: transparent;
     padding: 0 10xp;
     line-height: 1.2;
