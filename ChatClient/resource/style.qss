@@ -246,8 +246,8 @@ QWidget#messageShowContainer{
 }
 
 
-QWidget#messageEidtArea{
-    background: transparent;
+QWidget#messageEditArea{
+    background:none;
 }
 
 /* ========================================================
@@ -281,11 +281,80 @@ QLabel#messageContentLabel{
 
 
 
+/* ========================================================
+        设置右侧窗口splitter中的把手样式
+    ======================================================== */
+QSplitter#rightWindowSplitter{
+    border: none;
+    background-color: transparent;
+}
+
+QSplitter#rightWindowSplitter::handle {
+    background-color: #EDEDED; /* 分割线颜色 */
+    height: 1px;               /* 只有 1px 高 */
+}
+
+
+/* ========================================================
+        messagEditArea 的样式
+    ======================================================== */
+    /* 输入框样式 */
+QTextEdit#messageTextEditArea{
+    border-radius: 0px;
+    border:none;
+    background: transparent;
+}
+
+/* Tool按钮样式(图片/文件/语音/历史消息) */
+QPushButton#sendSpeechBtn,
+QPushButton#sendImageBtn,
+QPushButton#sendFileBtn,
+QPushButton#historyMessageBtn{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+QPushButton#sendSpeechBtn:hover,
+QPushButton#sendImageBtn:hover,
+QPushButton#sendFileBtn:hover,
+QPushButton#historyMessageBtn:hover{
+background-color: #e0e0e0;
+}
+
+QPushButton#sendSpeechBtn:pressed,
+QPushButton#sendImageBtn:pressed,
+QPushButton#sendFileBtn:pressed,
+QPushButton#historyMessageBtn:pressed{
+background-color: #d4d4d4;
+}
+
+/* 消息发送按钮样式 */
+QPushButton#sendMessageBtn{
+    background-color: #1296db;
+    color:white;
+    border: none;
+    border-radius: 5px;
+}
+ 
+QPushButton#sendMessageBtn:hover{
+    background-color: #108bcb;
+}
+
+QPushButton#sendMessageBtn:pressed{
+    background-color: #0f81bd;
+}
+ 
+QPushButton#sendMessageBtn:disabled{
+    background-color: #e0e0e0;
+    color: #9c9c9c;
+}
 
 
 
-
-
+ /* caret-color: blue; */
 
 
 

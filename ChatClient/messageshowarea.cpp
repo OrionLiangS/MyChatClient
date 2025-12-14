@@ -31,7 +31,7 @@ MessageShowArea::MessageShowArea() {
     // 创建容器
     container = new QWidget(this);
     container->setObjectName("messageShowContainer");
-
+    // container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
     // 设置容器可resize
     this->setWidgetResizable(true);
 

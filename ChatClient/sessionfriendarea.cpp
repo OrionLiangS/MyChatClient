@@ -369,9 +369,7 @@ void SessionFriendItem::active()
 // SessionItem 的构造函数
 SessionItem::SessionItem(QWidget *owner, const QString &chatSessionId, const QIcon &avatar, const QString &name, const QString &message)
     :SessionFriendItem(owner, avatar, name, message), chatSessionId(chatSessionId)
-{
-
-}
+{}
 
 
 
