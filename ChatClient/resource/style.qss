@@ -353,38 +353,110 @@ QPushButton#sendMessageBtn:disabled{
 }
 
 
-
- /* caret-color: blue; */
-
-
-
+/* ================================ 
+            selfinfo
+================================ */
 
 
+/*TOP*/
 
 
+QPushButton#selfInfoAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+    outline: none; /* 去掉焦点虚线框 */
+}
 
+QPushButton#selfInfoAvatar:pressed {
+    border: none;
+    margin: 0px; /* 锁死 */
+    padding: 0px;
+    background-color: transparent; /* 或者你想要的深色 */
+}
 
+QLabel#selfInfoIdTag{
+    color: #9e9e9e;
+}
 
+QLabel#selfInfoId{
+    color: #9e9e9e;
+}
 
+QLabel#selfInfoNameShow{
+    color: #161616;
+    font-size: 15px;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+QLineEdit#selfInfoNameEdit{
     
+}
+
+
+
+/*MID*/
+
+QLabel#selfInfoSignTag{color: #9e9e9e;}
+
+QLabel#selfInfoSignShow{color: #9e9e9e;}
+
+QLineEdit#selfInfoSignEdit{}
+
+
+
+
+
+/*BOTTOM*/
+
+QLabel#selfInfoTelTag{color: #9e9e9e;}
+
+QLabel#selfInfoTelShow{color: #9e9e9e;}
+
+QLineEdit#selfInfoTelEdit{}
+
+
+
+QPushButton#selfInfoNameSubmitBtn,
+QPushButton#selfInfoNameEditBtn,
+QPushButton#selfInfoSignEditBtn,
+QPushButton#selfInfoSubmitBtn,
+QPushButton#selfInfoEditBtn,
+QPushButton#selfInfoSubmitBtn{
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%;
+    border-radius: 5px;
+    outline: none; /* 再次确认去掉焦点虚线框 */
+    min-width: 30px;  /* 🔥 强制给一个最小宽高，防止被布局挤压 */
+    min-height: 30px;
+    max-width: 30px;  /* 🔥 锁死最大宽高 */
+    max-height: 30px;
+    border:none; background:transparent;
+}
+
+
+QPushButton#selfInfoNameSubmitBtn:hover,
+QPushButton#selfInfoNameEditBtn:hover,
+QPushButton#selfInfoSignEditBtn:hover,
+QPushButton#selfInfoSubmitBtn:hover,
+QPushButton#selfInfoEditBtn:hover,
+QPushButton#selfInfoSubmitBtn:hover{
+background-color: #d7d7d7;
+}
+
+
+QPushButton#selfInfoNameSubmitBtn:pressed,
+QPushButton#selfInfoNameEditBtn:pressed,
+QPushButton#selfInfoSignEditBtn:pressed,
+QPushButton#selfInfoSubmitBtn:pressed,
+QPushButton#selfInfoEditBtn:pressed,
+QPushButton#selfInfoSubmitBtn:pressed{
+background-color: #9e9e9e;
+}
+
+
+QLineEdit#selfInfoTelVerifyCode{}
+
+QPushButton#selfInfoGetVerifyCode{}

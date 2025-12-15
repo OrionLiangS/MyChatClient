@@ -12,6 +12,8 @@
 
 #include "debug.h"
 
+#include "selfinfo.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -363,6 +365,11 @@ void MainWidget::initSignalSlots()
     connect(sessionTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToSession);
     connect(friendTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToFriend);
     connect(applyTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToApply);
+
+    connect(userAvatar, &QPushButton::clicked, this,[=](){
+        SelfInfo* selfInfo = new SelfInfo(this);
+        selfInfo->show();
+    });
 }
 
 
@@ -423,6 +430,7 @@ void MainWidget::switchTabToApply()
     loadApplyList();
 
 }
+
 
 
 
