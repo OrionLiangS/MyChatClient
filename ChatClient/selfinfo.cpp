@@ -90,8 +90,8 @@ SelfInfo::SelfInfo(QWidget* parent) : InfoWidget(parent)
     selfBottomWidget->setObjectName("selfBottomWidget");
 
     // 容器高度设置
-    selfTopWidget->setFixedHeight(75);
-    selfMidWidget->setFixedHeight(75);
+    selfTopWidget->setFixedHeight(80);
+    selfMidWidget->setFixedHeight(80);
     selfBottomWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     // 分隔线
@@ -133,7 +133,7 @@ SelfInfo::SelfInfo(QWidget* parent) : InfoWidget(parent)
     topRightLayout->setRowMinimumHeight(0, 40);
 
     topRightLayout->addWidget(nameShow,      0, 0, 2, 2, Qt::AlignLeft | Qt::AlignVCenter);
-    topRightLayout->addWidget(nameEdit,      0, 0, 2, 2, Qt::AlignLeft | Qt::AlignVCenter);
+    topRightLayout->addWidget(nameEdit,      0, 0, 2, 2, Qt::AlignVCenter);
     topRightLayout->addWidget(nameEditBtn,   0, 2, 2, 1, Qt::AlignRight | Qt::AlignVCenter);
     topRightLayout->addWidget(nameSubmitBtn, 0, 2, 2, 1, Qt::AlignRight | Qt::AlignVCenter);
 
