@@ -15,14 +15,14 @@
 
 #include <QGraphicsDropShadowEffect>
 
+#include "infowidget.h"
 
-class SelfInfo : public QDialog
+class SelfInfo : public InfoWidget
 {
     Q_OBJECT
 public:
     SelfInfo(QWidget*parent);
-    bool event(QEvent *event)override;
-    void showEvent(QShowEvent *event) override; // 新增声明
+
 private:
     // 头像
     QPushButton *selfInfoAvatar; ///< 头像
