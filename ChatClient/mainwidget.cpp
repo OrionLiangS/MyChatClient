@@ -12,7 +12,7 @@
 
 #include "debug.h"
 
-#include "selfinfo.h"
+#include "selfinfowidget.h"
 
 /**
  * @brief MainWidget::instance 单例实例
@@ -367,7 +367,7 @@ void MainWidget::initSignalSlots()
     connect(applyTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToApply);
 
     connect(userAvatar, &QPushButton::clicked, this,[=](){
-        SelfInfo* selfInfo = new SelfInfo(this);
+        SelfInfoWidget* selfInfo = new SelfInfoWidget(this);
         selfInfo->show();
     });
 }

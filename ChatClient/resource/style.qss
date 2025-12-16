@@ -474,3 +474,43 @@ QPushButton#selfInfoGetVerifyCode:hover{
 QPushButton#selfInfoGetVerifyCode:pressed{
     background-color:#9e9e9e;
 }
+
+
+
+
+/* ================================ 
+            UserInfoWidegt
+================================ */
+
+QLabel#userInfoId{}
+
+QLabel#userInfoTel{}
+
+QLabel#userInfoNikeName{}
+
+QPushButton#userInfoAvatar{
+    border: none;
+    margin: 0px; /* 锁死 */
+    padding: 0px;
+    background-color: transparent; /* 或者你想要的深色 */
+}
+
+QPushButton#userInfoApplyFriendBtn,
+QPushButton#userInfoSendMessageBtn,
+QPushButton#userInfoDeleteFriendBtn{
+    background-color: #FFFFFF;
+}
+
+
+QPushButton#userInfoApplyFriendBtn:hover,
+QPushButton#userInfoSendMessageBtn:hover,
+QPushButton#userInfoDeleteFriendBtn:hover{
+    background-color:#d7d7d7;
+}
+
+
+QPushButton#userInfoApplyFriendBtn:pressed,
+QPushButton#userInfoSendMessageBtn:pressed,
+QPushButton#userInfoDeleteFriendBtn:pressed{
+    background-color:#9e9e9e;
+}

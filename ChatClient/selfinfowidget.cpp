@@ -1,4 +1,4 @@
-#include "selfinfo.h"
+#include "selfinfowidget.h"
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QSizePolicy>
@@ -10,7 +10,7 @@
 #include "debug.h"
 #include "model/data.h"
 
-SelfInfo::SelfInfo(QWidget* parent) : InfoWidget(parent)
+SelfInfoWidget::SelfInfoWidget(QWidget* parent) : InfoWidget(parent)
 {
 
     // =========================================
@@ -266,7 +266,7 @@ SelfInfo::SelfInfo(QWidget* parent) : InfoWidget(parent)
 
 
 
-void SelfInfo::setObjectNameForSelf()
+void SelfInfoWidget::setObjectNameForSelf()
 {
     // =========================================
     // 设置ObjectName
@@ -302,7 +302,7 @@ void SelfInfo::setObjectNameForSelf()
     getVerifyCode->setObjectName("selfInfoGetVerifyCode");
 }
 
-void SelfInfo::initSignalSlots()
+void SelfInfoWidget::initSignalSlots()
 {
 
     // ==== NikeName ====
@@ -388,7 +388,7 @@ void SelfInfo::initSignalSlots()
 
 }
 
-void SelfInfo::selfInfoSetFocusPolicy()
+void SelfInfoWidget::selfInfoSetFocusPolicy()
 {
     selfInfoAvatar->setFocusPolicy(Qt::NoFocus);
 
