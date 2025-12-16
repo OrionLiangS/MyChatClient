@@ -390,10 +390,19 @@ QLabel#selfInfoNameShow{
     font-size: 15px;
 }
 
-QLineEdit#selfInfoNameEdit{
-    
-}
 
+
+QLineEdit#selfInfoTelVerifyCode,
+QLineEdit#selfInfoTelEdit,
+QLineEdit#selfInfoSignEdit,
+QLineEdit#selfInfoNameEdit {
+    border: 1px solid  rgb(225,225,225); /* 统一设为 1px 实线，浅灰色 */
+    border-radius: 5px;        /*稍微加一点圆角更现代 */
+    background-color: #FFFFFF; /* 纯白背景 */
+    color: #333333;            /* 文字颜色 */
+    padding-left: 8px;         /* 文字离左边稍微有点距离 */
+    font-size: 13px;
+}
 
 
 /*MID*/
@@ -402,7 +411,7 @@ QLabel#selfInfoSignTag{color: #9e9e9e;}
 
 QLabel#selfInfoSignShow{color: #9e9e9e;}
 
-QLineEdit#selfInfoSignEdit{}
+
 
 
 
@@ -414,7 +423,6 @@ QLabel#selfInfoTelTag{color: #9e9e9e;}
 
 QLabel#selfInfoTelShow{color: #9e9e9e;}
 
-QLineEdit#selfInfoTelEdit{}
 
 
 
@@ -457,6 +465,12 @@ background-color: #9e9e9e;
 }
 
 
-QLineEdit#selfInfoTelVerifyCode{}
-
-QPushButton#selfInfoGetVerifyCode{}
+QPushButton#selfInfoGetVerifyCode{
+    background-color: #FFFFFF;
+}
+QPushButton#selfInfoGetVerifyCode:hover{
+    background-color:#d7d7d7;
+}
+QPushButton#selfInfoGetVerifyCode:pressed{
+    background-color:#9e9e9e;
+}

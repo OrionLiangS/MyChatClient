@@ -57,6 +57,15 @@ private:
     // 设置ObjectName
     // =====================
     void setObjectNameForSelf();
+
+    // ======================
+    // 初始化信号槽
+    // =====================
+    void initSignalSlots();
+
+
+    // 禁用抖动
+    void selfInfoSetFocusPolicy();
 };
 
 #endif // SELFINFO_H
