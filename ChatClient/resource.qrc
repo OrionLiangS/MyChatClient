@@ -20,5 +20,6 @@
         <file>resource/image/sendImageBtn.png</file>
         <file>resource/image/sendSpeechBtn.png</file>
         <file>resource/image/selfInfoEdit.png</file>
+        <file>resource/image/selfInfoSubmit.png</file>
     </qresource>
 </RCC>

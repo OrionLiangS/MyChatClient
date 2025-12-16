@@ -1,248 +1,290 @@
 #include "selfinfo.h"
-
 #include <QVBoxLayout>
-
 #include <QGridLayout>
-
 #include <QSizePolicy>
-
 #include <QStyleOption>
-
 #include <QPainter>
-
 #include <QPaintEvent>
-
 #include <QIcon>
-
 #include <QSize>
-
 #include "debug.h"
+#include "model/data.h"
 
-SelfInfo::SelfInfo(QWidget*parent):QDialog(parent) {
-
+SelfInfo::SelfInfo(QWidget* parent) : QDialog(parent)
+{
+    // =========================================
+    // 0. 基础窗口属性设置
+    // =========================================
     this->setObjectName("selfInfoWidget");
-
-    // 1. 窗口属性设置
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-    this->setAttribute(Qt::WA_TranslucentBackground); // 背景透明
+    this->setAttribute(Qt::WA_TranslucentBackground);
     this->setAttribute(Qt::WA_DeleteOnClose);
 
-    // 关键：窗口尺寸要比实际内容稍微大一点，留出画阴影的空间
-    this->setFixedSize(310, 330);
+    this->setFixedSize(320, 360);
     this->move(QCursor::pos());
 
-    // =========================================
-    // 2. 创建内部容器 (mainFrame)
-    // =========================================
-    QFrame *mainFrame = new QFrame(this);
-    mainFrame->setObjectName("mainFrame");
 
-    // 使用 QSS 设置圆角和白色背景
+    // =========================================
+    // 1. 创建内部容器与特效
+    // =========================================
+    QFrame* mainFrame = new QFrame(this);
+    mainFrame->setObjectName("mainFrame");
     mainFrame->setStyleSheet(
         "#mainFrame {"
-        "   background-color: #FFFFFF;"  // 白底
-        "   border-radius: 10px;"        // 圆角
+        "   background-color: #FFFFFF;"
+        "   border-radius: 10px;"
         "}"
         );
 
-    // =========================================
-    // 3. 添加阴影特效
-    // =========================================
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(0, 0);          // 0偏移
-    shadow->setColor(QColor(0, 0, 0, 80)); // 黑色，透明度
-    shadow->setBlurRadius(25);        // 模糊半径
-
+    QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setOffset(0, 0);
+    shadow->setColor(QColor(0, 0, 0, 80));
+    shadow->setBlurRadius(20);
     mainFrame->setGraphicsEffect(shadow);
 
-    // =========================================
-    // 4. 设置外层布局 (为了留出阴影空隙)
-    // =========================================
-    QVBoxLayout *globalLayout = new QVBoxLayout(this);
-    globalLayout->setContentsMargins(10, 10, 10, 10); // 四周留 10px 给阴影
+    QVBoxLayout* globalLayout = new QVBoxLayout(this);
+    globalLayout->setContentsMargins(20, 20, 20, 20);
     globalLayout->addWidget(mainFrame);
 
-
     // =========================================
-    // 初始化控件
+    // 2. 初始化控件 (高度统一锁死 30px)
     // =========================================
 
-    // 头像
+    // --- 顶部模块 ---
     selfInfoAvatar = new QPushButton(mainFrame);
     selfInfoAvatar->setFlat(true);
-    // 类比微信号
-    IdTag = new QLabel(mainFrame);
-    Id = new QLabel(mainFrame);
 
-    // 类比网名
-    nameShow = new QLabel(mainFrame);
-    nameEdit = new QLineEdit(mainFrame);
+    nameShow      = new QLabel(mainFrame);
+    nameEdit      = new QLineEdit(mainFrame);
+    nameEditBtn   = new QPushButton(mainFrame);
     nameSubmitBtn = new QPushButton(mainFrame);
-    nameEditBtn = new QPushButton(mainFrame);
 
+    nameShow->setFixedHeight(30);
+    nameEdit->setFixedHeight(30);
 
-    // 个签
-    signTag = new QLabel(mainFrame);
-    signShow = new QLabel(mainFrame);
-    signEdit = new QLineEdit(mainFrame);
-    signEditBtn = new QPushButton(mainFrame);
+    IdTag = new QLabel(mainFrame);
+    Id    = new QLabel(mainFrame);
+    IdTag->setFixedHeight(30);
+    Id->setFixedHeight(30);
+
+    // --- 中部模块 ---
+    signTag       = new QLabel(mainFrame);
+    signShow      = new QLabel(mainFrame);
+    signEdit      = new QLineEdit(mainFrame);
+    signEditBtn   = new QPushButton(mainFrame);
     signSubmitBtn = new QPushButton(mainFrame);
 
-    // 手机号
-    telTag = new QLabel(mainFrame);
-    telShow = new QLabel(mainFrame);
-    telEdit = new QLineEdit(mainFrame);
-    telEditBtn = new QPushButton(mainFrame);
-    telSubmitBtn = new QPushButton(mainFrame);
+    signTag->setFixedHeight(30);
+    signShow->setFixedHeight(30);
+    signEdit->setFixedHeight(30);
+
+    // --- 底部模块 ---
+    telTag        = new QLabel(mainFrame);
+    telShow       = new QLabel(mainFrame);
+    telEdit       = new QLineEdit(mainFrame);
+    telEditBtn    = new QPushButton(mainFrame);
+    telSubmitBtn  = new QPushButton(mainFrame);
     telVerifyCode = new QLineEdit(mainFrame);
     getVerifyCode = new QPushButton(mainFrame);
+    getVerifyCode->setText("获取验证码");
+    telVerifyCode->setPlaceholderText("请输入验证码.....");
 
+    telTag->setFixedHeight(30);
+    telShow->setFixedHeight(30);
+    telEdit->setFixedHeight(30);
+    telVerifyCode->setFixedHeight(30);
+    getVerifyCode->setFixedHeight(35);
 
-    // 设置ObjectNames
+    // --- 设置对象名 ---
     setObjectNameForSelf();
 
-    // =========================================
-    // 布局
-    // =========================================
+    // --- 统一设置按钮大小 ---
+    QSize btnSize(30, 30);
+    nameEditBtn->setFixedSize(btnSize);
+    nameSubmitBtn->setFixedSize(btnSize);
+    signEditBtn->setFixedSize(btnSize);
+    signSubmitBtn->setFixedSize(btnSize);
+    telEditBtn->setFixedSize(btnSize);
+    telSubmitBtn->setFixedSize(btnSize);
 
+    // =========================================
+    // 3. 主布局框架
+    // =========================================
     QVBoxLayout* mainLayout = new QVBoxLayout(mainFrame);
+    mainLayout->setContentsMargins(20, 15, 20, 15);
+    mainLayout->setSpacing(5);
 
-
-    mainLayout->setContentsMargins(25,20,25,20);
-
-    // 创建上中下部Widget
-    QWidget* selfTopWidget = new QWidget(mainFrame);
-    selfTopWidget->setObjectName("selfTopWidget");
-
-    QWidget* selfMidWidget = new QWidget(mainFrame);
-    selfMidWidget->setObjectName("selfMidWidget");
-
+    QWidget* selfTopWidget    = new QWidget(mainFrame);
+    QWidget* selfMidWidget    = new QWidget(mainFrame);
     QWidget* selfBottomWidget = new QWidget(mainFrame);
+
+    selfTopWidget->setObjectName("selfTopWidget");
+    selfMidWidget->setObjectName("selfMidWidget");
     selfBottomWidget->setObjectName("selfBottomWidget");
 
-    // 创建分隔线
-    QFrame *line1 = new QFrame(mainFrame); // [修改]
+    // 容器高度设置
+    selfTopWidget->setFixedHeight(75);
+    selfMidWidget->setFixedHeight(75);
+    selfBottomWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    // 分隔线
+    QFrame* line1 = new QFrame(mainFrame);
     line1->setFrameShape(QFrame::HLine);
     line1->setStyleSheet("background: transparent; border:none; border-bottom: 1px solid #f2f2f2;");
     line1->setFixedHeight(1);
 
-    QFrame *line2 = new QFrame(mainFrame); // [修改]
+    QFrame* line2 = new QFrame(mainFrame);
     line2->setFrameShape(QFrame::HLine);
     line2->setStyleSheet("background: transparent; border:none; border-bottom: 1px solid #f2f2f2;");
     line2->setFixedHeight(1);
 
-    // 添加子Widget与分隔线 (mainLayout 现在是管理 mainFrame 内部的)
     mainLayout->addWidget(selfTopWidget);
     mainLayout->addWidget(line1);
     mainLayout->addWidget(selfMidWidget);
     mainLayout->addWidget(line2);
     mainLayout->addWidget(selfBottomWidget);
+    mainLayout->addStretch();
 
     // =========================================
-    // selfTopWidget
+    // 4. 顶部布局 (Top Layout)
     // =========================================
-    QHBoxLayout *topMainLayout = new QHBoxLayout(selfTopWidget);
+    QHBoxLayout* topMainLayout = new QHBoxLayout(selfTopWidget);
     topMainLayout->setContentsMargins(0, 0, 0, 0);
     topMainLayout->setSpacing(15);
 
-    // --- A. 左侧：头像 ---
     selfInfoAvatar->setFixedSize(65, 65);
     selfInfoAvatar->setIconSize(QSize(65, 65));
     topMainLayout->addWidget(selfInfoAvatar, 0, Qt::AlignTop);
 
-
-    // --- B. 右侧：网格布局
     QWidget* topRightWidget = new QWidget(this);
+    topRightWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     topMainLayout->addWidget(topRightWidget);
-    topRightWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed );
-    QGridLayout *topRightLayout = new QGridLayout();
+
+    QGridLayout* topRightLayout = new QGridLayout();
     topRightLayout->setContentsMargins(0, 0, 0, 0);
     topRightLayout->setSpacing(5);
-    topRightLayout->setRowMinimumHeight(0, 30); // 强制第一行至少 30px (配合按钮高度)
+    topRightLayout->setRowMinimumHeight(0, 40);
 
-    topRightLayout->addWidget(nameShow, 0,0,2,2,Qt::AlignLeft);
-    topRightLayout->addWidget(nameEditBtn, 0,2,2,1,Qt::AlignVCenter|Qt::AlignRight);
-    nameEditBtn->setFixedSize(30,30);
+    topRightLayout->addWidget(nameShow,      0, 0, 2, 2, Qt::AlignLeft | Qt::AlignVCenter);
+    topRightLayout->addWidget(nameEdit,      0, 0, 2, 2, Qt::AlignLeft | Qt::AlignVCenter);
+    topRightLayout->addWidget(nameEditBtn,   0, 2, 2, 1, Qt::AlignRight | Qt::AlignVCenter);
+    topRightLayout->addWidget(nameSubmitBtn, 0, 2, 2, 1, Qt::AlignRight | Qt::AlignVCenter);
 
-    topRightLayout->addWidget(nameEdit, 0,0,2,2);
     nameEdit->setHidden(true);
-    topRightLayout->addWidget(nameSubmitBtn, 0,2,2,1,Qt::AlignVCenter|Qt::AlignRight);
     nameSubmitBtn->setHidden(true);
-    nameEditBtn->setFixedSize(30,30);
 
-    topRightLayout->addWidget(IdTag,2,0,1,1);
-    topRightLayout->addWidget(Id,2,1,1,2);
+    topRightLayout->addWidget(IdTag, 2, 0, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+    topRightLayout->addWidget(Id,    2, 1, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
 
+    topRightLayout->setColumnStretch(0, 0);
+    topRightLayout->setColumnStretch(1, 1);
+    topRightLayout->setColumnStretch(2, 0);
 
     topRightWidget->setLayout(topRightLayout);
 
     // =========================================
-    // selfMidWidget
+    // 5. 中部布局 (Mid Layout) - 修复重点
     // =========================================
-    QGridLayout *selfMidLayout = new QGridLayout(selfMidWidget);
-    selfMidWidget->setLayout(selfMidLayout);
-    selfMidLayout->setContentsMargins(0,0,0,0);
+    QGridLayout* selfMidLayout = new QGridLayout(selfMidWidget);
+    selfMidLayout->setContentsMargins(0, 0, 0, 0);
     selfMidLayout->setHorizontalSpacing(5);
+    selfMidLayout->setVerticalSpacing(5);
+    selfMidWidget->setLayout(selfMidLayout);
 
-    selfMidLayout->addWidget(signTag, 0,0,1,1,Qt::AlignLeft);
-    selfMidLayout->addWidget(signShow, 1,0,1,2,Qt::AlignLeft);
-    selfMidLayout->addWidget(signEdit, 1,0,1,2,Qt::AlignLeft);
+    //  [修复重点A] 减小硬性限制，创造缓冲空间
+    // 原来是 40，现在改回 30 (刚好装下控件)。这样 30+5+30=65，容器75，剩余10px。
+    selfMidLayout->setRowMinimumHeight(0, 30); // Tag Row
+    selfMidLayout->setRowMinimumHeight(1, 30); // Content Row
+
+    //  [修复重点B] 使用 Row Stretch 定向吸收剩余空间
+    // Row 0 Stretch = 0: 保持最小高度，不许动
+    // Row 1 Stretch = 1: 吸收那 10px 剩余空间，实际高度变成 40px
+    selfMidLayout->setRowStretch(0, 0);
+    selfMidLayout->setRowStretch(1, 1);
+
+    // 这样，即使 LineEdit 变胖，也只是在 Row 1 的 40px 空间里折腾，绝不会挤压 Row 0
+
+    selfMidLayout->addWidget(signTag, 0, 0, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+
+    selfMidLayout->addWidget(signShow,      1, 0, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
+    selfMidLayout->addWidget(signEdit,      1, 0, 1, 2,  Qt::AlignVCenter);
+    selfMidLayout->addWidget(signEditBtn,   1, 2, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+    selfMidLayout->addWidget(signSubmitBtn, 1, 2, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+
     signEdit->setHidden(true);
-
-    selfMidLayout->addWidget(signEditBtn, 1,2,1,1,Qt::AlignVCenter|Qt::AlignRight);
-    selfMidLayout->addWidget(signSubmitBtn, 1,2,1,1,Qt::AlignVCenter|Qt::AlignRight);
-    signEditBtn->setFixedSize(30,30);
-    signSubmitBtn->setFixedSize(30,30);
     signSubmitBtn->setHidden(true);
 
+    selfMidLayout->setColumnStretch(0, 0);
+    selfMidLayout->setColumnStretch(1, 1);
+    selfMidLayout->setColumnStretch(2, 0);
+
     // =========================================
-    // selfBottomWidget
+    // 6. 底部布局 (Bottom Layout) - 同步修复
     // =========================================
-    QGridLayout *selfBottomLayout = new QGridLayout(selfBottomWidget);
-    selfBottomWidget->setLayout(selfBottomLayout);
-    selfBottomLayout->setContentsMargins(0,0,0,0);
+    QGridLayout* selfBottomLayout = new QGridLayout(selfBottomWidget);
+    selfBottomLayout->setContentsMargins(0, 0, 0, 0);
     selfBottomLayout->setVerticalSpacing(5);
+    selfBottomWidget->setLayout(selfBottomLayout);
 
-    selfBottomLayout->addWidget(telTag,0,0,1,1,Qt::AlignLeft|Qt::AlignVCenter);
-    selfBottomLayout->addWidget(telShow,1,0,1,4);
-    selfBottomLayout->addWidget(telEdit,1,0,1,4);
+    //  [同步修复] 底部也应用相同的逻辑，防止未来抖动
+    selfBottomLayout->setRowMinimumHeight(0, 30);
+    selfBottomLayout->setRowMinimumHeight(1, 30); // 手机号
+    selfBottomLayout->setRowMinimumHeight(2, 30); // 验证码
+
+    selfBottomLayout->setRowStretch(0, 0);
+    selfBottomLayout->setRowStretch(1, 1); // 手机号行吸收空间
+    selfBottomLayout->setRowStretch(2, 0); // 验证码行保持紧凑
+
+    // Row 0: 标签
+    selfBottomLayout->addWidget(telTag, 0, 0, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+
+    // Row 1: 手机号
+    selfBottomLayout->addWidget(telShow,      1, 0, 1, 4, Qt::AlignLeft | Qt::AlignVCenter);
+    selfBottomLayout->addWidget(telEdit,      1, 0, 1, 4, Qt::AlignVCenter);
+    selfBottomLayout->addWidget(telEditBtn,   1, 4, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+    selfBottomLayout->addWidget(telSubmitBtn, 1, 4, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+
     telEdit->setHidden(true);
-    selfBottomLayout->addWidget(telEditBtn,1,4,1,1);
-    selfBottomLayout->addWidget(telSubmitBtn,1,4,1,1);
     telSubmitBtn->setHidden(true);
-    telEditBtn->setFixedSize(30,30);
-    telSubmitBtn->setFixedSize(30,30);
 
-    selfBottomLayout->addWidget(telVerifyCode,2,0,1,3);
-    selfBottomLayout->addWidget(getVerifyCode,2,3,1,2);
+    // Row 2: 验证码
+    selfBottomLayout->addWidget(telVerifyCode, 2, 0, 1, 3, Qt::AlignVCenter);
+    selfBottomLayout->addWidget(getVerifyCode, 2, 3, 1, 2, Qt::AlignCenter);
+
     telVerifyCode->setHidden(true);
     getVerifyCode->setHidden(true);
 
+    selfBottomLayout->setColumnStretch(0, 0);
+    selfBottomLayout->setColumnStretch(1, 1);
+    selfBottomLayout->setColumnStretch(2, 0);
+    selfBottomLayout->setColumnStretch(3, 0);
+    selfBottomLayout->setColumnStretch(4, 0);
 
-    // ======================================
-    // 设置标签
-    // ======================================
+    // =========================================
+    // 7. 文本与图标设置 (保持不变)
+    // =========================================
     IdTag->setText("ID: ");
     signTag->setText("个性签名: ");
     telTag->setText("手机号:");
 
-    // ======================================
-    // 设置按钮Icon样式(Edit)
-    // ======================================
-    // 大小
-    nameEditBtn->setIconSize(QSize(15,15));
-    signEditBtn->setIconSize(QSize(15,15));
-    telEditBtn->setIconSize(QSize(15,15));
+    QSize iconSizeEdit(15, 15);
+    nameEditBtn->setIconSize(iconSizeEdit);
+    signEditBtn->setIconSize(iconSizeEdit);
+    telEditBtn->setIconSize(iconSizeEdit);
 
-    // 设置Icon
     nameEditBtn->setIcon(QIcon(":/resource/image/selfInfoEdit.png"));
     signEditBtn->setIcon(QIcon(":/resource/image/selfInfoEdit.png"));
     telEditBtn->setIcon(QIcon(":/resource/image/selfInfoEdit.png"));
 
+    QSize iconSizeSubmit(16, 16);
+    nameSubmitBtn->setIconSize(iconSizeSubmit);
+    signSubmitBtn->setIconSize(iconSizeSubmit);
+    telSubmitBtn->setIconSize(iconSizeSubmit);
 
-    // ======================================
-    // 测试
-    // ======================================
+    nameSubmitBtn->setIcon(QIcon(":/resource/image/selfInfoSubmit.png"));
+    signSubmitBtn->setIcon(QIcon(":/resource/image/selfInfoSubmit.png"));
+    telSubmitBtn->setIcon(QIcon(":/resource/image/selfInfoSubmit.png"));
+
 #if TEST_UI
     selfInfoAvatar->setIcon(QIcon(":/resource/image/defaultAvatar.png"));
     nameShow->setText("测试用户");
@@ -251,21 +293,10 @@ SelfInfo::SelfInfo(QWidget*parent):QDialog(parent) {
     Id->setText("isIdTest0001");
 #endif
 
-
-
-    // ======================================
-    // 禁用抖动
-    // ======================================
-    selfInfoAvatar->setFocusPolicy(Qt::NoFocus);
-
-    nameEditBtn->setFocusPolicy(Qt::NoFocus);
-
-    nameSubmitBtn->setFocusPolicy(Qt::NoFocus);
-
-    signEditBtn->setFocusPolicy(Qt::NoFocus);
-
-    signSubmitBtn->setFocusPolicy(Qt::NoFocus);
+    selfInfoSetFocusPolicy();
+    initSignalSlots();
 }
+
 
 bool SelfInfo::event(QEvent *event)
 {
@@ -324,4 +355,117 @@ void SelfInfo::setObjectNameForSelf()
     telSubmitBtn->setObjectName("selfInfoSubmitBtn");
     telVerifyCode->setObjectName("selfInfoTelVerifyCode");
     getVerifyCode->setObjectName("selfInfoGetVerifyCode");
+}
+
+void SelfInfo::initSignalSlots()
+{
+
+    // ==== NikeName ====
+    connect(nameEditBtn, &QPushButton::clicked, this, [=](){
+        if(nameEdit->isHidden()){
+            QString nname = nameShow->text();
+            nameEdit->setHidden(false);
+            nameEditBtn->setHidden(true);
+            nameSubmitBtn->setHidden(false);
+            nameShow->setHidden(true);
+            nameEdit->setText(nname);
+        }
+    });
+
+    connect(nameSubmitBtn, &QPushButton::clicked, this, [=](){
+        if(nameShow->isHidden()){
+            nameEdit->setHidden(true);
+            nameEditBtn->setHidden(false);
+            nameSubmitBtn->setHidden(true);
+            nameShow->setHidden(false);
+            QString newname = nameEdit->text();
+            nameShow->setText(newname);
+            LOG()<<"触发 NikeName 修改提交操作";
+        }
+    });
+
+    // ==== Sign ====
+
+    connect(signEditBtn, &QPushButton::clicked, this, [=](){
+        if(signEdit->isHidden()){
+            signShow->setHidden(true);
+            signEditBtn->setHidden(true);
+            signSubmitBtn->setHidden(false);
+            signEdit->setHidden(false);
+            QString sign = signShow->text();
+            signEdit->setText(sign);
+        }
+    });
+
+    connect(signSubmitBtn, &QPushButton::clicked, this, [=](){
+        if(signShow->isHidden()){
+            signEdit->setHidden(true);
+            signEditBtn->setHidden(false);
+            signSubmitBtn->setHidden(true);
+            signShow->setHidden(false);
+            QString newsign = signEdit->text();
+            signShow->setText(newsign);
+            LOG()<<"触发 Sign 修改提交操作";
+        }
+    });
+
+
+
+    // ==== Tel ====
+
+    connect(telEditBtn, &QPushButton::clicked, this, [=](){
+        if(telEdit->isHidden()){
+            telShow->setHidden(true);
+            telEditBtn->setHidden(true);
+            telSubmitBtn->setHidden(false);
+            telEdit->setHidden(false);
+            getVerifyCode->setHidden(false);
+            telVerifyCode->setHidden(false);
+            QString tel = telShow->text();
+            telEdit->setText(tel);
+        }
+    });
+
+    connect(telSubmitBtn, &QPushButton::clicked, this, [=](){
+        if(telShow->isHidden()){
+            telEdit->setHidden(true);
+            telEditBtn->setHidden(false);
+            telSubmitBtn->setHidden(true);
+            telShow->setHidden(false);
+            getVerifyCode->setHidden(true);
+            telVerifyCode->setHidden(true);
+            QString newtel = telEdit->text();
+            telShow->setText(newtel);
+            LOG()<<"触发 tel 修改提交操作";
+        }
+    });
+
+
+}
+
+void SelfInfo::selfInfoSetFocusPolicy()
+{
+    selfInfoAvatar->setFocusPolicy(Qt::NoFocus);
+
+    nameEditBtn->setFocusPolicy(Qt::NoFocus);
+
+    nameSubmitBtn->setFocusPolicy(Qt::NoFocus);
+
+    signEditBtn->setFocusPolicy(Qt::NoFocus);
+
+    signSubmitBtn->setFocusPolicy(Qt::NoFocus);
+
+    telSubmitBtn->setFocusPolicy(Qt::NoFocus);
+
+    telEditBtn->setFocusPolicy(Qt::NoFocus);
+
+    getVerifyCode->setFocusPolicy(Qt::NoFocus);
+
+    // nameEdit->setFocusPolicy(Qt::NoFocus);
+
+    // signEdit->setFocusPolicy(Qt::NoFocus);
+
+    // telEdit->setFocusPolicy(Qt::NoFocus);
+
+    // telVerifyCode->setFocusPolicy(Qt::NoFocus);
 }
