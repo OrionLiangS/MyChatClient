@@ -17,7 +17,7 @@ InfoWidget::InfoWidget(QWidget*parent):QDialog(parent) {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
     this->setFixedSize(320, 360);
-    this->move(QCursor::pos());
+    this->move(QCursor::pos()); ///< 可进行重写为头像右侧, 改基类即可
 
 
     // =========================================
