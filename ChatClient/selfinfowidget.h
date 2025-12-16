@@ -1,5 +1,5 @@
-#ifndef SELFINFO_H
-#define SELFINFO_H
+#ifndef SELFINFOWIDGET_H
+#define SELFINFOWIDGET_H
 
 #include <QDialog>
 
@@ -17,11 +17,11 @@
 
 #include "infowidget.h"
 
-class SelfInfo : public InfoWidget
+class SelfInfoWidget : public InfoWidget
 {
     Q_OBJECT
 public:
-    SelfInfo(QWidget*parent);
+    SelfInfoWidget(QWidget*parent);
 
 private:
     // 头像
@@ -68,4 +68,4 @@ private:
     void selfInfoSetFocusPolicy();
 };
 
-#endif // SELFINFO_H
+#endif // SELFINFOWIDGET_H

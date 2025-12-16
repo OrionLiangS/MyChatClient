@@ -70,6 +70,8 @@ protected:
     // 【关键修复】新增：声明 resizeEvent，否则 cpp 里没法实现！
     void resizeEvent(QResizeEvent *event) override;
 
+
+
 private:
     /**
      * @brief MessageItem 构造函数

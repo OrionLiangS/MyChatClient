@@ -16,6 +16,10 @@
 
 #include "debug.h"
 
+#include "userinfowidget.h"
+
+#include "mainwidget.h"
+
 using namespace model;
 
 /**
@@ -291,6 +295,15 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     int itemHeight = contentWidget->height() + 40;
     if (itemHeight < 80) itemHeight = 80;
     item->setFixedHeight(itemHeight);
+
+    // 连接点击头像的信号槽
+    connect(messageAvatar, &QPushButton::clicked, item, [=](){
+        MainWidget *mainWidget = MainWidget::getInstance();
+        UserInfoWidget* userinfowidget = new UserInfoWidget(mainWidget);
+        userinfowidget->show();
+    });
+
+
 
     return item;
 }
