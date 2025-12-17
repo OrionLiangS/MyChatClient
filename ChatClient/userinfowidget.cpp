@@ -1,28 +1,23 @@
 #include "userinfowidget.h"
-
 #include <QPushButton>
-
 #include <QHBoxLayout>
-
 #include <QVBoxLayout>
-
+#include <QGridLayout>
 #include <QFrame>
-
 #include "debug.h"
 
-UserInfoWidget::UserInfoWidget(QWidget* parent) : InfoWidget(parent)
+UserInfoWidget::UserInfoWidget(const UserInfo &userinfo, QWidget* parent) : InfoWidget(parent), userinfo(userinfo)
 {
-
     // ======================
     // 初始化大小
     // ======================
     this->setFixedSize(320, 230);
 
     // ======================
-    // 初始化控件 (注意父对象是 mainFrame)
+    // 初始化控件
     // ======================
     userInfoAvatar = new QPushButton(mainFrame);
-    userInfoAvatar->setFixedSize(65, 65); //  对应图中蓝色 Avatar 大小
+    userInfoAvatar->setFixedSize(65, 65);
     userInfoAvatar->setIconSize(QSize(65, 65));
     userInfoAvatar->setFlat(true);
 
@@ -30,22 +25,27 @@ UserInfoWidget::UserInfoWidget(QWidget* parent) : InfoWidget(parent)
     userInfoSendMessageBtn = new QPushButton(mainFrame);
     userInfoDeleteFriendBtn = new QPushButton(mainFrame);
 
-    // 设置按钮文字方便调试
     userInfoApplyFriendBtn->setText("申请好友");
     userInfoSendMessageBtn->setText("发送信息");
     userInfoDeleteFriendBtn->setText("删除好友");
 
     userInfoId = new QLabel(mainFrame);
     userInfoTel = new QLabel(mainFrame);
-    userInfoNikeName = new QLabel(mainFrame); // 也就是 NickName
+    userInfoNikeName = new QLabel(mainFrame);
+
+    // 1. 初始化 Tag 标签并设置文字
+    userInfoIdTag = new QLabel(mainFrame);
+    userInfoTelTag = new QLabel(mainFrame);
+    userInfoIdTag->setText("ID: ");
+    userInfoTelTag->setText("手机号: ");
 
 
     // ======================
     // 主布局
     // ======================
     QVBoxLayout *mainUinfoLayout = new QVBoxLayout(mainFrame);
-    mainUinfoLayout->setContentsMargins(20, 20, 20, 20); // 留出内部边距
-    mainUinfoLayout->setSpacing(10); // 上下区域间距
+    mainUinfoLayout->setContentsMargins(20, 20, 20, 20);
+    mainUinfoLayout->setSpacing(10);
 
     // ======================
     // Top布局 (头像 + 右侧信息)
@@ -53,47 +53,54 @@ UserInfoWidget::UserInfoWidget(QWidget* parent) : InfoWidget(parent)
     QWidget *topUinfoWidget = new QWidget(mainFrame);
     QHBoxLayout *topUinfoLayout = new QHBoxLayout(topUinfoWidget);
     topUinfoLayout->setContentsMargins(0, 0, 0, 0);
-    topUinfoLayout->setSpacing(15); // 头像和右侧文字的距离
+    topUinfoLayout->setSpacing(15);
     topUinfoWidget->setFixedHeight(80);
 
     // 1. 左侧头像
-    topUinfoLayout->addWidget(userInfoAvatar, Qt::AlignTop);
+    topUinfoLayout->addWidget(userInfoAvatar, 0, Qt::AlignTop);
 
-    // 2. 右侧信息容器
+    // 2. 右侧信息容器 (使用 Grid 布局)
     QWidget *topUinfoRightWidget = new QWidget(topUinfoWidget);
-    QVBoxLayout *topUinfoRightLayout = new QVBoxLayout(topUinfoRightWidget);
+    QGridLayout *topUinfoRightLayout = new QGridLayout(topUinfoRightWidget); // 改用 QGridLayout
     topUinfoRightLayout->setContentsMargins(0, 0, 0, 0);
-    topUinfoRightLayout->setSpacing(5); // 文字行间距
+    topUinfoRightLayout->setVerticalSpacing(5);   // 行间距
+    topUinfoRightLayout->setHorizontalSpacing(5); // Tag和内容之间的间距
 
-    // 3. 添加文字
-    topUinfoRightLayout->addWidget(userInfoId);
-    topUinfoRightLayout->addWidget(userInfoNikeName);
-    topUinfoRightLayout->addWidget(userInfoTel); // 补回缺失的 Tel
+    // 3. 添加文字到网格中
+    //     // Row 0: 昵称 (占用 2 列)
+    topUinfoRightLayout->addWidget(userInfoNikeName, 0, 0, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
 
-    // 4. 加个弹簧，让文字靠上 (可选)
-    topUinfoRightLayout->addStretch();
+    // Row 1: ID Tag + ID 内容
+    topUinfoRightLayout->addWidget(userInfoIdTag, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
+    topUinfoRightLayout->addWidget(userInfoId,    1, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
+    // Row 2: Tel Tag + Tel 内容
+    topUinfoRightLayout->addWidget(userInfoTelTag, 2, 0, Qt::AlignLeft | Qt::AlignVCenter);
+    topUinfoRightLayout->addWidget(userInfoTel,    2, 1, Qt::AlignLeft | Qt::AlignVCenter);
+
+    // 4. 加个垂直弹簧，把所有内容往上推
+    topUinfoRightLayout->setRowStretch(3, 1);
+
+    // 将右侧容器加入 Top 布局
     topUinfoLayout->addWidget(topUinfoRightWidget);
 
-    // 右侧水平弹簧，防止被拉伸
+    // 右侧水平弹簧
     topUinfoLayout->addStretch();
 
-
     // ======================
-    // 中间分隔线 (图中绿色的线)
+    // 中间分隔线
     // ======================
     QFrame *line = new QFrame(mainFrame);
     line->setFrameShape(QFrame::HLine);
     line->setStyleSheet("background-color: #EAEAEA; border: none; min-height: 1px; max-height: 1px;");
 
-
     // ======================
-    // Bottom布局 (按钮组)
+    // Bottom布局
     // ======================
     QWidget *bottomUinfoWidget = new QWidget(mainFrame);
     QHBoxLayout *bottomUinfoLayout = new QHBoxLayout(bottomUinfoWidget);
     bottomUinfoLayout->setContentsMargins(0, 0, 0, 0);
-    bottomUinfoLayout->setSpacing(10); // 按钮之间的间距
+    bottomUinfoLayout->setSpacing(10);
 
     userInfoApplyFriendBtn->setFixedHeight(35);
     userInfoSendMessageBtn->setFixedHeight(35);
@@ -102,33 +109,22 @@ UserInfoWidget::UserInfoWidget(QWidget* parent) : InfoWidget(parent)
     bottomUinfoLayout->addWidget(userInfoApplyFriendBtn);
     bottomUinfoLayout->addWidget(userInfoSendMessageBtn);
     bottomUinfoLayout->addWidget(userInfoDeleteFriendBtn);
-    // 1. 添加顶部区域 (头像+信息)
+
+    // 组装到主布局
     mainUinfoLayout->addWidget(topUinfoWidget);
-
-    // 2. 添加中间分隔线
     mainUinfoLayout->addWidget(line);
-
-
-    // 3. 添加底部区域 (按钮组)
-    mainUinfoLayout->addWidget(bottomUinfoWidget,Qt::AlignTop);
-
-#if TEST_UI
-    // 测试文字
-    userInfoId->setText("ID: 123456");
-    userInfoNikeName->setText("测试用户");
-    userInfoTel->setText("Tel: 13800000000");
-    userInfoAvatar->setIcon(QIcon(":/resource/image/defaultAvatar.png"));
-#endif
+    mainUinfoLayout->addWidget(bottomUinfoWidget, 0, Qt::AlignTop);
 
     // ==========================
-    //  设置对象名
+    //  设置对象名 & 赋值
     // ==========================
     setObjectNameForSelf();
-
-    // ==========================
-    //  禁用抖动
-    // ==========================
     selfInfoSetFocusPolicy();
+
+    userInfoAvatar->setIcon(userinfo.avatar);
+    userInfoTel->setText(userinfo.phone);
+    userInfoNikeName->setText(userinfo.nickname);
+    userInfoId->setText(userinfo.userId); // 给 ID 赋值 (假设 UserInfo 结构体里有 userId)
 }
 
 void UserInfoWidget::setObjectNameForSelf()
@@ -140,6 +136,8 @@ void UserInfoWidget::setObjectNameForSelf()
     userInfoApplyFriendBtn->setObjectName("userInfoApplyFriendBtn");
     userInfoSendMessageBtn->setObjectName("userInfoSendMessageBtn");
     userInfoDeleteFriendBtn->setObjectName("userInfoDeleteFriendBtn");
+    userInfoIdTag->setObjectName("userInfoIdTag");
+    userInfoTelTag->setObjectName("userInfoTelTag");
 }
 
 void UserInfoWidget::selfInfoSetFocusPolicy()

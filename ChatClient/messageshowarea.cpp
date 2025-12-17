@@ -60,6 +60,8 @@ MessageShowArea::MessageShowArea() {
         UserInfo userinfo;
         userinfo.avatar = QIcon(":/resource/image/defaultAvatar.png");
         userinfo.nickname = "测试用户"+QString::number(i);
+        userinfo.phone = "13811112223";
+        userinfo.userId = "userinfo_"+QString::number(i);
         QString text ="This is a test Message  This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message";
         Message message = Message::makeMessage(TEXT_TYPE, QString::number(i), userinfo,text.toUtf8(),"");
         addMessage(true, message);
@@ -299,7 +301,7 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     // 连接点击头像的信号槽
     connect(messageAvatar, &QPushButton::clicked, item, [=](){
         MainWidget *mainWidget = MainWidget::getInstance();
-        UserInfoWidget* userinfowidget = new UserInfoWidget(mainWidget);
+        UserInfoWidget* userinfowidget = new UserInfoWidget(message.sender,mainWidget);
         userinfowidget->show();
     });
 
