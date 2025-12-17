@@ -180,7 +180,7 @@ void MessageShowArea::AreaSetStyle()
  */
 // 构造函数
 MessageItem::MessageItem(bool isLeft)
-    :isLeft(isLeft)
+    :isLeft(isLeft), contentWidget(nullptr)
 {
     // 这里的 contentWidget 初始化为空
 }
@@ -200,8 +200,11 @@ void MessageItem::resizeEvent(QResizeEvent *event)
             // 重新设置 Item 的高度，因为气泡高度变了，Item 也要撑开
             // 70 是预留给头像、名字和上下边距的空间
             int newItemHeight = textBubble->height() + 40;
-            if (newItemHeight < 80) newItemHeight = 80; // 最小高度
-            this->setFixedHeight(newItemHeight);
+            if (newItemHeight < 80)
+                newItemHeight = 80; // 最小高度
+
+            if(this->height() != newItemHeight)
+                this->setFixedHeight(newItemHeight);
         }
     }
 }
@@ -242,11 +245,17 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     // 将创建好的 contentWidget 保存到 item 成员变量中，供 resizeEvent 使用
     item->contentWidget = contentWidget;
 
-    // 5. 初始化一次大小 (防止刚出来是0)
-    if (auto textBubble = qobject_cast<MessageContentLabel*>(contentWidget)) {
-        textBubble->updateContentSize(600); // 先给个大概值
+    int itemHeight = 80; // 默认高度
+    if (contentWidget) {
+        // 5. 初始化一次大小 (防止刚出来是0)
+        if (auto textBubble = qobject_cast<MessageContentLabel*>(contentWidget)) {
+            textBubble->updateContentSize(600); // 先给个大概值
+        }
+        itemHeight = contentWidget->height() + 40;
     }
 
+    if (itemHeight < 80) itemHeight = 80;
+    item->setFixedHeight(itemHeight);
     // ============================================================
     // 布局核心逻辑 (解决左右不对齐问题)
     // ============================================================
@@ -293,10 +302,7 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
         layout->addWidget(messageAvatar, 0, 2, 2, 1, Qt::AlignTop | Qt::AlignRight);
     }
 
-    // 初始化高度
-    int itemHeight = contentWidget->height() + 40;
-    if (itemHeight < 80) itemHeight = 80;
-    item->setFixedHeight(itemHeight);
+
 
     // 连接点击头像的信号槽
     connect(messageAvatar, &QPushButton::clicked, item, [=](){

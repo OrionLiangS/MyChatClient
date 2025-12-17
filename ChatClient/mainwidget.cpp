@@ -14,6 +14,8 @@
 
 #include "selfinfowidget.h"
 
+#include "sidebar.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -276,6 +278,9 @@ void MainWidget::initRightWindow()
     // 1) 整体布局
     // ============================
     //
+
+
+
     QVBoxLayout *rightWindowlayout = new QVBoxLayout(rightWindow);
     rightWindowlayout->setSpacing(0);
     rightWindowlayout->setContentsMargins(0,0,0,0);
@@ -351,6 +356,11 @@ void MainWidget::initRightWindow()
 
     // Button 权重为 0 (只占用固定大小，不参与拉伸)
     titleLayout->addWidget(titleExtraBtn, 0);
+
+
+    sidebar = new Sidebar(rightWindow);
+
+    sidebar->raise();
 }
 
 
@@ -369,6 +379,16 @@ void MainWidget::initSignalSlots()
     connect(userAvatar, &QPushButton::clicked, this,[=](){
         SelfInfoWidget* selfInfo = new SelfInfoWidget(this);
         selfInfo->show();
+    });
+
+    connect(titleExtraBtn, &QPushButton::clicked, rightWindowSplitter, [=](){
+        sidebar->toggle();
+#if TEST_UI
+        QWidget *tempWidget = new QWidget(this);
+        tempWidget->setStyleSheet("background-color: red;");
+        sidebar->setContent(tempWidget);
+#endif
+
     });
 }
 

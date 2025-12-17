@@ -17,6 +17,8 @@
 
 #include "messageeditarea.h"
 
+#include "sidebar.h"
+
 /**
  * @brief The MainWidget class
  * @details
@@ -31,6 +33,9 @@ public:
 
 public:
     static MainWidget* getInstance();
+
+
+
 
 private:
     // 单例实例
@@ -127,7 +132,7 @@ private:
 
     QLabel *titleWidgetTitle;               ///< 顶部栏的标题
     QPushButton *titleExtraBtn;             ///< 顶部标题栏的右侧按钮
-
+    Sidebar *sidebar;                       ///< 右侧抽屉
 
 
 
@@ -138,7 +143,6 @@ private:
     void loadSessionList();     ///< 加载会话列表
     void loadFriendList();      ///< 加载好友列表
     void loadApplyList();       ///< 加载好友申请列表
-
 
 
 
