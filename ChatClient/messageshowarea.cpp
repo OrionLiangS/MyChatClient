@@ -16,6 +16,10 @@
 
 #include "debug.h"
 
+#include "userinfowidget.h"
+
+#include "mainwidget.h"
+
 using namespace model;
 
 /**
@@ -31,7 +35,7 @@ MessageShowArea::MessageShowArea() {
     // 创建容器
     container = new QWidget(this);
     container->setObjectName("messageShowContainer");
-
+    // container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
     // 设置容器可resize
     this->setWidgetResizable(true);
 
@@ -56,6 +60,8 @@ MessageShowArea::MessageShowArea() {
         UserInfo userinfo;
         userinfo.avatar = QIcon(":/resource/image/defaultAvatar.png");
         userinfo.nickname = "测试用户"+QString::number(i);
+        userinfo.phone = "13811112223";
+        userinfo.userId = "userinfo_"+QString::number(i);
         QString text ="This is a test Message  This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message This is a test Message";
         Message message = Message::makeMessage(TEXT_TYPE, QString::number(i), userinfo,text.toUtf8(),"");
         addMessage(true, message);
@@ -291,6 +297,15 @@ MessageItem *MessageItem::makeMessageItem(bool isLeft, const Message &message)
     int itemHeight = contentWidget->height() + 40;
     if (itemHeight < 80) itemHeight = 80;
     item->setFixedHeight(itemHeight);
+
+    // 连接点击头像的信号槽
+    connect(messageAvatar, &QPushButton::clicked, item, [=](){
+        MainWidget *mainWidget = MainWidget::getInstance();
+        UserInfoWidget* userinfowidget = new UserInfoWidget(message.sender,mainWidget);
+        userinfowidget->show();
+    });
+
+
 
     return item;
 }

@@ -15,5 +15,11 @@
         <file>resource/image/reject.png</file>
         <file>resource/image/reject_hover.png</file>
         <file>resource/image/TitleExtraBtn.png</file>
+        <file>resource/image/historyMessageBtn.png</file>
+        <file>resource/image/sendFileBtn.png</file>
+        <file>resource/image/sendImageBtn.png</file>
+        <file>resource/image/sendSpeechBtn.png</file>
+        <file>resource/image/selfInfoEdit.png</file>
+        <file>resource/image/selfInfoSubmit.png</file>
     </qresource>
 </RCC>

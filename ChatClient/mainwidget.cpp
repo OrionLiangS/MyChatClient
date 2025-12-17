@@ -12,6 +12,8 @@
 
 #include "debug.h"
 
+#include "selfinfowidget.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -68,7 +70,7 @@ MainWidget::MainWidget(QWidget *parent)
 void MainWidget::initMainWindow()
 {
     // 1. 窗口基础设置
-    this->resize(1000, 600);
+    this->resize(900, 700);
     this->setMinimumSize(627, 570);
     // 隐藏标题栏 - 暂不考虑实现
     // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
@@ -286,7 +288,9 @@ void MainWidget::initRightWindow()
 
     // 下部分割器
     rightWindowSplitter = new QSplitter(Qt::Vertical, rightWindow);
-    rightWindowSplitter->setObjectName("rightWIndowSplitter");
+    rightWindowSplitter->setObjectName("rightWindowSplitter");
+    rightWindowSplitter->setHandleWidth(1);
+
 
 
     // 消息展示区
@@ -307,9 +311,11 @@ void MainWidget::initRightWindow()
     rightWindowSplitter->setCollapsible(1,false); // 防止折叠
     rightWindowSplitter->setCollapsible(0,false); // 防止折叠
 
+
+
     // 设置启动时的默认比例
-    rightWindowSplitter->setStretchFactor(0, 7); // 第0个控件(展示区) 占 7份
-    rightWindowSplitter->setStretchFactor(1, 3); // 第1个控件(编辑区) 占 3份
+    rightWindowSplitter->setStretchFactor(0, 5); // MessageShowArea
+    rightWindowSplitter->setStretchFactor(1, 5); // MessageEditArea
 
 
     // ============================
@@ -359,6 +365,11 @@ void MainWidget::initSignalSlots()
     connect(sessionTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToSession);
     connect(friendTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToFriend);
     connect(applyTabButton, &QPushButton::clicked, this, &MainWidget::switchTabToApply);
+
+    connect(userAvatar, &QPushButton::clicked, this,[=](){
+        SelfInfoWidget* selfInfo = new SelfInfoWidget(this);
+        selfInfo->show();
+    });
 }
 
 
@@ -419,6 +430,7 @@ void MainWidget::switchTabToApply()
     loadApplyList();
 
 }
+
 
 
 

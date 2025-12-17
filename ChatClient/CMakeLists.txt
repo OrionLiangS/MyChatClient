@@ -24,6 +24,9 @@ qt_add_executable(ChatClient
     messageshowarea.h messageshowarea.cpp
     messageeditarea.cpp
     messageeditarea.h
+    selfinfowidget.h selfinfowidget.cpp
+    infowidget.h infowidget.cpp
+    userinfowidget.h userinfowidget.cpp
 )
 
 target_link_libraries(ChatClient
