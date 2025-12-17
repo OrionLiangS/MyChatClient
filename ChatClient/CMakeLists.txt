@@ -27,6 +27,7 @@ qt_add_executable(ChatClient
     selfinfowidget.h selfinfowidget.cpp
     infowidget.h infowidget.cpp
     userinfowidget.h userinfowidget.cpp
+    sidebar.h sidebar.cpp
 )
 
 target_link_libraries(ChatClient
