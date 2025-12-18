@@ -378,7 +378,7 @@ MessageContentLabel::MessageContentLabel(const QString &text, bool isLeft)
 }
 
 // ################################################
-// 【核心修复】新增：专门计算大小，不画图
+// 专门计算大小，不画图
 // ###############################################
 void MessageContentLabel::updateContentSize(int parentWidth)
 {

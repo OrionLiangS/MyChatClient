@@ -19,6 +19,9 @@
 
 #include "sidebar.h"
 
+#include "sessiondetailspage.h"
+
+
 /**
  * @brief The MainWidget class
  * @details
@@ -133,7 +136,7 @@ private:
     QLabel *titleWidgetTitle;               ///< 顶部栏的标题
     QPushButton *titleExtraBtn;             ///< 顶部标题栏的右侧按钮
     Sidebar *sidebar;                       ///< 右侧抽屉
-
+    SessionDetailsPage *sessionDetailsPage; ///< 需要塞进抽屉的容器
 
 
 

@@ -11,8 +11,8 @@
 #include <QStyle>
 
 
-Sidebar::Sidebar(QWidget *parent)
-    :QWidget(parent), m_parent(parent), m_content(nullptr), m_isShow(false)
+Sidebar::Sidebar(QWidget *parent, int m_startY)
+    :QWidget(parent), m_parent(parent), m_content(nullptr), m_isShow(false), m_startY(m_startY)
 {
     this->setObjectName("Sidebar");
 
@@ -73,8 +73,8 @@ void Sidebar::showSidebar()
     // 设置动画进入
     int parentW = m_parent->width();
     m_anim->stop();
-    m_anim->setStartValue(QPoint(parentW, titleHeight));
-    m_anim->setEndValue(QPoint(parentW-m_width, titleHeight));
+    m_anim->setStartValue(QPoint(parentW, m_startY));
+    m_anim->setEndValue(QPoint(parentW-m_width, m_startY));
     m_anim->start();
 
     m_isShow = true;
@@ -85,7 +85,7 @@ void Sidebar::hideSidebar()
     int parentW = m_parent->width(); // 获取父类长度
     m_anim->stop();
     m_anim->setStartValue(this->pos());
-    m_anim->setEndValue(QPoint(parentW, titleHeight));
+    m_anim->setEndValue(QPoint(parentW, m_startY));
 
     connect(m_anim, &QPropertyAnimation::finished, this, &Sidebar::hide, Qt::UniqueConnection);
 
@@ -135,9 +135,9 @@ void Sidebar::updatePosition()
     this->setFixedSize(m_width, m_parent->height());
 
     if(!m_isShow){
-        this->move(m_parent->width(), titleHeight); // 移到界外
+        this->move(m_parent->width(), m_startY); // 移到界外
     }
-    else this->move(m_parent->width()-m_width, titleHeight); // 吸附右侧
+    else this->move(m_parent->width()-m_width, m_startY); // 吸附右侧
 }
 
 
