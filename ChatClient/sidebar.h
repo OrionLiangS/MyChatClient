@@ -19,7 +19,7 @@ class Sidebar : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Sidebar(QWidget *parent = nullptr);
+    explicit Sidebar(QWidget *parent = nullptr, int m_startY=0);
 
     /**
      * @brief setContent 为抽屉容器塞进内容
@@ -85,7 +85,7 @@ private:
     void updatePosition();
 
 
-    const int titleHeight = 67;     ///< 硬编码 Title高度
+    const int m_startY;     ///< 增添起始Y值, 记录Y值位置
 
 signals:
 };

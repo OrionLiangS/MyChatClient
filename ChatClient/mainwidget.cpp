@@ -16,6 +16,8 @@
 
 #include "sidebar.h"
 
+#include "sessiondetailspage.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -279,8 +281,6 @@ void MainWidget::initRightWindow()
     // ============================
     //
 
-
-
     QVBoxLayout *rightWindowlayout = new QVBoxLayout(rightWindow);
     rightWindowlayout->setSpacing(0);
     rightWindowlayout->setContentsMargins(0,0,0,0);
@@ -358,9 +358,14 @@ void MainWidget::initRightWindow()
     titleLayout->addWidget(titleExtraBtn, 0);
 
 
-    sidebar = new Sidebar(rightWindow);
-
+    sidebar = new Sidebar(rightWindow, titleWidget->height());
     sidebar->raise();
+
+#if TEST_UI
+    SessionDetailsPage *test_page = new SessionDetailsPage(this);
+    sidebar->setContent(test_page);
+#endif
+
 }
 
 
@@ -384,9 +389,9 @@ void MainWidget::initSignalSlots()
     connect(titleExtraBtn, &QPushButton::clicked, rightWindowSplitter, [=](){
         sidebar->toggle();
 #if TEST_UI
-        QWidget *tempWidget = new QWidget(this);
-        tempWidget->setStyleSheet("background-color: red;");
-        sidebar->setContent(tempWidget);
+        // QWidget *tempWidget = new QWidget(this);
+        // tempWidget->setStyleSheet("background-color: red;");
+        // sidebar->setContent(tempWidget);
 #endif
 
     });

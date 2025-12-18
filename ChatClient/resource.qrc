@@ -21,5 +21,9 @@
         <file>resource/image/sendSpeechBtn.png</file>
         <file>resource/image/selfInfoEdit.png</file>
         <file>resource/image/selfInfoSubmit.png</file>
+        <file>resource/image/add_hover.png</file>
+        <file>resource/image/add_normal.png</file>
+        <file>resource/image/remove_hover.png</file>
+        <file>resource/image/remove_normal.png</file>
     </qresource>
 </RCC>
