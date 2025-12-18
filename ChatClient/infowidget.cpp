@@ -6,19 +6,35 @@
 
 #include "infowidget.h"
 
-InfoWidget::InfoWidget(QWidget*parent):QDialog(parent) {
+InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(isModal) {
+
+
+
+    this->setObjectName("selfInfoWidget");
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    this->setAttribute(Qt::WA_TranslucentBackground);
 
     // =========================================
     // 0. 基础窗口属性设置
     // =========================================
-    this->setObjectName("selfInfoWidget");
-    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-    this->setAttribute(Qt::WA_TranslucentBackground);
-    this->setAttribute(Qt::WA_DeleteOnClose);
 
-    this->setFixedSize(320, 360);
-    this->move(QCursor::pos()); ///< 可进行重写为头像右侧, 改基类即可
+    // 模态状态
+    if(m_isModal){
+        this->setWindowModality(Qt::ApplicationModal); // 设置模态属性
+        if(parent){
+            QPoint parentGlobalPos = parent->mapToGlobal(QPoint(0, 0));
+            int xOffset = (parent->width() - this->width())/2;
+            int yOffset = (parent->height() - this->height())/2;
+            this->setFixedSize(667,533);
+            this->move(parentGlobalPos.x() + xOffset, parentGlobalPos.y() + yOffset);
+        }
+    }
+    else{
 
+        this->setAttribute(Qt::WA_DeleteOnClose);
+        this->setFixedSize(320, 360);
+        this->move(QCursor::pos()); ///< 可进行重写为头像右侧, 改基类即可
+    }
 
     // =========================================
     // 1. 创建内部容器与特效
@@ -47,13 +63,17 @@ InfoWidget::InfoWidget(QWidget*parent):QDialog(parent) {
 
 bool InfoWidget::event(QEvent *event)
 {
-    // 监听窗口激活状态改变
-    // 当你点击窗口外部时，当前窗口会变成“非激活”状态 (isActiveWindow() 为 false)
-    if (event->type() == QEvent::ActivationChange)
+    // 非模态时调用
+    if(!m_isModal)
     {
-        if (!this->isActiveWindow())
+        // 监听窗口激活状态改变
+        // 当你点击窗口外部时，当前窗口会变成“非激活”状态 (isActiveWindow() 为 false)
+        if (event->type() == QEvent::ActivationChange)
         {
-            this->close(); // 失去焦点，自己关闭自己
+            if (!this->isActiveWindow())
+            {
+                this->close(); // 失去焦点，自己关闭自己
+            }
         }
     }
     return QDialog::event(event);
