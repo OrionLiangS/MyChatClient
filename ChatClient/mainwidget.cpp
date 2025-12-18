@@ -357,13 +357,16 @@ void MainWidget::initRightWindow()
     // Button 权重为 0 (只占用固定大小，不参与拉伸)
     titleLayout->addWidget(titleExtraBtn, 0);
 
-
+    // 创建抽屉并将抽屉设置进去
     sidebar = new Sidebar(rightWindow, titleWidget->height());
     sidebar->raise();
 
+    // 创建内容, 并将内容设置进抽屉
+    sessionDetailsPage = new SessionDetailsPage(this);
+    sidebar->setContent(sessionDetailsPage);
+
 #if TEST_UI
-    SessionDetailsPage *test_page = new SessionDetailsPage(this);
-    sidebar->setContent(test_page);
+
 #endif
 
 }

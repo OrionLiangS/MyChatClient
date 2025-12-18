@@ -55,6 +55,7 @@ SessionDetailsPage::SessionDetailsPage(QWidget *parent)
     gridLayout->addWidget(testUser, 0, 2);
 #endif
 
+
 }
 
 void SessionDetailsPage::paintEvent(QPaintEvent *event)
