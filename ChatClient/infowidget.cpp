@@ -21,11 +21,13 @@ InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(i
     // 模态状态
     if(m_isModal){
         this->setWindowModality(Qt::ApplicationModal); // 设置模态属性
+        this->setFixedSize(667,533);
+
         if(parent){
-            QPoint parentGlobalPos = parent->mapToGlobal(QPoint(0, 0));
-            int xOffset = (parent->width() - this->width())/2;
-            int yOffset = (parent->height() - this->height())/2;
-            this->setFixedSize(667,533);
+            QWidget* topLevel = parent->window();
+            QPoint parentGlobalPos = topLevel->mapToGlobal(QPoint(0, 0));
+            int xOffset = (topLevel->width() - this->width())/2;
+            int yOffset = (topLevel->height() - this->height())/2;
             this->move(parentGlobalPos.x() + xOffset, parentGlobalPos.y() + yOffset);
         }
     }

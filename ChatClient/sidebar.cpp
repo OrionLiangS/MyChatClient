@@ -40,7 +40,7 @@ Sidebar::Sidebar(QWidget *parent, int m_startY)
     // 初始化动画
     m_anim = new QPropertyAnimation(this, "pos");
     // 持续事件
-    m_anim->setDuration(300);
+    m_anim->setDuration(250);
     // 设置丝滑曲线 todo
     m_anim->setEasingCurve(QEasingCurve::OutCubic);
 
