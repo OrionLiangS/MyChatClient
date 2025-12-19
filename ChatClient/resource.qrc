@@ -27,5 +27,6 @@
         <file>resource/image/remove_normal.png</file>
         <file>resource/image/checked.png</file>
         <file>resource/image/unchecked.png</file>
+        <file>resource/image/selectedFriendDelete.png</file>
     </qresource>
 </RCC>

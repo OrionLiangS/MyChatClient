@@ -750,3 +750,18 @@ QWidget#totalContainer {
 QWidget#selectedContainer {
     background-color: #FFFFFF;
 }
+
+
+QPushButton#SelectedFriendItemDelBtn{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+QPushButton#selectedFriendItem{
+
+    background-color:#FFFFFF;
+    border: none;
+}
