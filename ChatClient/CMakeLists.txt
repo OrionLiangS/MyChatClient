@@ -29,6 +29,8 @@ qt_add_executable(ChatClient
     userinfowidget.h userinfowidget.cpp
     sidebar.h sidebar.cpp
     sessiondetailspage.h sessiondetailspage.cpp
+    choosefriendwidget.h choosefriendwidget.cpp
+    floatingscrollarea.h floatingscrollarea.cpp
 )
 
 target_link_libraries(ChatClient

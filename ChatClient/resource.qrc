@@ -25,5 +25,7 @@
         <file>resource/image/add_normal.png</file>
         <file>resource/image/remove_hover.png</file>
         <file>resource/image/remove_normal.png</file>
+        <file>resource/image/checked.png</file>
+        <file>resource/image/unchecked.png</file>
     </qresource>
 </RCC>

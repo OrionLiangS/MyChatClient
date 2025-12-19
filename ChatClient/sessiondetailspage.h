@@ -46,6 +46,8 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
+    void initSignalSlots();     ///< 初始化信号槽
+
 signals:
     void signalAddFriendClicked();              // 添加群聊中的好友
     void signalRemoveFriendClicked();           // 删除群聊中的好友

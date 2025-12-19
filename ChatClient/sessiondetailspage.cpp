@@ -16,6 +16,9 @@
 
 #include <QStyle>
 
+#include "choosefriendwidget.h"
+
+
 // #########################################
 // 会话容器 - 需要塞进抽屉中
 // #########################################
@@ -28,8 +31,8 @@ SessionDetailsPage::SessionDetailsPage(QWidget *parent)
 
     // 1) 设置网格布局
     QGridLayout *gridLayout = new QGridLayout(this);
-    gridLayout->setContentsMargins(10, 10, 10, 10); // 加上边距好看点
-    gridLayout->setSpacing(5);
+    gridLayout->setContentsMargins(10, 20, 10, 10); // 加上边距好看点
+    gridLayout->setSpacing(10);
 
     // 2) 创建“添加”按钮 (局部变量)
     AvatarItem* addBtn = new AvatarItem(this, "添加");
@@ -41,6 +44,7 @@ SessionDetailsPage::SessionDetailsPage(QWidget *parent)
     // 4) 连信号 (分流业务)
     connect(addBtn, &AvatarItem::clicked, this, &SessionDetailsPage::signalAddFriendClicked);
     connect(rmBtn, &AvatarItem::clicked, this, &SessionDetailsPage::signalRemoveFriendClicked);
+    gridLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 
     // 5) 上架 (放入布局)
     gridLayout->addWidget(addBtn, 0, 0);
@@ -51,10 +55,33 @@ SessionDetailsPage::SessionDetailsPage(QWidget *parent)
 // =======================
 
 #if TEST_UI
-    AvatarItem*testUser = new AvatarItem(this, "测试用户", QIcon(":/resource/image/defaultAvatar.png"));
-    gridLayout->addWidget(testUser, 0, 2);
+    // 定义一行有多少列
+    const int MAX_COL = 4;
+
+    // 生成 20 个测试用户
+    for(int i = 0; i < 12; ++i) {
+        // 1. 计算当前的实际索引位置
+        // 关键点：+2 是因为前面已经 addWidget 了 addBtn 和 rmBtn
+        // 它们分别占据了 0 和 1 的位置，所以我们的测试数据从 2 开始
+        int visualIndex = i + 2;
+
+        // 2. 计算行和列
+        int row = visualIndex / MAX_COL; // 整数除法算行号
+        int col = visualIndex % MAX_COL; // 取余数算列号
+
+        // 3. 创建头像
+        // 注意：这里名字稍微变一下方便观察顺序
+        QString name = QString("用户%1").arg(i + 1);
+        AvatarItem* testUser = new AvatarItem(this, name, QIcon(":/resource/image/defaultAvatar.png"));
+
+        // 4. 添加到布局
+        gridLayout->addWidget(testUser, row, col);
+    }
+
 #endif
 
+    // 设置信号
+    initSignalSlots();
 
 }
 
@@ -65,6 +92,16 @@ void SessionDetailsPage::paintEvent(QPaintEvent *event)
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+
+void SessionDetailsPage::initSignalSlots()
+{
+    // 关联弹窗构造函数
+    connect(this, &SessionDetailsPage::signalAddFriendClicked, this, [=](){
+        ChooseFriendWidget *chooseFriendWidget = new ChooseFriendWidget(this);
+        chooseFriendWidget->show();
+    });
 }
 
 

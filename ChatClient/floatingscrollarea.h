@@ -1,0 +1,33 @@
+#ifndef FLOATINGSCROLLAREA_H
+#define FLOATINGSCROLLAREA_H
+
+#include <QScrollArea>
+
+class QScrollBar;
+class QResizeEvent;
+class QEvent; // 新增
+
+class FloatingScrollArea : public QScrollArea
+{
+    Q_OBJECT
+public:
+    explicit FloatingScrollArea(QWidget *parent = nullptr);
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+    // 鼠标进入事件
+    void enterEvent(QEnterEvent *event) override; // Qt6用QEnterEvent, Qt5用QEvent
+    // 鼠标离开事件
+    void leaveEvent(QEvent *event) override;
+
+private:
+    void initScrollBar();
+    // 统一控制显示逻辑的函数
+    void updateScrollBarVisible();
+
+    QScrollBar *m_vScrollBar;
+    bool m_isHover; // 记录当前鼠标是否在区域内
+};
+
+#endif // FLOATINGSCROLLAREA_H
