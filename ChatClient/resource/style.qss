@@ -604,3 +604,149 @@ QWidget#SessionDetailsPage{
     background-color: #FFFFFF;
     border: 1px solid #d5d5d5;
 }
+
+
+
+/* ###########################
+    ChooseFriendWidget
+########################### */
+
+/*------------------------
+    TotalContainer 左侧布局
+--------------------------*/
+
+QLineEdit#totalContSearchEdit{
+    background-color: #F7F7F7;
+    border:none;
+    padding-left: 10px; 
+    padding-right: 10px;
+    border-radius: 5px;
+}
+
+QLineEdit#totalContSearchEdit:focus {
+    border: 1.5px solid #0078d7; /* 获得焦点时边框变蓝 */
+    background-color: #FFFFFF; /* 获得焦点时背景色微变 */
+}
+
+
+
+
+/*
+    chooseFriendItem
+*/
+
+QPushButton#chooseFriendItem{
+    background-color:#FFFFFF;
+    border: none;
+}
+
+QPushButton#chooseFriendItem:hover{
+    background-color: #f2f2f2;
+}
+
+QPushButton#chooseFriendItem:pressed{
+    background-color: #e5e5e5;
+}
+
+
+QPushButton#chooseFriendAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+
+/* 1. 基础样式 (正确) */
+QCheckBox#chooseFriendCheckBox {
+    spacing: 8px;
+    color: #333333;
+    font-size: 14px;
+    background: transparent;
+}
+
+
+
+/* 3. 未选中状态 - 直接在 indicator 后面加伪状态 */
+QCheckBox#chooseFriendCheckBox::indicator:unchecked {
+    width: 20px;
+    height: 20px;
+    image: url(:/resource/image/unchecked.png);
+}
+
+/* 4. 选中状态 */
+QCheckBox#chooseFriendCheckBox::indicator:checked {
+    width: 18px;
+    height: 18px;
+    image: url(:/resource/image/checked.png);
+}
+
+QWidget#totalScrollWidget {
+    background-color: #FFFFFF;
+    border: none;
+}
+
+
+QWidget#selectedScrollWidget{
+    background-color:#FFFFFF;
+    border: none;
+}
+
+QWidget#selectedBottomGropWidget{
+    background:transparent;
+    border: none;
+}
+
+QPushButton#selectedFinishBtn{
+    border: none;
+    border-radius: 6px;
+    color: #FFFFFF;
+    background-color: #1296db;    
+}
+
+QPushButton#selectedFinishBtn:hover{
+    background-color: #108bcb;    
+}
+
+QPushButton#selectedFinishBtn:pressed{
+    background-color: #0f81bd;    
+}
+
+QPushButton#selectedCancelBtn{
+    border: none;
+    border-radius: 6px;    
+    background-color: #f2f2f2;
+}
+
+QPushButton#selectedCancelBtn:hover{
+background-color: #ebebeb;
+}
+
+QPushButton#selectedCancelBtn:pressed{
+background-color: #e5e5e5;
+}
+
+QLabel#selectedContTitleTag{
+    border: none;
+    font-family: "微软雅黑";
+    font-weight: auto;
+}
+
+QLabel#selectedContNumLabel{
+    border: none;
+    font-size: 12px;
+    font-family: "微软雅黑";
+    color: #9e9e9e;
+    font-weight: auto;
+}
+
+
+
+QWidget#totalContainer {
+    background-color: #FFFFFF;
+}
+
+QWidget#selectedContainer {
+    background-color: #FFFFFF;
+}
