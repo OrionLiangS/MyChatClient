@@ -298,7 +298,7 @@ void ChooseFriendWidget::initSignalSlots()
     connect(selectedFinishBtn, &QPushButton::clicked, this, [=](){
         QList<QString> ids = getSelectedUserIds();
         LOG() << "点击完成，选中的用户ID列表: " << ids;
-        // 这里可以发射一个信号给上层，例如 emit signalFinished(ids);
+        signalFinished(ids); // 发送信号并将ids进行传出
         this->close();
     });
 }
@@ -447,7 +447,7 @@ SelectedFriendItem::SelectedFriendItem(ChooseFriendItem* item, QWidget *parent)
     ChooseFriendItemHLayout->addStretch();
     ChooseFriendItemHLayout->addWidget(SelectedFriendItemDelBtn, 0,Qt::AlignRight);
 
-    // 🔥🔥【关键修复】🔥🔥
+    // 【关键修复】
     // 使用 &SelectedFriendItem::clickHandler 而不是父类名。
     // 这解决了 C2248 protected 成员访问错误。
     disconnect(this, &QPushButton::clicked, this, &SelectedFriendItem::clickHandler);

@@ -108,6 +108,9 @@ private slots:
      * - 若 item 被取消: 从 Map 取出对应的 SelectedFriendItem, delete 掉。
      */
     void onItemStatusChanged(ChooseFriendItem* item);
+
+signals:
+    void signalFinished(const QList<QString>& ids);
 };
 
 
