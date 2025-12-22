@@ -17,6 +17,7 @@
 // 类: ChooseFriendWidget
 // 描述: 选择好友窗口，继承自 InfoWidget。
 //       界面主要包含左侧的好友列表(TotalContainer)和右侧的已选列表(SelectedContainer)。
+//       核心联动逻辑: 通过 m_selectedMap 映射和信号槽，实现左右列表的同步增删。
 // ################################################################################
 
 
@@ -62,12 +63,10 @@ void ChooseFriendWidget::initTotalContainer(QHBoxLayout *mainLayout)
     // 1. 初始化容器并立即命名
     // -------------------------------------------
     totalContainer = new QWidget(mainFrame);
-
-    // 核心修复：出生即命名，确保QSS样式生效
     totalContainer->setObjectName("totalContainer");
 
     mainLayout->addWidget(totalContainer);
-    totalContainer->setAttribute(Qt::WA_StyledBackground); // 命名后开启背景绘制，确保变白
+    totalContainer->setAttribute(Qt::WA_StyledBackground);
 
     QVBoxLayout *vlayout = new QVBoxLayout(totalContainer);
     totalContainer->setLayout(vlayout);
@@ -87,12 +86,8 @@ void ChooseFriendWidget::initTotalContainer(QHBoxLayout *mainLayout)
     searchLayout->setSpacing(0);
     searchLayout->setAlignment(Qt::AlignTop);
 
-    // 初始化搜索框并立即命名
     totalContSearchEdit = new QLineEdit(totalContainer);
-
-    // 归位：搜索框命名
     totalContSearchEdit->setObjectName("totalContSearchEdit");
-
     totalContSearchEdit->setFixedHeight(35);
     searchLayout->addWidget(totalContSearchEdit);
     totalContSearchEdit->setPlaceholderText("搜索");
@@ -100,23 +95,18 @@ void ChooseFriendWidget::initTotalContainer(QHBoxLayout *mainLayout)
     vlayout->addWidget(totalContSearchWidget);
 
     // -------------------------------------------
-    // 3. 创建滚动区域 (悬浮滚动条)
+    // 3. 创建滚动区域
     // -------------------------------------------
     totalScrollArea = new FloatingScrollArea(totalContainer);
-
-    // 归位：滚动区命名
     totalScrollArea->setObjectName("totalScrollArea");
 
     totalScrollWidget = new QWidget(totalContainer);
-
-    // 归位：滚动内容容器命名
     totalScrollWidget->setObjectName("totalScrollWidget");
 
     vlayout->addWidget(totalScrollArea);
     totalScrollArea->setWidget(totalScrollWidget);
     totalScrollArea->setWidgetResizable(true);
 
-    // 设置滚动区布局
     totalScrollVlayout = new QVBoxLayout(totalScrollWidget);
     totalScrollWidget->setLayout(totalScrollVlayout);
     totalScrollVlayout->setSpacing(0);
@@ -124,8 +114,8 @@ void ChooseFriendWidget::initTotalContainer(QHBoxLayout *mainLayout)
 
 #if TEST_UI
     for(int i =0;i<30;++i){
-        // 使用封装好的添加函数生成测试数据
-        addItemFroTotalContainer(QIcon(":/resource/image/defaultAvatar.png"),"测试用户"+QString::number(i),false);
+        // 生成测试数据：ID使用 "user_i" 格式
+        addItemFroTotalContainer(QString("user_%1").arg(i), QIcon(":/resource/image/defaultAvatar.png"),"测试用户"+QString::number(i));
     }
 #endif
 }
@@ -133,7 +123,7 @@ void ChooseFriendWidget::initTotalContainer(QHBoxLayout *mainLayout)
 
 // ================================================================================
 // 函数: initSelectedContainer
-// 描述: 初始化右侧布局 (标题栏 + 已选头像列表 + 底部按钮组)
+// 描述: 初始化右侧布局 (标题栏 + 已选列表 + 底部按钮)
 // ================================================================================
 void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
 {
@@ -141,13 +131,9 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
     // 1. 初始化容器并立即命名
     // -------------------------------------------
     selectedContainer = new QWidget(mainFrame);
-
-    // 核心修复：必须在这里命名，StyleSheet 才能生效！
     selectedContainer->setObjectName("selectedContainer");
 
     mainLayout->addWidget(selectedContainer);
-
-    // 命名之后再开启背景绘制
     selectedContainer->setAttribute(Qt::WA_StyledBackground);
 
     QVBoxLayout *vlayout = new QVBoxLayout(selectedContainer);
@@ -157,7 +143,7 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
     vlayout->setAlignment(Qt::AlignTop);
 
     // -------------------------------------------
-    // 2. 创建标题栏 ("发起群聊")
+    // 2. 创建标题栏
     // -------------------------------------------
     QWidget* selectedContTitleWidget = new QWidget(selectedContainer);
     selectedContTitleWidget->setFixedHeight(55);
@@ -169,13 +155,11 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
 
     selectedContTitleTag = new QLabel(selectedContTitleWidget);
     selectedContNumLabel = new QLabel(selectedContTitleWidget);
-
-    // 归位：Label 命名
     selectedContTitleTag->setObjectName("selectedContTitleTag");
     selectedContNumLabel->setObjectName("selectedContNumLabel");
 
     selectedContTitleTag->setText("发起群聊");
-    selectedContNumLabel->setText("已选择人数(todo)");
+    selectedContNumLabel->setText("已选择 0 人");
     selectedContNumLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
     titleLayout->addWidget(selectedContTitleTag, Qt::AlignLeft | Qt::AlignVCenter);
@@ -184,38 +168,32 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
     vlayout->addWidget(selectedContTitleWidget);
 
     // -------------------------------------------
-    // 3. 创建滚动区域 (已选列表)
+    // 3. 创建滚动区域
     // -------------------------------------------
     selectedScrollArea = new FloatingScrollArea(selectedContainer);
-    // 滚动区本身通常是透明的，可以不命名，或者也加上
-    // selectedScrollArea->setObjectName("selectedScrollArea");
-
     selectedScrollWidget = new QWidget(selectedContainer);
-
-    // 归位：右侧滚动内容容器命名 (防止这里也变灰)
     selectedScrollWidget->setObjectName("selectedScrollWidget");
 
     vlayout->addWidget(selectedScrollArea);
     selectedScrollArea->setWidget(selectedScrollWidget);
     selectedScrollArea->setWidgetResizable(true);
 
+    selectedScrollVlayout = new QVBoxLayout(selectedScrollWidget);
+    selectedScrollVlayout->setAlignment(Qt::AlignTop);
+
     // -------------------------------------------
-    // 4. 创建底部按钮组 ("完成"/"取消")
+    // 4. 创建底部按钮组
     // -------------------------------------------
     selectedBottomGropWidget = new QWidget(selectedContainer);
-
-    // 归位：底部容器命名
     selectedBottomGropWidget->setObjectName("selectedBottomGropWidget");
-
     selectedBottomGropWidget->setFixedHeight(45);
+
     QHBoxLayout* selectedBottomGropHLayout = new QHBoxLayout(selectedBottomGropWidget);
     selectedBottomGropHLayout->setContentsMargins(10,0,10,5);
     selectedBottomGropHLayout->setSpacing(0);
 
     selectedFinishBtn = new QPushButton(selectedBottomGropWidget);
     selectedCancelBtn = new QPushButton(selectedBottomGropWidget);
-
-    // 归位：按钮命名
     selectedFinishBtn->setObjectName("selectedFinishBtn");
     selectedCancelBtn->setObjectName("selectedCancelBtn");
 
@@ -232,66 +210,111 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
     selectedBottomGropHLayout->addWidget(selectedCancelBtn,0, Qt::AlignBottom|Qt::AlignRight);
 
     vlayout->addWidget(selectedBottomGropWidget, Qt::AlignBottom);
-
-
-    selectedScrollVlayout = new QVBoxLayout(selectedScrollWidget);
-    selectedScrollVlayout->setAlignment(Qt::AlignTop);
-
-#if TEST_UI
-    for(int i =0;i<20;++i){
-        addItemForSelectedContainer(QIcon(":/resource/image/defaultAvatar.png"),"测试用户"+QString::number(i));
-    }
-#endif
 }
 
 
 // ================================================================================
 // 函数: addItemFroTotalContainer
-// 描述: 辅助函数，向左侧好友列表添加一个新的条目(ChooseFriendItem)
+// 描述: 向左侧列表添加好友条目，并连接信号
 // ================================================================================
-void ChooseFriendWidget::addItemFroTotalContainer(const QIcon &avatar, const QString &name, bool isChecked)
+void ChooseFriendWidget::addItemFroTotalContainer(const QString& userId, const QIcon &avatar, const QString &name)
 {
-    ChooseFriendItem *new_item = new ChooseFriendItem(avatar,name,isChecked);
+    // 构造时传入 false (默认不选中)
+    ChooseFriendItem *new_item = new ChooseFriendItem(userId, avatar, name, false);
+
+    // 连接信号：左侧 Item 状态改变 -> 通知 Widget 处理
+    connect(new_item, &ChooseFriendItem::signalStatusChanged, this, &ChooseFriendWidget::onItemStatusChanged);
+
     totalScrollVlayout->addWidget(new_item);
 }
 
 
 // ================================================================================
-// 函数: addItemForSelectedContainer
-// 描述: 辅助函数，向右侧已选列表添加一个新的条目(SelectedFriendItem)
+// 函数: onItemStatusChanged
+// 描述: [核心槽函数] 处理左侧状态变化，同步增删右侧 Item
 // ================================================================================
-void ChooseFriendWidget::addItemForSelectedContainer(const QIcon &avatar, const QString &name)
+void ChooseFriendWidget::onItemStatusChanged(ChooseFriendItem *item)
 {
-    SelectedFriendItem *new_item = new SelectedFriendItem(avatar,name, selectedScrollWidget);
-    selectedScrollVlayout->addWidget(new_item);
+    // 1. 获取当前 Item 的选中状态
+    bool isChecked = item->isChecked();
+
+    if (isChecked) {
+        // === 增加：左侧勾选 -> 右侧添加 ===
+
+        // 防抖：避免重复添加
+        if (m_selectedMap.contains(item)) return;
+
+        // 构造右侧 Item (传入左侧指针 item 作为数据源和关联句柄)
+        // 这里会调用 item->getIcon()，所以必须保证 item 已经初始化完毕
+        SelectedFriendItem *selectedItem = new SelectedFriendItem(item, selectedScrollWidget);
+        selectedScrollVlayout->addWidget(selectedItem);
+
+        // 记入账本
+        m_selectedMap.insert(item, selectedItem);
+    }
+    else {
+        // === 删除：左侧取消 -> 右侧移除 ===
+
+        if (m_selectedMap.contains(item)) {
+            // 从 Map 移除并取出指针
+            SelectedFriendItem *selectedItem = m_selectedMap.take(item);
+            if (selectedItem) {
+                // 销毁 UI 对象
+                selectedItem->deleteLater();
+            }
+        }
+    }
+
+    // 更新顶部计数标签
+    selectedContNumLabel->setText(QString("已选择 %1 人").arg(m_selectedMap.size()));
+}
+
+
+// ================================================================================
+// 函数: getSelectedUserIds
+// 描述: 获取当前所有选中用户的 ID 列表
+// ================================================================================
+QList<QString> ChooseFriendWidget::getSelectedUserIds() const
+{
+    QList<QString> ids;
+    // 遍历 Map 的 Key (左侧 Item 指针)，获取其 ID
+    for (auto item : m_selectedMap.keys()) {
+        if (item) {
+            ids.append(item->getUserId());
+        }
+    }
+    return ids;
 }
 
 
 // ================================================================================
 // 函数: initSignalSlots
-// 描述: 初始化 ChooseFriendWidget 的信号槽连接
+// 描述: 初始化窗口级信号槽 (底部按钮)
 // ================================================================================
 void ChooseFriendWidget::initSignalSlots()
 {
     connect(selectedCancelBtn, &QPushButton::clicked, this, &ChooseFriendWidget::close);
 
     connect(selectedFinishBtn, &QPushButton::clicked, this, [=](){
-        LOG()<<"执行添加至群聊操作";
+        QList<QString> ids = getSelectedUserIds();
+        LOG() << "点击完成，选中的用户ID列表: " << ids;
+        signalFinished(ids); // 发送信号并将ids进行传出
+        this->close();
     });
 }
 
 
 // ################################################################################
 // 类: ChooseFriendItem
-// 描述: 左侧好友列表中的单个条目 (复选框 + 头像 + 名字)
+// 描述: 左侧好友列表中的单个条目
 // ################################################################################
 
 
 // ================================================================================
 // 函数: ChooseFriendItem (构造函数)
-// 描述: 初始化条目UI，设置内容和样式
 // ================================================================================
-ChooseFriendItem::ChooseFriendItem(const QIcon &avatar, const QString &name, bool isChecked, QWidget *parent)
+ChooseFriendItem::ChooseFriendItem(const QString& userId, const QIcon &avatar, const QString &name, bool isChecked, QWidget *parent)
+    : m_userId(userId) // 保存 ID
 {
     this->setObjectName("chooseFriendItem");
     this->setFixedHeight(51);
@@ -313,31 +336,23 @@ ChooseFriendItem::ChooseFriendItem(const QIcon &avatar, const QString &name, boo
     ChooseFriendItemHLayout->addWidget(chooseFriendAvatar);
     ChooseFriendItemHLayout->addWidget(chooseFriendNikeName);
 
-    // -------------------------------------------
-    // 初始化对象名字 (用于QSS)
-    // -------------------------------------------
+    // 初始化控件名
     initObjectNames();
 
-    // -------------------------------------------
     // 设置内容
-    // -------------------------------------------
     chooseFriendNikeName->setText(name);
     chooseFriendAvatar->setIcon(avatar);
+
+    // 设置初始状态 (注意：这会触发 toggled 信号，但此时外部可能还没 connect，所以是安全的)
     chooseFriendCheckBox->setChecked(isChecked);
 
-    // -------------------------------------------
     // 初始化信号槽
-    // -------------------------------------------
     initSignalSlot();
-
-#if TEST_UI
-#endif
 }
 
 
 // ================================================================================
 // 函数: clickHandler
-// 描述: 响应条目点击，反转复选框的选中状态
 // ================================================================================
 void ChooseFriendItem::clickHandler()
 {
@@ -348,7 +363,6 @@ void ChooseFriendItem::clickHandler()
 
 // ================================================================================
 // 函数: initObjectNames
-// 描述: 设置子控件的对象名，便于QSS样式匹配
 // ================================================================================
 void ChooseFriendItem::initObjectNames()
 {
@@ -360,28 +374,60 @@ void ChooseFriendItem::initObjectNames()
 
 // ================================================================================
 // 函数: initSignalSlot
-// 描述: 绑定自身点击信号
+// 描述: 绑定自身信号
 // ================================================================================
 void ChooseFriendItem::initSignalSlot()
 {
+    // 1. 点击 Item -> 切换 CheckBox
     connect(this, &QPushButton::clicked, this, &ChooseFriendItem::clickHandler);
+
+    // 2. 监听 CheckBox 变化 -> 发送信号 (带 this 指针)
+    connect(chooseFriendCheckBox, &QCheckBox::toggled, this, [=](bool checked){
+        emit signalStatusChanged(this);
+    });
+}
+
+
+// ================================================================================
+// 函数: 公开接口实现 (Getter / Setter)
+// ================================================================================
+QIcon ChooseFriendItem::getIcon() const {
+    return chooseFriendAvatar->icon();
+}
+
+QString ChooseFriendItem::getName() const {
+    return chooseFriendNikeName->text();
+}
+
+QString ChooseFriendItem::getUserId() const {
+    return m_userId;
+}
+
+bool ChooseFriendItem::isChecked() const {
+    return chooseFriendCheckBox->isChecked();
+}
+
+// 供右侧调用：修改状态
+void ChooseFriendItem::setChecked(bool checked) {
+    chooseFriendCheckBox->setChecked(checked);
 }
 
 
 // ################################################################################
 // 类: SelectedFriendItem
-// 描述: 右侧已选列表中的单个条目 (继承自 ChooseFriendItem，隐藏复选框，增加删除按钮)
+// 描述: 右侧已选列表中的单个条目
 // ################################################################################
 
 
 // ================================================================================
 // 函数: SelectedFriendItem (构造函数)
+// 描述: 接收左侧指针，复用数据并建立关联
 // ================================================================================
-SelectedFriendItem::SelectedFriendItem(const QIcon &avatar, const QString &name, QWidget *parent)
-    :ChooseFriendItem(avatar, name, false, parent)
+SelectedFriendItem::SelectedFriendItem(ChooseFriendItem* item, QWidget *parent)
+    :ChooseFriendItem(item->getUserId(), item->getIcon(), item->getName(), false, parent), // 复用左侧数据
+    m_refItem(item) // 保存关联
 {
     setFixedHeight(35);
-
     this->setObjectName("selectedFriendItem");
 
     // -------------------------------------------
@@ -392,15 +438,19 @@ SelectedFriendItem::SelectedFriendItem(const QIcon &avatar, const QString &name,
     SelectedFriendItemDelBtn->setFixedSize(15,15);
     SelectedFriendItemDelBtn->setFocusPolicy(Qt::NoFocus);
 
-    // 隐藏复选框 (左侧才需要)
+    // 隐藏 CheckBox (右侧不需要)
     chooseFriendCheckBox->setHidden(true);
 
     SelectedFriendItemDelBtn->setIconSize(QSize(12,12));
     SelectedFriendItemDelBtn->setIcon(QIcon(":/resource/image/selectedFriendDelete.png"));
 
-    // 在右侧添加弹簧和删除按钮
     ChooseFriendItemHLayout->addStretch();
     ChooseFriendItemHLayout->addWidget(SelectedFriendItemDelBtn, 0,Qt::AlignRight);
+
+    // 【关键修复】
+    // 使用 &SelectedFriendItem::clickHandler 而不是父类名。
+    // 这解决了 C2248 protected 成员访问错误。
+    disconnect(this, &QPushButton::clicked, this, &SelectedFriendItem::clickHandler);
 
     initSignalSlots();
 }
@@ -408,11 +458,19 @@ SelectedFriendItem::SelectedFriendItem(const QIcon &avatar, const QString &name,
 
 // ================================================================================
 // 函数: initSignalSlots
-// 描述: 绑定删除按钮的逻辑
+// 描述: 绑定删除按钮逻辑
 // ================================================================================
 void SelectedFriendItem::initSignalSlots()
 {
     connect(SelectedFriendItemDelBtn, &QPushButton::clicked, this, [=](){
-        LOG()<<"接入删除当前Item逻辑";
+        // 核心联动：点击右侧删除 -> 遥控左侧取消勾选
+        if (m_refItem) {
+            // 这会触发:
+            // 1. 左侧 CheckBox 变为 false
+            // 2. 左侧 emit signalStatusChanged(this)
+            // 3. Widget::onItemStatusChanged(item)
+            // 4. Widget 查表删除当前的 SelectedFriendItem (即 this)
+            m_refItem->setChecked(false);
+        }
     });
 }
