@@ -180,6 +180,11 @@ void ChooseFriendWidget::initSelectedContainer(QHBoxLayout *mainLayout)
 
     selectedScrollVlayout = new QVBoxLayout(selectedScrollWidget);
     selectedScrollVlayout->setAlignment(Qt::AlignTop);
+    selectedScrollVlayout->setContentsMargins(0,0,0,0);
+    selectedScrollVlayout->setSpacing(10);
+
+    // 不允许挤压子控件
+    selectedScrollVlayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     // -------------------------------------------
     // 4. 创建底部按钮组
