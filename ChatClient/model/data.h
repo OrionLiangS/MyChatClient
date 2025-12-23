@@ -294,6 +294,8 @@ public:
             LOG()<<"unknow type message";
             return Message();
         }
+        return Message();
+
     }
 
 private:

@@ -16,7 +16,7 @@
 
 #include "sidebar.h"
 
-#include "sessiondetailspage.h"
+#include "chatdetailspage.h"
 
 /**
  * @brief MainWidget::instance 单例实例
@@ -361,14 +361,19 @@ void MainWidget::initRightWindow()
     sidebar = new Sidebar(rightWindow, titleWidget->height());
     sidebar->raise();
 
+    /**
+    * @todo - rebuilding ....
+    */
     // 创建内容, 并将内容设置进抽屉
-    sessionDetailsPage = new SessionDetailsPage(this);
-    sidebar->setContent(sessionDetailsPage);
-
-#if TEST_UI
-
+    // 测试数据
+    ChatDetailType type;
+#if TEST_GROUP_CHAT
+    type = CHAT_DETAIL_GROUP;
+#elif TEST_PRIVATE_CHAT
+    type = CHAT_PRIVATE_GROUP;
 #endif
-
+    chatDetailsPage = ChatDetailsPage::createChatDetailsPage(type);
+    sidebar->setContent(chatDetailsPage);
 }
 
 
