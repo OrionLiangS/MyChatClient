@@ -28,5 +28,9 @@
         <file>resource/image/checked.png</file>
         <file>resource/image/unchecked.png</file>
         <file>resource/image/selectedFriendDelete.png</file>
+        <file>resource/image/bottom.png</file>
+        <file>resource/image/more.png</file>
+        <file>resource/image/up.png</file>
+        <file>resource/image/editName.png</file>
     </qresource>
 </RCC>

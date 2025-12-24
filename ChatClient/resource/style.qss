@@ -89,8 +89,8 @@ QLineEdit#searchEdit {
     border: none;
     border-radius: 5px;
     background-color: #EAEAEA; /* 输入框底色偏灰 */
-    font-size: 13px;
-    font-family: "雅黑";
+    font-size: 12px;
+    font-family: "微软雅黑";
     font-weight: 2px;
 }
 
@@ -531,7 +531,7 @@ QPushButton#userInfoDeleteFriendBtn:pressed{
             Sidebar
 ================================ */
 QWidget#Sidebar{
-    background:transparent;
+    background-color:#FFFFFF;
     border: 1px solid #e0e0e0;
 }
 
@@ -765,3 +765,91 @@ QPushButton#selectedFriendItem{
     background-color:#FFFFFF;
     border: none;
 }
+
+
+
+
+QLineEdit#groupChatSearch{
+    border:none;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: "微软雅黑";
+}
+
+
+QLineEdit#groupChatSearch:focus{
+    background-color: #ffffff;
+    border: 2px solid #1296db;
+}
+
+QWidget#groupChatDetailsScrollContainer{
+    background: transparent;
+    border: none;
+}
+
+
+
+QLabel#groupAnnouncementTag,
+QLabel#groupNameTag{
+    border: none;
+    font-size: 12px;
+}
+
+
+QPushButton#groupName{
+        border: none;   
+        background-color: transparent;
+        text-align: left;
+        /* 默认状态：不显示图片 */
+        image: none;
+}
+
+
+
+
+QPushButton#groupAnnouncement{
+    border: none;
+}
+
+/* 测试 */
+/* QPushButton#groupName:hover,
+QPushButton#groupAnnouncement:hover{
+    background-color: #333333;
+} */
+
+
+
+QPushButton#groupContainerMoreAvatarItemBtn{
+    background: transparent;
+    border: none;
+}
+
+
+
+
+
+ /* 测试 */
+/* QPushButton#groupContainerMoreAvatarItemBtn:hover{
+    background-color: #9e9e9e;
+    border: none;
+}  */
+
+
+
+
+QPushButton#clearChatHistory,
+QPushButton#exitGroupChatBtn{
+    border:none;
+    background-color: transparent;
+    color:#fa5151;
+    font-size: 12px;
+}
+
+
+ /* 测试 */
+
+/* QPushButton#clearChatHistory:hover,
+QPushButton#exitGroupChatBtn:hover{
+    background-color:#d4d4d4;
+} */
