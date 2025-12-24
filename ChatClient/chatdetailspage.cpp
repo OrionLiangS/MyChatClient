@@ -25,102 +25,284 @@
 // 会话容器 - 需要塞进抽屉中
 // #########################################
 
-
-
 GroupChatDetailsPage::GroupChatDetailsPage(QWidget *parent)
+    : ChatDetailsPage(parent)
 {
 #if /*TEST_GROUP_CHAT*/0
     QLabel* label = new QLabel(this);
     label->setText("GroupChatDetailsPage");
 #endif
 
+    // 1. 基础布局 & 搜索框 & 滚动区
+    initBaseLayout();
+
+    // 2. 头像区域 (Grid + 按钮 + 线)
+    initAvatarArea();
+
+    // 3. 群信息 (公告 + 名称 + 线)
+    initGroupInfo();
+
+    // 4. 底部按钮 (清空 + 退出)
+    initFooter();
+
+    // 最后加弹簧
+    groupDetailsScrollContainerVlayout->addStretch();
+
+
+    // 初始化信号槽
+    initSignalSlots();
+}
+
+// ==========================================
+// 1. 基础布局初始化
+// ==========================================
+void GroupChatDetailsPage::initBaseLayout()
+{
+    // 外层 VLayout
     groupChatVlayout = new QVBoxLayout(this);
     this->setLayout(groupChatVlayout);
     groupChatVlayout->setSpacing(0);
     groupChatVlayout->setContentsMargins(0,0,0,0);
 
-
+    // 搜索框区域
     QWidget *groupChatSearchWidget = new QWidget(this);
     groupChatSearchWidget->setFixedHeight(45);
+
     QHBoxLayout *groupChatSearchHlayout = new QHBoxLayout(groupChatSearchWidget);
-    groupChatSearchWidget->setLayout(groupChatSearchHlayout);
+    groupChatSearchWidget->setLayout(groupChatSearchHlayout); // 显式设置一下更稳妥
     groupChatSearchHlayout->setContentsMargins(20,10,20,5);
     groupChatSearchHlayout->setSpacing(0);
     groupChatSearchHlayout->setAlignment(Qt::AlignHCenter);
+
     groupChatSearch = new QLineEdit(groupChatSearchWidget);
     groupChatSearch->setObjectName("groupChatSearch");
     groupChatSearch->setFixedHeight(25);
     groupChatSearch->setPlaceholderText("搜索群成员");
+    groupChatSearch->setClearButtonEnabled(true);
+    groupChatSearch->setTextMargins(15,0,15,0);
+
     groupChatSearchHlayout->addWidget(groupChatSearch);
-
-
     groupChatVlayout->addWidget(groupChatSearchWidget);
 
-
+    // 滚动区域
     groupChatScroll = new FloatingScrollArea(this);
     groupChatScroll->setObjectName("groupChatScroll");
     groupChatVlayout->addWidget(groupChatScroll);
 
-
+    // 滚动内部容器
     groupChatDetailsScrollContainer = new QWidget(this);
     groupChatDetailsScrollContainer->setObjectName("groupChatDetailsScrollContainer");
+
     groupChatScroll->setWidget(groupChatDetailsScrollContainer);
     groupChatScroll->setWidgetResizable(true);
 
+    // 滚动内部 VLayout
     groupDetailsScrollContainerVlayout = new QVBoxLayout(groupChatDetailsScrollContainer);
     groupDetailsScrollContainerVlayout->setContentsMargins(25,0,25,0);
-    groupChatDetailsScrollContainer->setLayout(groupDetailsScrollContainerVlayout);
+    groupDetailsScrollContainerVlayout->setSpacing(7);
+}
 
-    // ==========================================================
-    // groupDetailsScrollContainerVlayout内布局
-    // ==========================================================
-
+// ==========================================
+// 2. 头像区域初始化
+// ==========================================
+void GroupChatDetailsPage::initAvatarArea()
+{
+    // --- 头像 Widget ---
     groupContainerAvatarItemWidget = new QWidget(groupChatDetailsScrollContainer);
+    groupContainerAvatarItemWidget->setMinimumHeight(130);
     groupContainerAvatarItemWidget->setObjectName("groupContainerAvatarItemWidget");
+
     groupContainerAvatarItemLayout = new QGridLayout(groupContainerAvatarItemWidget);
     groupContainerAvatarItemWidget->setLayout(groupContainerAvatarItemLayout);
 
-    groupContainerMoreAvatarItemBtn = new QPushButton(groupContainerAvatarItemWidget);
-    groupContainerMoreAvatarItemBtn->setObjectName("groupContainerMoreAvatarItemBtn");
-
+    // 【保留原布局】直接加 widget
     groupDetailsScrollContainerVlayout->addWidget(groupContainerAvatarItemWidget);
 
-    ContainerMoreAvatarItemBtnWidget = new QWidget(groupChatDetailsScrollContainer);
-    QHBoxLayout *moreAvatarItemBtnHlayout = new QHBoxLayout(ContainerMoreAvatarItemBtnWidget);
-    moreAvatarItemBtnHlayout->setObjectName("moreAvatarItemBtnHlayout");
-    ContainerMoreAvatarItemBtnWidget->setLayout(moreAvatarItemBtnHlayout);
+#if TEST_UI
+    groupContainerAvatarItemWidget->setStyleSheet("background-color: red");
+#endif
 
-    groupDetailsScrollContainerVlayout->addWidget(ContainerMoreAvatarItemBtnWidget);
+    // --- 查看更多按钮 ---
+    groupContainerMoreAvatarItemBtn = new QPushButton(groupContainerAvatarItemWidget);
+    groupContainerMoreAvatarItemBtn->setObjectName("groupContainerMoreAvatarItemBtn");
+    groupContainerMoreAvatarItemBtn->setFixedHeight(30);
 
-    groupAnnouncementTag = new QLabel(groupChatDetailsScrollContainer);
-    groupAnnouncementTag->setObjectName("groupAnnouncementTag");
+    // -----------------------------------------
+    // 设置按钮内部的布局
+    // -----------------------------------------
+    QHBoxLayout *moreAvatarItemBtnHlayout = new QHBoxLayout(groupContainerMoreAvatarItemBtn);
+    moreAvatarItemBtnHlayout->setSpacing(5);
+    moreAvatarItemBtnHlayout->setContentsMargins(0,0,0,0);
 
-    groupAnnouncement = new QPushButton(groupChatDetailsScrollContainer);
-    groupAnnouncement->setObjectName("groupAnnouncementTag");
+    groupContainerMoreAvatarItemBtn->setLayout(moreAvatarItemBtnHlayout);
+    // 先添加一个弹簧
+    moreAvatarItemBtnHlayout->addStretch();
 
-    groupNameTag = new QLabel(groupChatDetailsScrollContainer);
-    groupNameTag->setObjectName("groupAnnouncementTag");
+    // 添加左侧的Label
+    QLabel *moreAvatarLabel = new QLabel(groupContainerMoreAvatarItemBtn);
+    moreAvatarItemBtnHlayout->addWidget(moreAvatarLabel);
+    moreAvatarLabel->setText("查看更多");
+    moreAvatarLabel->setFixedHeight(25);
+    moreAvatarLabel->setStyleSheet("font-size:12px;color:#9e9e9e;");
 
-    groupName = new QPushButton(groupChatDetailsScrollContainer);
-    groupName->setObjectName("groupName");
+    // 添加右侧的Icon
+    QPushButton *seeMoreAvatarIcon = new QPushButton(groupContainerAvatarItemWidget);
+    seeMoreAvatarIcon->setStyleSheet("border:none;background: transparent;");
+    seeMoreAvatarIcon->setFixedSize(15,15);
+    seeMoreAvatarIcon->setIconSize(QSize(15,15));
+    seeMoreAvatarIcon->setIcon(QIcon(":/resource/image/bottom.png"));
+    moreAvatarItemBtnHlayout->addWidget(seeMoreAvatarIcon);
 
-    exitGroupChatBtn = new QPushButton(groupChatDetailsScrollContainer);
-    exitGroupChatBtn->setObjectName("exitGroupChatBtn");
-
-    clearChatHistory = new QPushButton(groupChatDetailsScrollContainer);
-    clearChatHistory->setObjectName("clearChatHistory");
-
+    // 在添加一个弹簧 把两个内容挤在一起
+    moreAvatarItemBtnHlayout->addStretch();
 
 
 #if TEST_UI_
-    for(int i =0;i<30;++i){
-        QPushButton *btn = new QPushButton(groupChatDetailsScrollContainer);
-        groupDetailsScrollContainerVlayout->addWidget(btn);
-    }
+    groupContainerMoreAvatarItemBtn->setStyleSheet("background-color: Black;");
+#endif
+
+    // 【保留原布局】
+    groupDetailsScrollContainerVlayout->addWidget(groupContainerMoreAvatarItemBtn);
+
+    // --- 分隔线 ---
+    addSeparator();
+}
+
+// ==========================================
+// 3. 群信息初始化
+// ==========================================
+void GroupChatDetailsPage::initGroupInfo()
+{
+
+
+    // --- 群名称 ---
+    groupNameTag = new QLabel(groupChatDetailsScrollContainer);
+    groupNameTag->setObjectName("groupNameTag");
+    groupNameTag->setText("群名称");
+
+    groupName = new QPushButton(groupChatDetailsScrollContainer);
+    groupName->setObjectName("groupName");
+    groupName->setFixedHeight(40);
+
+
+    // 【严格保留你的布局逻辑】
+    groupDetailsScrollContainerVlayout->addWidget(groupNameTag, 0, Qt::AlignLeft);
+    groupDetailsScrollContainerVlayout->addWidget(groupName);
+
+
+    // --------------------------------------------
+    // 群名称的布局
+    // --------------------------------------------
+    // 创建布局
+    QHBoxLayout* groupNameLayout = new QHBoxLayout(groupName);
+    groupName->setLayout(groupNameLayout);
+    groupNameLayout->setContentsMargins(0,0,0,0);
+    groupNameLayout->setSpacing(5);
+    // 设置左边的文本
+    QLabel* groupNameLabel = new QLabel(groupName);
+    groupNameLayout->addWidget(groupNameLabel,0,Qt::AlignLeft|Qt::AlignVCenter);
+    groupNameLabel->setStyleSheet("font-size:12px;color:#9e9e9e;");
+    groupNameLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    // 穿透
+    groupNameLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+    // 设置右边的修改icon
+    QPushButton *groupNameIcon = new QPushButton(groupName);
+    groupNameIcon->setFixedSize(13,13);
+    groupNameIcon->setIconSize(QSize(12,12));
+    groupNameIcon->setIcon(QIcon(":/resource/image/editName.png"));
+    groupNameLayout->addWidget(groupNameIcon,0,Qt::AlignLeft|Qt::AlignVCenter);
+    groupNameIcon->setStyleSheet("border:none;background: transparent;");
+    groupNameIcon->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+#if TEST_UI
+    groupNameLabel->setText("群名称的内容 - 测试");
 #endif
 
 
+
+    // --- 群公告 ---
+    groupAnnouncementTag = new QLabel(groupChatDetailsScrollContainer);
+    groupAnnouncementTag->setObjectName("groupAnnouncementTag");
+    groupAnnouncementTag->setText("群公告");
+
+
+    groupAnnouncement = new QPushButton(groupChatDetailsScrollContainer);
+    groupAnnouncement->setObjectName("groupAnnouncement");
+    groupAnnouncement->setFixedHeight(40);
+    groupAnnouncement->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+
+    // 【严格保留你的布局逻辑】：左对齐Tag，居中对齐Btn
+    groupDetailsScrollContainerVlayout->addWidget(groupAnnouncementTag, 0, Qt::AlignLeft);
+    groupDetailsScrollContainerVlayout->addWidget(groupAnnouncement);
+
+
+    // --------------------------------------------
+    // 群公告的布局
+    // --------------------------------------------
+    // 创建布局
+    QHBoxLayout* groupAnnouncementLayout = new QHBoxLayout(groupAnnouncement);
+    groupAnnouncement->setLayout(groupAnnouncementLayout);
+    groupAnnouncementLayout->setContentsMargins(0,0,0,0);
+    groupAnnouncementLayout->setSpacing(0);
+    // 设置左边的文本
+    QLabel* announcementLabel = new QLabel(groupAnnouncement);
+    groupAnnouncementLayout->addWidget(announcementLabel,0,Qt::AlignLeft|Qt::AlignVCenter);
+    announcementLabel->setStyleSheet("font-size:12px;color:#9e9e9e;");
+    announcementLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    // 设置右边的更多icon
+    QPushButton *announcementIcon = new QPushButton(groupAnnouncement);
+    announcementIcon->setFixedSize(15,15);
+    announcementIcon->setIconSize(QSize(15,15));
+    announcementIcon->setIcon(QIcon(":/resource/image/more.png"));
+    groupAnnouncementLayout->addWidget(announcementIcon,0,Qt::AlignRight|Qt::AlignVCenter);
+    announcementIcon->setStyleSheet("border:none;background: transparent;");
+
+
+#if TEST_UI
+    announcementLabel->setText("群公告的内容 - 测试");
+#endif
+
+
+    // --- 分隔线 ---
+    addSeparator();
 }
+
+// ==========================================
+// 4. 底部按钮初始化
+// ==========================================
+void GroupChatDetailsPage::initFooter()
+{
+    // --- 清空聊天记录 ---
+    clearChatHistory = new QPushButton(groupChatDetailsScrollContainer);
+    clearChatHistory->setObjectName("clearChatHistory");
+    clearChatHistory->setText("清空聊天记录");
+    groupDetailsScrollContainerVlayout->addWidget(clearChatHistory);
+    clearChatHistory->setFixedHeight(30);
+
+    // --- 分隔线 ---
+    addSeparator();
+
+    // --- 退出群聊 ---
+    exitGroupChatBtn = new QPushButton(groupChatDetailsScrollContainer);
+    exitGroupChatBtn->setObjectName("exitGroupChatBtn");
+    exitGroupChatBtn->setText("退出群聊");
+    exitGroupChatBtn->setFixedHeight(30);
+
+    groupDetailsScrollContainerVlayout->addWidget(exitGroupChatBtn);
+}
+
+// ==========================================
+// 5. 辅助函数：只负责画线
+// ==========================================
+void GroupChatDetailsPage::addSeparator()
+{
+    QFrame *line = new QFrame(groupChatDetailsScrollContainer);
+    line->setFrameShape(QFrame::HLine);
+    line->setStyleSheet("background-color: #EAEAEA; border: none; min-height: 1px; max-height: 1px;");
+    groupDetailsScrollContainerVlayout->addWidget(line);
+}
+
+
 
 void GroupChatDetailsPage::initSignalSlots()
 {
@@ -128,6 +310,36 @@ void GroupChatDetailsPage::initSignalSlots()
     connect(this, &GroupChatDetailsPage::signalAddFriendClicked, this, [=](){
         ChooseFriendWidget *chooseFriendWidget = new ChooseFriendWidget(this);
         chooseFriendWidget->show();
+    });
+
+    connect(groupContainerMoreAvatarItemBtn, &QPushButton::clicked, this, [=](){
+#if TEST_UI
+        LOG()<<"查看更多群友";
+#endif
+    });
+
+    connect(groupName, &QPushButton::clicked, this ,[=](){
+#if TEST_UI
+        LOG()<<"修改群名";
+#endif
+    });
+
+    connect(groupAnnouncement,&QPushButton::clicked, this ,[=](){
+#if TEST_UI
+        LOG()<<"打开群公告";
+#endif
+    });
+
+    connect(clearChatHistory,&QPushButton::clicked, this ,[=](){
+#if TEST_UI
+        LOG()<<"清空聊天记录";
+#endif
+    });
+
+    connect(exitGroupChatBtn,&QPushButton::clicked, this ,[=](){
+#if TEST_UI
+        LOG()<<"退出群聊";
+#endif
     });
 }
 

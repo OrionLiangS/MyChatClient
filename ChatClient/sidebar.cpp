@@ -108,14 +108,16 @@ bool Sidebar::eventFilter(QObject *watched, QEvent *event)
     }
     if(m_isShow && event->type() == QEvent::MouseButtonPress){
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-        // mapToGlobal 确保坐标系一致
         QPoint globalPos = mouseEvent->globalPos();
 
-        // 如果点击点 不在 Sidebar 的矩形范围内
-        // 且 Sidebar 是显示的
-        if (!this->geometry().contains(this->mapFromGlobal(globalPos))) {
+        // 1. 将全局坐标映射为 Sidebar 的内部坐标
+        QPoint localPos = this->mapFromGlobal(globalPos);
+
+        // 2. 使用 rect() (它是 0,0,w,h) 来判断点是否在自身矩形内
+        // if (!this->geometry().contains(...))  <-- 删掉这行
+        if (!this->rect().contains(localPos)) {  // <-- 换成这行
             hideSidebar();
-            return true; // 拦截事件，不让父窗口响应这次点击 (可选)
+            return true;
         }
     }
     return QWidget::eventFilter(watched, event);

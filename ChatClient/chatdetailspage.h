@@ -98,6 +98,17 @@ protected:
     // void paintEvent(QPaintEvent *event) override;
 
 private:
+    // --- 纯净重构：只拆分，不改逻辑 ---
+    void initBaseLayout();      // 初始化最外层 + 搜索框 + 滚动区
+    void initAvatarArea();      // 初始化头像网格 + 查看更多
+    void initGroupInfo();       // 初始化群公告、群名称
+    void initFooter();          // 初始化底部按钮
+
+    // 辅助函数：只用来加那条横线
+    void addSeparator();
+
+
+private:
     /**
      * @brief 初始化信号槽连接
      * @details 连接内部 UI 控件的信号到外部业务逻辑，或处理界面交互逻辑。
@@ -157,12 +168,6 @@ private:
      * @details 以 4列 x N行 的方式展示群成员头像。
      */
     QGridLayout* groupContainerAvatarItemLayout;
-
-    /**
-     * @brief “查看更多群成员”按钮的容器
-     * @details 用于控制按钮的布局位置（如居中或填充）。
-     */
-    QWidget *ContainerMoreAvatarItemBtnWidget;
 
     /**
      * @brief “查看更多群成员”按钮
