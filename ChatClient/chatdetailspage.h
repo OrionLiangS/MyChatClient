@@ -2,23 +2,20 @@
 #define CHATDETAILSPAGE_H
 
 #include <QObject>
-
 #include <QWidget>
-
 #include <QPushButton>
-
 #include <QLabel>
-
 #include "floatingscrollarea.h"
-
 #include <QLineEdit>
-
 #include <QVBoxLayout>
+#include "toolswidget.h"
+#include "infowidget.h"
+
 
 /**
  * @brief The ChatDetailType enum
  * @details
- * - 用于判断当前聊天为单聊还是群聊
+ * 枚举会话类型，用于工厂模式创建不同的详情页
  */
 enum ChatDetailType {
     CHAT_DETAIL_PRIVATE, // 私聊/单聊
@@ -27,59 +24,74 @@ enum ChatDetailType {
 
 
 /**
- * @brief The AvatarItem class
+ * @class AvatarItem
+ * @brief 会话详情页中的单个头像组件
  * @details
- * 会话详情页中的单个标签
- * - 标签包括一个头像与一个Label显示NikeName
+ * 包含一个圆角头像按钮 (QPushButton) 和下方显示的昵称 (QLabel)。
+ * 支持自动文字截断 (Elide) 显示。
  */
 class AvatarItem : public QWidget{
-
     Q_OBJECT
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父对象
+     * @param name 显示的昵称
+     * @param avatarIcon 头像图标
+     */
     explicit AvatarItem(QWidget *parent = nullptr, const QString& name = "",const QIcon& avatarIcon = QIcon());
-    void setAvatarObjectName(const QString &objectName);
-signals:
-    void clicked();
-protected:
 
-    QPushButton *avatarBtn;
-    QLabel *nameLabel;
+    /**
+     * @brief 设置内部头像按钮的 ObjectName
+     * @param objectName QSS 样式 ID
+     * @details 主要用于区分普通成员头像与特殊的 [添加]/[移除] 按钮
+     */
+    void setAvatarObjectName(const QString &objectName);
+
+signals:
+    /** @brief 头像被点击时触发 */
+    void clicked();
+
+protected:
+    QPushButton *avatarBtn; ///< 头像按钮
+    QLabel *nameLabel;      ///< 昵称标签
 };
 
 
-
 /**
- * @brief The ChatDetailsPage class
+ * @class ChatDetailsPage
+ * @brief 会话详情页的基类
+ * @details 提供工厂方法用于创建具体的详情页实例。
  */
 class ChatDetailsPage : public QWidget{
     Q_OBJECT
 public:
-
     /**
-     * @brief createChatDetailsPage ChatDetailsPage的工厂函数
-     * @param type 会话类型
-     * @param parent 会话详情的父对象
-     * @return 返回指向子类对象的父类指针
+     * @brief 工厂函数: 创建会话详情页
+     * @param type 会话类型 (群聊/私聊)
+     * @param parent 父对象
+     * @return ChatDetailsPage* 指向具体子类的指针
      */
     static ChatDetailsPage* createChatDetailsPage(ChatDetailType type, QWidget *parent=nullptr);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-
     ChatDetailsPage(QWidget *parent = nullptr);
-
-
 private:
 };
 
 
 /**
  * @class GroupChatDetailsPage
- * @brief 群聊详情页 UI 类
+ * @brief 群聊详情页 UI 实现类
  * @details
- * 该类负责展示群聊的详细信息，包括成员列表、群公告、群名称以及管理功能。
- * 界面采用垂直布局，顶部为搜索框，下方为可滚动的详情区域。
- * 滚动区域内部分为：头像网格 -> 更多按钮 -> 功能菜单 -> 底部操作。
+ * 负责展示群成员列表、群公告、群名称及管理功能。
+ * 布局结构：
+ * - 顶部：搜索框
+ * - 中间：可滚动区域 (FloatingScrollArea)
+ * - 头像网格 (Grid Layout)
+ * - 群信息 (公告/名称)
+ * - 底部按钮 (清空/退出)
  *
  * @inherits ChatDetailsPage
  */
@@ -89,151 +101,96 @@ class GroupChatDetailsPage : public ChatDetailsPage
 public:
     /**
      * @brief 构造函数
-     * @param parent 父窗口指针 (默认为 nullptr)
+     * @param parent 父窗口指针
      */
     explicit GroupChatDetailsPage(QWidget *parent = nullptr);
 
+    /**
+     * @brief 向网格中追加一个群成员
+     * @param userId 用户ID
+     * @param name 显示名称
+     * @param avatar 头像图标
+     * @details 自动计算 Grid 行列位置并添加到末尾
+     */
+    void addMemberItem(const QString& userId, const QString& name, const QIcon& avatar);
+
 protected:
-    // 如果后续需要自定义绘制背景，可重写此函数
     // void paintEvent(QPaintEvent *event) override;
 
 private:
-    // --- 纯净重构：只拆分，不改逻辑 ---
-    void initBaseLayout();      // 初始化最外层 + 搜索框 + 滚动区
-    void initAvatarArea();      // 初始化头像网格 + 查看更多
-    void initGroupInfo();       // 初始化群公告、群名称
-    void initFooter();          // 初始化底部按钮
+    // --- 界面初始化模块 ---
+    void initBaseLayout();      ///< 初始化整体垂直布局、搜索框及滚动区容器
+    void initAvatarArea();      ///< 初始化头像网格、预置加减号按钮
+    void initGroupInfo();       ///< 初始化群公告、群名称显示区域
+    void initFooter();          ///< 初始化底部功能按钮 (清空/退出)
+    void addSeparator();        ///< 辅助函数：添加灰色横向分割线
+    void initConfirmModifygroupName(); ///< 初始化修改群名确认弹窗
 
-    // 辅助函数：只用来加那条横线
-    void addSeparator();
-
-
-private:
     /**
      * @brief 初始化信号槽连接
-     * @details 连接内部 UI 控件的信号到外部业务逻辑，或处理界面交互逻辑。
      */
     void initSignalSlots();
 
     // ============================================================
     //  UI 成员变量 - 基础框架
     // ============================================================
-
-    /**
-     * @brief 界面主布局管理器
-     * @details 垂直布局，管理顶部的搜索框和下方的滚动区域。
-     */
-    QVBoxLayout* groupChatVlayout;
-
-    /**
-     * @brief 顶部群成员搜索框
-     * @details 固定在顶部，不随下方内容滚动。用于过滤群成员列表。
-     */
-    QLineEdit *groupChatSearch;
-
-    /**
-     * @brief 自定义浮动滚动区域
-     * @details 占据主界面的剩余空间，用于承载过长的详情内容。
-     */
-    FloatingScrollArea *groupChatScroll;
+    QVBoxLayout* groupChatVlayout;              ///< 主布局
+    QLineEdit *groupChatSearch;                 ///< 顶部搜索框
+    FloatingScrollArea *groupChatScroll;        ///< 自定义滚动区域
 
     // ============================================================
-    //  UI 成员变量 - 滚动容器
+    //  UI 成员变量 - 滚动容器内部
     // ============================================================
-
-    /**
-     * @brief 滚动内容的实际容器 Widget
-     * @details 这是 ScrollArea 的 setWidget() 对象，所有可滚动内容都添加在这个 Widget 上。
-     */
-    QWidget *groupChatDetailsScrollContainer;
-
-    /**
-     * @brief 滚动容器的垂直布局
-     * @details 负责从上到下排列：头像区域、功能菜单、退出按钮等。
-     */
-    QVBoxLayout *groupDetailsScrollContainerVlayout;
+    QWidget *groupChatDetailsScrollContainer;       ///< 滚动内容的实体 Widget
+    QVBoxLayout *groupDetailsScrollContainerVlayout;///< 滚动内容的垂直布局
 
     // ============================================================
     //  UI 成员变量 - 群成员模块
     // ============================================================
-
-    /**
-     * @brief 头像网格的容器 Widget
-     * @details 包裹 Grid Layout，用于统一管理头像区域的边距或背景。
-     */
-    QWidget* groupContainerAvatarItemWidget;
-
-    /**
-     * @brief 群成员头像网格布局
-     * @details 以 4列 x N行 的方式展示群成员头像。
-     */
-    QGridLayout* groupContainerAvatarItemLayout;
-
-    /**
-     * @brief “查看更多群成员”按钮
-     * @details 点击后可展开全部成员或跳转至独立的成员列表窗口。
-     */
-    QPushButton *groupContainerMoreAvatarItemBtn;
+    QWidget* groupContainerAvatarItemWidget;        ///< 头像网格的容器
+    QGridLayout* groupContainerAvatarItemLayout;    ///< 4列网格布局管理器
+    QPushButton *groupContainerMoreAvatarItemBtn;   ///< (已废弃) 查看更多按钮
 
     // ============================================================
-    //  UI 成员变量 - 功能菜单模块
+    //  UI 成员变量 - 群信息模块
     // ============================================================
+    QLabel *groupAnnouncementTag;   ///< "群公告" 标签
+    QPushButton* groupAnnouncement; ///< 群公告内容按钮
+    QLabel* groupNameTag;           ///< "群名称" 标签
+    QPushButton* groupName;         ///< 群名称显示按钮
+    LineEditFocus* groupNameEdit;   ///< 群名称编辑框 (Focus 增强版)
+    QLabel* groupNameLabel;         ///< 显示群名称的 Label (位于 Button 内部)
 
-    /** @brief “群公告”左侧标题标签 */
-    QLabel *groupAnnouncementTag;
-
-    /** @brief “群公告”右侧点击区域/内容显示按钮 */
-    QPushButton* groupAnnouncement;
-
-    /** @brief “群名称”左侧标题标签 */
-    QLabel* groupNameTag;
-
-    /** @brief “群名称”右侧点击区域/内容显示按钮 */
-    QPushButton* groupName;
-
-    /**
-     * @brief 清空聊天记录按钮
-     * @details 通常显示为红色文字，用于删除本地存储的消息记录。
-     */
-    QPushButton *clearChatHistory;
+    // --- 修改名称相关 ---
+    InfoWidget* confirmModifyGroupName; ///< 修改名称确认弹窗
+    QPushButton *acceptModifyNameBtn;   ///< 弹窗确认按钮
+    QPushButton *cancelModifyNameBtn;   ///< 弹窗取消按钮
 
     // ============================================================
     //  UI 成员变量 - 底部操作
     // ============================================================
-
-    /**
-     * @brief 退出/解散群聊按钮
-     * @details 位于页面最底部，执行退出群聊或解散群聊（如果是群主）的操作。
-     */
-    QPushButton* exitGroupChatBtn;
+    QPushButton *clearChatHistory;  ///< 清空聊天记录按钮
+    QPushButton* exitGroupChatBtn;  ///< 退出群聊按钮
 
 signals:
-    /**
-     * @brief 点击了“添加成员”按钮 [+]
-     * @details 触发选人窗口以邀请新成员。
-     */
+    /** @brief 点击了“添加成员”按钮 [+] */
     void signalAddFriendClicked();
 
-    /**
-     * @brief 点击了“移除成员”按钮 [-]
-     * @details 触发踢人模式或选人窗口以移除成员。
-     */
+    /** @brief 点击了“移除成员”按钮 [-] */
     void signalRemoveFriendClicked();
 
     /**
      * @brief 请求查看用户详情
-     * @param userId 被点击用户的唯一标识 ID
-     * @details 当点击群成员头像时触发。
+     * @param userId 被点击用户的ID
      */
     void signalShowUserDetail(const QString& userId);
 };
 
 
-
 /**
- * @brief The SessionDetailsPage class
- * @details
- * 单聊会话容器 - 需要部署至抽屉sidebar中
+ * @class PrivateChatDetailsPage
+ * @brief 单聊详情页 (占位)
+ * @details 目前尚未实现具体逻辑，用于单聊场景的侧边栏展示
  */
 class PrivateChatDetailsPage : public ChatDetailsPage
 {
@@ -241,16 +198,13 @@ class PrivateChatDetailsPage : public ChatDetailsPage
 public:
     explicit PrivateChatDetailsPage(QWidget *parent = nullptr);
 
-protected:
-
 private:
-    void initSignalSlots();     ///< 初始化信号槽
+    void initSignalSlots();
 
 signals:
-    void signalAddFriendClicked();              // 添加群聊中的好友
-    void signalRemoveFriendClicked();           // 删除群聊中的好友
-    void signalShowUserDetail(const QString& userId); // 想要看某人详情
+    void signalAddFriendClicked();
+    void signalRemoveFriendClicked();
+    void signalShowUserDetail(const QString& userId);
 };
-
 
 #endif // CHATDETAILSPAGE_H

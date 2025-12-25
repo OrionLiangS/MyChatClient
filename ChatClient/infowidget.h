@@ -16,6 +16,8 @@ public:
     bool event(QEvent *event)override;
     void showEvent(QShowEvent *event) override; // 新增声明
 
+    QFrame* getFrame();
+
 protected:
     QFrame* mainFrame;
     bool m_isModal;
