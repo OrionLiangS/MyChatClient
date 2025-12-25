@@ -6,9 +6,65 @@
 
 #include "infowidget.h"
 
+// InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(isModal) {
+
+
+
+//     this->setObjectName("selfInfoWidget");
+//     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+//     this->setAttribute(Qt::WA_TranslucentBackground);
+
+//     // =========================================
+//     // 0. 基础窗口属性设置
+//     // =========================================
+
+//     // 模态状态
+//     if(m_isModal){
+//         this->setWindowModality(Qt::ApplicationModal); // 设置模态属性
+//         this->setFixedSize(667,533);
+
+//         if(parent){
+//             QWidget* topLevel = parent->window();
+//             QPoint parentGlobalPos = topLevel->mapToGlobal(QPoint(0, 0));
+//             int xOffset = (topLevel->width() - this->width())/2;
+//             int yOffset = (topLevel->height() - this->height())/2;
+//             this->move(parentGlobalPos.x() + xOffset, parentGlobalPos.y() + yOffset);
+//         }
+//     }
+//     else{
+
+//         this->setAttribute(Qt::WA_DeleteOnClose);
+//         this->setFixedSize(320, 360);
+//         this->move(QCursor::pos()); ///< 可进行重写为头像右侧, 改基类即可
+//     }
+
+//     // =========================================
+//     // 1. 创建内部容器与特效
+//     // =========================================
+//     mainFrame = new QFrame(this);
+//     mainFrame->setObjectName("mainFrame");
+//     mainFrame->setStyleSheet(
+//         "#mainFrame {"
+//         "   background-color: #FFFFFF;"
+//         "   border-radius: 10px;"
+//         "}"
+//         );
+
+//     QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(this);
+//     shadow->setOffset(0, 0);
+//     shadow->setColor(QColor(0, 0, 0, 80));
+//     shadow->setBlurRadius(20);
+//     mainFrame->setGraphicsEffect(shadow);
+
+//     QVBoxLayout* globalLayout = new QVBoxLayout(this);
+//     globalLayout->setContentsMargins(20, 20, 20, 20);
+//     globalLayout->addWidget(mainFrame);
+
+
+// }
+
+// [infowidget.cpp] 构造函数修改版
 InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(isModal) {
-
-
 
     this->setObjectName("selfInfoWidget");
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
@@ -23,19 +79,13 @@ InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(i
         this->setWindowModality(Qt::ApplicationModal); // 设置模态属性
         this->setFixedSize(667,533);
 
-        if(parent){
-            QWidget* topLevel = parent->window();
-            QPoint parentGlobalPos = topLevel->mapToGlobal(QPoint(0, 0));
-            int xOffset = (topLevel->width() - this->width())/2;
-            int yOffset = (topLevel->height() - this->height())/2;
-            this->move(parentGlobalPos.x() + xOffset, parentGlobalPos.y() + yOffset);
-        }
+        // 【注意】把原来这里写的 if(parent) { ... this->move(...) } 代码全部删掉！
+        // 构造的时候父窗口可能还没准备好，不要在这里计算位置。
     }
     else{
-
         this->setAttribute(Qt::WA_DeleteOnClose);
         this->setFixedSize(320, 360);
-        this->move(QCursor::pos()); ///< 可进行重写为头像右侧, 改基类即可
+        this->move(QCursor::pos());
     }
 
     // =========================================
@@ -59,9 +109,8 @@ InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(i
     QVBoxLayout* globalLayout = new QVBoxLayout(this);
     globalLayout->setContentsMargins(20, 20, 20, 20);
     globalLayout->addWidget(mainFrame);
-
-
 }
+
 
 bool InfoWidget::event(QEvent *event)
 {
@@ -81,12 +130,46 @@ bool InfoWidget::event(QEvent *event)
     return QDialog::event(event);
 }
 
+// void InfoWidget::showEvent(QShowEvent *event)
+// {
+//     // 调用父类默认行为
+//     QDialog::showEvent(event);
+
+//     // 显示时立即激活窗口
+//     this->activateWindow();
+//     this->setFocus();
+// }
+
+
+// [infowidget.cpp] showEvent 修改版
 void InfoWidget::showEvent(QShowEvent *event)
 {
-    // 调用父类默认行为
+    // 1. 核心逻辑：在显示的一瞬间计算居中
+    if (m_isModal && this->parentWidget()) {
+        // 获取最顶层的父窗口（通常是 MainWidget）
+        QWidget* topLevel = this->parentWidget()->window();
+
+        if (topLevel) {
+            // 获取父窗口在屏幕上的绝对位置
+            QPoint parentGlobalPos = topLevel->mapToGlobal(QPoint(0, 0));
+
+            // 计算居中坐标：父窗口位置 + (父宽-子宽)/2
+            int xOffset = (topLevel->width() - this->width()) / 2;
+            int yOffset = (topLevel->height() - this->height()) / 2;
+
+            this->move(parentGlobalPos.x() + xOffset, parentGlobalPos.y() + yOffset);
+        }
+    }
+
+    // 2. 必须调用父类的 showEvent，否则窗口可能无法正常显示
     QDialog::showEvent(event);
 
-    // 显示时立即激活窗口
+    // 3. 激活窗口并获得焦点
     this->activateWindow();
     this->setFocus();
+}
+
+QFrame *InfoWidget::getFrame()
+{
+    return mainFrame;
 }
