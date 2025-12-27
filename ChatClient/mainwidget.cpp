@@ -370,7 +370,7 @@ void MainWidget::initRightWindow()
 #if TEST_GROUP_CHAT
     type = CHAT_DETAIL_GROUP;
 #elif TEST_PRIVATE_CHAT
-    type = CHAT_PRIVATE_GROUP;
+    type = CHAT_DETAIL_PRIVATE;
 #endif
     chatDetailsPage = ChatDetailsPage::createChatDetailsPage(type);
     sidebar->setContent(chatDetailsPage);

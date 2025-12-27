@@ -13,13 +13,13 @@
 
 
 /**
- * @brief The ChatDetailType enum
- * @details
- * 枚举会话类型，用于工厂模式创建不同的详情页
+ * @enum ChatDetailType
+ * @brief 会话类型枚举
+ * @details 用于工厂模式中区分创建单聊还是群聊的详情页。
  */
 enum ChatDetailType {
-    CHAT_DETAIL_PRIVATE, // 私聊/单聊
-    CHAT_DETAIL_GROUP    // 群聊
+    CHAT_DETAIL_PRIVATE, ///< 私聊/单聊模式
+    CHAT_DETAIL_GROUP    ///< 群聊模式
 };
 
 
@@ -27,8 +27,9 @@ enum ChatDetailType {
  * @class AvatarItem
  * @brief 会话详情页中的单个头像组件
  * @details
- * 包含一个圆角头像按钮 (QPushButton) 和下方显示的昵称 (QLabel)。
- * 支持自动文字截断 (Elide) 显示。
+ * 该组件由一个圆形头像按钮 (QPushButton) 和下方的昵称标签 (QLabel) 组成。
+ * - 支持设置特定 ObjectName 以应用不同的 QSS 样式（如添加/移除按钮）。
+ * - 昵称过长时会自动进行省略处理。
  */
 class AvatarItem : public QWidget{
     Q_OBJECT
@@ -37,19 +38,19 @@ public:
      * @brief 构造函数
      * @param parent 父对象
      * @param name 显示的昵称
-     * @param avatarIcon 头像图标
+     * @param avatarIcon 头像图标资源
      */
     explicit AvatarItem(QWidget *parent = nullptr, const QString& name = "",const QIcon& avatarIcon = QIcon());
 
     /**
      * @brief 设置内部头像按钮的 ObjectName
      * @param objectName QSS 样式 ID
-     * @details 主要用于区分普通成员头像与特殊的 [添加]/[移除] 按钮
+     * @details 主要用于区分普通成员头像与特殊的 [添加]/[移除] 按钮，以便在 QSS 中加载不同的背景图。
      */
     void setAvatarObjectName(const QString &objectName);
 
 signals:
-    /** @brief 头像被点击时触发 */
+    /** @brief 当点击头像区域（按钮）时触发此信号 */
     void clicked();
 
 protected:
@@ -60,8 +61,8 @@ protected:
 
 /**
  * @class ChatDetailsPage
- * @brief 会话详情页的基类
- * @details 提供工厂方法用于创建具体的详情页实例。
+ * @brief 会话详情页基类 (抽象工厂)
+ * @details 定义了详情页的基本接口，并提供工厂方法用于创建具体页面。
  */
 class ChatDetailsPage : public QWidget{
     Q_OBJECT
@@ -70,7 +71,7 @@ public:
      * @brief 工厂函数: 创建会话详情页
      * @param type 会话类型 (群聊/私聊)
      * @param parent 父对象
-     * @return ChatDetailsPage* 指向具体子类的指针
+     * @return ChatDetailsPage* 指向具体子类对象的指针
      */
     static ChatDetailsPage* createChatDetailsPage(ChatDetailType type, QWidget *parent=nullptr);
 
@@ -83,15 +84,16 @@ private:
 
 /**
  * @class GroupChatDetailsPage
- * @brief 群聊详情页 UI 实现类
+ * @brief 群聊详情页 UI 类
  * @details
- * 负责展示群成员列表、群公告、群名称及管理功能。
- * 布局结构：
- * - 顶部：搜索框
- * - 中间：可滚动区域 (FloatingScrollArea)
- * - 头像网格 (Grid Layout)
- * - 群信息 (公告/名称)
- * - 底部按钮 (清空/退出)
+ * 负责展示群聊的详细信息和管理功能。
+ *
+ * **布局结构：**
+ * - **顶部**：群成员搜索框。
+ * - **中间 (滚动区)**：
+ * - 头像网格 (Grid Layout, 4列)。
+ * - 群信息栏 (群名称、群公告)。
+ * - **底部**：功能按钮 (清空记录、退出群聊)。
  *
  * @inherits ChatDetailsPage
  */
@@ -110,7 +112,7 @@ public:
      * @param userId 用户ID
      * @param name 显示名称
      * @param avatar 头像图标
-     * @details 自动计算 Grid 行列位置并添加到末尾
+     * @details 内部自动根据当前成员数量计算 Grid 的行列坐标。
      */
     void addMemberItem(const QString& userId, const QString& name, const QIcon& avatar);
 
@@ -189,21 +191,61 @@ signals:
 
 /**
  * @class PrivateChatDetailsPage
- * @brief 单聊详情页 (占位)
- * @details 目前尚未实现具体逻辑，用于单聊场景的侧边栏展示
+ * @brief 单聊详情页 UI 类
+ * @details
+ * 展示单聊对象的详细信息及操作。
+ *
+ * **布局结构：**
+ * - **头部**：横向展示对方头像及添加按钮。
+ * - **中间**：功能入口 (查找聊天记录)。
+ * - **底部**：管理操作 (清空记录、删除好友)。
+ *
+ * @inherits ChatDetailsPage
  */
 class PrivateChatDetailsPage : public ChatDetailsPage
 {
     Q_OBJECT
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父窗口指针
+     */
     explicit PrivateChatDetailsPage(QWidget *parent = nullptr);
 
 private:
+    /** @brief 初始化信号槽连接 */
     void initSignalSlots();
 
+    // --- 界面初始化模块 ---
+    void initBaseLayout();      ///< 初始化最外层垂直布局
+    void initAvatarArea();      ///< 初始化顶部头像区域 (横向布局)
+    void initFindHistoryBtn();  ///< 初始化“查找聊天记录”按钮
+    void initFooter();          ///< 初始化底部按钮 (清空/删除)
+    void addSeparator();        ///< 辅助函数：添加灰色横向分割线
+
+private:
+    // ============================================================
+    //  UI 成员变量
+    // ============================================================
+    QVBoxLayout *privateChatVlayout;        ///< 页面主垂直布局
+
+    // --- 头像区域 ---
+    QWidget *privateChatAvatarWidget;       ///< 头像区域容器
+    QHBoxLayout* privateChatAvatarHlayout;  ///< 头像区域横向布局
+
+    // --- 功能按钮 ---
+    QPushButton *privateChatFindHistory;    ///< [查找聊天记录] 按钮
+    QPushButton *clearChatHistory;          ///< [清空聊天记录] 按钮
+    QPushButton *privateDeleteFriend;       ///< [删除好友] 按钮
+
 signals:
+    /** @brief 点击了 [添加] 按钮，触发选人窗口 */
     void signalAddFriendClicked();
+
+    /** @brief 点击了 [删除好友] 按钮 (预留信号) */
     void signalRemoveFriendClicked();
+
+    /** @brief 请求查看用户详情 */
     void signalShowUserDetail(const QString& userId);
 };
 

@@ -191,6 +191,7 @@ void GroupChatDetailsPage::initAvatarArea()
     AvatarItem* removeBtn = new AvatarItem(groupContainerAvatarItemWidget, "移除", QIcon());
     removeBtn->setAvatarObjectName("detailsPageRemoveFriendBtn"); // 设置特殊样式ID
     connect(removeBtn, &AvatarItem::clicked, this, &GroupChatDetailsPage::signalRemoveFriendClicked);
+    removeBtn->setHidden(true);
 
     // 强制放在 (0, 1)
     groupContainerAvatarItemLayout->addWidget(removeBtn, 0, 1);
@@ -557,15 +558,200 @@ void ChatDetailsPage::paintEvent(QPaintEvent *event)
 ChatDetailsPage::ChatDetailsPage(QWidget *parent)
     :QWidget(parent)
 {
-
 }
 
+// ##############################################################################
+//                           PrivateChatDetailsPage
+//                      单聊详情页 - 核心逻辑实现
+// ##############################################################################
+
+// ==============================================================================
+//  构造函数
+// ==============================================================================
 PrivateChatDetailsPage::PrivateChatDetailsPage(QWidget *parent)
 {
-#if TEST_PRIVATE_CHAT
-#endif
+    // -------------------------------------------------------
+    // 1. 最外层布局初始化
+    // -------------------------------------------------------
+    initBaseLayout();
+
+    // -------------------------------------------------------
+    // 2. 头像区域初始化
+    //    (横向布局: 对方头像 + 添加按钮)
+    // -------------------------------------------------------
+    initAvatarArea();
+
+    // -------------------------------------------------------
+    // 3. 初始化"查找聊天记录"按钮
+    // -------------------------------------------------------
+    initFindHistoryBtn();
+
+    // -------------------------------------------------------
+    // 4. 初始化底部功能区
+    //    (清空聊天记录 / 删除好友)
+    // -------------------------------------------------------
+    initFooter();
+
+    // -------------------------------------------------------
+    // 5. 初始化信号槽
+    // -------------------------------------------------------
+    initSignalSlots();
+
+    // 最后加弹簧 (顶起上方内容)
+    privateChatVlayout->addStretch();
 }
 
+// ==============================================================================
+//  信号槽初始化
+// ==============================================================================
 void PrivateChatDetailsPage::initSignalSlots()
 {
+    // 1. 添加好友
+    connect(this, &PrivateChatDetailsPage::signalAddFriendClicked, this, [=](){
+        ChooseFriendWidget *chooseFriendWidget = new ChooseFriendWidget(this);
+        chooseFriendWidget->exec();
+    });
+
+    // 2. 查找聊天记录
+    connect(privateChatFindHistory, &QPushButton::clicked, this, [=](){
+#if TEST_UI
+        LOG()<<"查找聊天记录";
+#endif
+    });
+
+    // 3. 清空聊天记录
+    connect(clearChatHistory, &QPushButton::clicked, this, [=](){
+#if TEST_UI
+        LOG()<<"清空聊天记录";
+#endif
+    });
+
+    // 4. 删除好友
+    connect(privateDeleteFriend, &QPushButton::clicked, this, [=](){
+#if TEST_UI
+        LOG()<<"删除好友";
+#endif
+    });
+}
+
+// ==============================================================================
+//  UI 初始化: 头像区域 (横向布局)
+// ==============================================================================
+void PrivateChatDetailsPage::initAvatarArea()
+{
+    privateChatAvatarWidget = new QWidget(this);
+    privateChatVlayout->addWidget(privateChatAvatarWidget);
+    privateChatAvatarWidget->setFixedHeight(70);
+#if TEST_UI
+    // privateChatAvatarWidget->setStyleSheet("background-color: red;");
+#endif
+
+    // 内部使用横向布局
+    privateChatAvatarHlayout = new QHBoxLayout(privateChatAvatarWidget);
+    privateChatAvatarWidget->setLayout(privateChatAvatarHlayout);
+    privateChatAvatarHlayout->setAlignment(Qt::AlignLeft);
+    privateChatAvatarHlayout->setSpacing(0);
+    privateChatAvatarHlayout->setContentsMargins(0,0,0,0);
+
+    // --- 添加固定按钮 [+] ---
+    AvatarItem* addBtn = new AvatarItem(privateChatAvatarWidget, "添加", QIcon());
+    addBtn->setAvatarObjectName("detailsPageAddFriendBtn"); // 设置特殊样式ID
+    connect(addBtn, &AvatarItem::clicked, this, &PrivateChatDetailsPage::signalAddFriendClicked);
+    privateChatAvatarHlayout->addWidget(addBtn);
+
+    // --- [测试用] 添加当前用户头像 ---
+#if TEST_UI
+    // AvatarItem::AvatarItem(QWidget *parent, const QString& name,const QIcon& avatarIcon): QWidget{parent}
+    AvatarItem *curUser = new AvatarItem(privateChatAvatarWidget, "测试用户数据", QIcon(":/resource/image/defaultAvatar.png"));
+    privateChatAvatarHlayout->addWidget(curUser);
+#endif
+
+    addSeparator();
+}
+
+// ==============================================================================
+//  UI 初始化: 基础布局
+// ==============================================================================
+void PrivateChatDetailsPage::initBaseLayout()
+{
+    privateChatVlayout = new QVBoxLayout(this);
+    // 设置布局
+    this->setLayout(privateChatVlayout);
+    // 初始化布局参数
+    privateChatVlayout->setSpacing(10);
+    privateChatVlayout->setContentsMargins(20,10,20,150);
+}
+
+// ==============================================================================
+//  辅助函数: 添加分割线
+// ==============================================================================
+void PrivateChatDetailsPage::addSeparator()
+{
+    QFrame *line = new QFrame(this);
+    line->setFrameShape(QFrame::HLine);
+    line->setStyleSheet("background-color: #EAEAEA; border: none; min-height: 1px; max-height: 1px;");
+    privateChatVlayout->addWidget(line);
+}
+
+// ==============================================================================
+//  UI 初始化: 查找聊天记录按钮
+// ==============================================================================
+void PrivateChatDetailsPage::initFindHistoryBtn()
+{
+    privateChatFindHistory = new QPushButton(this);
+    privateChatFindHistory->setFixedHeight(35);
+    privateChatFindHistory->setObjectName("privateChatFindHistory");
+#if TEST_UI
+    // privateChatFindHistory->setStyleSheet("background-color:red;");
+#endif
+    privateChatVlayout->addWidget(privateChatFindHistory);
+
+    // 内部布局: 左侧文本 + 右侧图标
+    QHBoxLayout *findHistoryLayout = new QHBoxLayout(privateChatFindHistory);
+    privateChatFindHistory->setLayout(findHistoryLayout);
+    findHistoryLayout->setSpacing(0);
+    findHistoryLayout->setContentsMargins(0,0,0,0);
+
+    QLabel *historyLabel = new QLabel(privateChatFindHistory);
+
+    QPushButton *historyMoreIcon = new QPushButton(privateChatFindHistory);
+    findHistoryLayout->addWidget(historyLabel, 0, Qt::AlignLeft);
+    findHistoryLayout->addWidget(historyMoreIcon, 0, Qt::AlignRight);
+
+    historyLabel->setText("查找聊天记录");
+    historyLabel->setStyleSheet("font-size: 12px;");
+
+    historyMoreIcon->setFixedSize(15,15);
+    historyMoreIcon->setIconSize(QSize(15,15));
+    historyMoreIcon->setIcon(QIcon(":/resource/image/more.png"));
+    historyMoreIcon->setStyleSheet("border:none;background: transparent;");
+
+#if TEST_UI
+#endif
+
+    addSeparator();
+}
+
+// ==============================================================================
+//  UI 初始化: 底部操作按钮
+// ==============================================================================
+void PrivateChatDetailsPage::initFooter()
+{
+    // --- 1. 清空聊天记录 ---
+    clearChatHistory = new QPushButton(this);
+    clearChatHistory->setObjectName("clearChatHistory");
+    clearChatHistory->setText("清空聊天记录");
+    privateChatVlayout->addWidget(clearChatHistory);
+    clearChatHistory->setFixedHeight(30);
+
+    // --- 分隔线 ---
+    addSeparator();
+
+    // --- 2. 删除好友 (最底部) ---
+    privateDeleteFriend = new QPushButton(this);
+    privateDeleteFriend->setObjectName("privateDeleteFriend");
+    privateDeleteFriend->setText("删除好友");
+    privateDeleteFriend->setFixedHeight(30);
+
+    privateChatVlayout->addWidget(privateDeleteFriend);
 }
