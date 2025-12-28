@@ -32,5 +32,7 @@
         <file>resource/image/more.png</file>
         <file>resource/image/up.png</file>
         <file>resource/image/editName.png</file>
+        <file>resource/image/searchIcon.png</file>
+        <file>resource/image/search.svg</file>
     </qresource>
 </RCC>

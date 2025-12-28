@@ -6,6 +6,8 @@
 
 #include "infowidget.h"
 
+#include <QMouseEvent>
+
 // InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(isModal) {
 
 
@@ -172,4 +174,10 @@ void InfoWidget::showEvent(QShowEvent *event)
 QFrame *InfoWidget::getFrame()
 {
     return mainFrame;
+}
+
+void InfoWidget::mousePressEvent(QMouseEvent *event)
+{
+    this->setFocus();
+    QDialog::mousePressEvent(event);
 }

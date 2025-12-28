@@ -18,6 +18,8 @@
 
 #include "chatdetailspage.h"
 
+#include "addfrienddialog.h"
+
 /**
  * @brief MainWidget::instance 单例实例
  */
@@ -401,7 +403,11 @@ void MainWidget::initSignalSlots()
         // tempWidget->setStyleSheet("background-color: red;");
         // sidebar->setContent(tempWidget);
 #endif
+    });
 
+    connect(addFriendBtn, &QPushButton::clicked, this, [=](){
+        AddFriendDialog* addFriendDialog = new AddFriendDialog(this);
+        addFriendDialog->exec();
     });
 }
 

@@ -2,7 +2,7 @@
    全局样式
    ======================================================== */
 QWidget {
-    font-family: "Microsoft YaHei"; /* 全局字体: 微软雅黑 */
+    font-family: "思源黑体"; /* 全局字体: 思源黑体 */
     font-size: 14px;                /* 全局字号 */
 }
 
@@ -90,7 +90,7 @@ QLineEdit#searchEdit {
     border-radius: 5px;
     background-color: #EAEAEA; /* 输入框底色偏灰 */
     font-size: 12px;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
     font-weight: 2px;
 }
 
@@ -488,14 +488,14 @@ QLabel#userInfoTel{
     background: transparent;
     font-size: 13px;
     color:#9e9e9e;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
 
 }
 
 QLabel#userInfoNikeName{
     font-size: 15px;
     font-weight: auto;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
 }
 
 QPushButton#userInfoAvatar{
@@ -735,14 +735,14 @@ background-color: #e5e5e5;
 
 QLabel#selectedContTitleTag{
     border: none;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
     font-weight: auto;
 }
 
 QLabel#selectedContNumLabel{
     border: none;
     font-size: 12px;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
     color: #9e9e9e;
     font-weight: auto;
 }
@@ -780,7 +780,7 @@ QLineEdit#groupChatSearch{
     background-color: #f2f2f2;
     border-radius: 5px;
     font-size: 12px;
-    font-family: "微软雅黑";
+    font-family: "思源黑体";
 }
 
 
@@ -908,3 +908,54 @@ QPushButton#privateChatFindHistory{
     background-color: #9e9e9e;
     border: none;
 }   */
+
+
+QWidget#addFriendTitleWidget{
+    border: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    /*test*/
+    /* background-color: red; */
+}
+
+QPushButton#closeAddFriendBtn{
+    border: none;
+    border-top-right-radius: 10px;
+    background: transparent;
+    font-size: 20px;
+    color: #757575;
+}
+
+QPushButton#closeAddFriendBtn:hover{
+    border: none;
+    background-color: #ed4c4c;
+    color: white;
+}
+
+QLineEdit#addFriendSearchEdit{
+    border: none;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+QLineEdit#addFriendSearchEdit:focus{
+    border: 1px solid #1296db;
+    background-color: #ffffff;
+}
+
+
+QPushButton#addFriendSearchBtn{
+    border: none;
+    border-radius: 5px;
+    background-color: #1296db;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+QPushButton#addFriendSearchBtn:hover{
+    background-color: #108bcb;
+}
+QPushButton#addFriendSearchBtn:pressed{
+    background-color: #0f81bd;
+}

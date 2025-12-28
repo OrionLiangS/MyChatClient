@@ -19,6 +19,8 @@ public:
     QFrame* getFrame();
 
 protected:
+    void mousePressEvent(QMouseEvent *event) override;
+
     QFrame* mainFrame;
     bool m_isModal;
 };
