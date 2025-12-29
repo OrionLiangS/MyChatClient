@@ -12,6 +12,9 @@ using model::UserInfo;
 class QVBoxLayout;
 class QLineEdit;
 class QHBoxLayout;
+class QStackedWidget;
+class QLabel;
+class FriendResultCard;
 
 class AddFriendDialog : public InfoWidget
 {
@@ -25,7 +28,8 @@ private:
     void initTitle();
     void initSignalSlots();
     void initSearchWidget();
-    void initCardWidget();
+    void initStackedWidget();
+    void setSearchInfo(UserInfo *userinfo);
 private:
     QVBoxLayout *mainLayout;
 
@@ -36,22 +40,47 @@ private:
     LineEditFocus *addFriendSearchEdit;
     QPushButton *addFriendSearchBtn;
 
-    QHBoxLayout *cardHLayout;
+    QStackedWidget *m_stackedWidget;
+
+    QLabel *errorPage;
+
+    FriendResultCard* resultCard;
 
 protected:
 };
 
-
+enum FriendRelationEnum {
+    RELATION_OWN,       // 自己
+    RELATION_FRIEND,    // 好友
+    RELATION_STRANGER   // 陌生人
+};
 
 class FriendResultCard : public QWidget
 {
     Q_OBJECT
 public:
-    FriendResultCard(const UserInfo& userInfo, QWidget *parent = nullptr);
+    FriendResultCard(QWidget *parent = nullptr);
 protected:
-void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void setInfo(UserInfo *userInfo, FriendRelationEnum relation);
 private:
-    const UserInfo& userInfo;
+    void initUI();
+    void initAvatarUI();
+    void initBtnGroupUI();
+    void initSignalSlots();
+
+    void addSeparator();
+    UserInfo m_userInfo;
+    QVBoxLayout *mainLayout;
+    QWidget *container;
+    QPushButton *friendResultCardAvatar;
+    QLabel* m_nickName;
+    QLabel* m_id;
+    QPushButton *friendResultCardAddBtn;
+    QPushButton *friendResultCardSendBtn;
+    QPushButton *friendResultCardDelBtn;
+    QVBoxLayout *containerLayout;
+
 
 };
 

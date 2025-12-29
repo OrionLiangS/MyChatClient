@@ -959,3 +959,73 @@ QPushButton#addFriendSearchBtn:hover{
 QPushButton#addFriendSearchBtn:pressed{
     background-color: #0f81bd;
 }
+
+
+QPushButton#friendResultCardAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+QWidget#friendResultCardDialog{
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    border: none;
+}
+
+
+/* --------------- */
+
+/* ==============================================
+   通用基础样式
+   ============================================== */
+QPushButton#friendResultCardAddBtn, 
+QPushButton#friendResultCardDelBtn, 
+QPushButton#friendResultCardSendBtn {
+    border: none;
+    border-radius: 7px;
+    background-color: #ffffff;
+    
+    /* 1. 字体样式 */
+    color: #333333;
+    font-size: 13px; /* 根据实际调整 */
+    
+    /* 2. 【关键】布局控制 (上图下文) */
+    /* 给顶部留出 35px 空间放图标，文字会被挤到下面 */
+    padding-top: 35px; 
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    
+    /* 3. 文字水平居中 */
+    text-align: center;
+
+    /* 4. 背景图通用设置 */
+    background-repeat: no-repeat;
+    /* 【关键】图标水平居中，垂直靠上 (距离顶部 10px) */
+    background-position: center top 10px; 
+    
+    /* 5. 【关键】去掉 background-origin: content */
+    /* 默认是 padding-box，这样图标才不会被 padding-top 挤下去 */
+}
+
+/* ==============================================
+   鼠标交互状态 (Hover / Pressed)
+   ============================================== */
+QPushButton#friendResultCardAddBtn:hover, 
+QPushButton#friendResultCardDelBtn:hover, 
+QPushButton#friendResultCardSendBtn:hover {
+    background-color: rgb(242, 242, 242);
+}
+
+QPushButton#friendResultCardAddBtn:pressed, 
+QPushButton#friendResultCardDelBtn:pressed, 
+QPushButton#friendResultCardSendBtn:pressed {
+    background-color: rgb(229, 229, 229);
+}
+
+/* ==============================================
+   给每个按钮指定具体的图标
+   ============================================== */
