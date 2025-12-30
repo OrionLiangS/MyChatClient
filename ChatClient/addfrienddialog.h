@@ -22,7 +22,9 @@ class AddFriendDialog : public InfoWidget
 public:
     AddFriendDialog(QWidget *parent = nullptr);
 
+    void doSearch();
 
+    void setSearchKeyword(const QString& key);
 private:
     void initMainWidget();
     void initTitle();
@@ -30,6 +32,10 @@ private:
     void initSearchWidget();
     void initStackedWidget();
     void setSearchInfo(UserInfo *userinfo);
+    bool checkIsFriend(const QString &id);
+
+
+
 private:
     QVBoxLayout *mainLayout;
 
@@ -60,16 +66,19 @@ class FriendResultCard : public QWidget
     Q_OBJECT
 public:
     FriendResultCard(QWidget *parent = nullptr);
+    void setInfo(UserInfo *userInfo, FriendRelationEnum relation);
+    void updateUI();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
-    void setInfo(UserInfo *userInfo, FriendRelationEnum relation);
 private:
     void initUI();
     void initAvatarUI();
     void initBtnGroupUI();
     void initSignalSlots();
-
     void addSeparator();
+
+    FriendRelationEnum m_relation;
     UserInfo m_userInfo;
     QVBoxLayout *mainLayout;
     QWidget *container;
@@ -80,8 +89,6 @@ private:
     QPushButton *friendResultCardSendBtn;
     QPushButton *friendResultCardDelBtn;
     QVBoxLayout *containerLayout;
-
-
 };
 
 

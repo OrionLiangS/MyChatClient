@@ -409,6 +409,43 @@ void MainWidget::initSignalSlots()
         AddFriendDialog* addFriendDialog = new AddFriendDialog(this);
         addFriendDialog->exec();
     });
+
+    connect(searchEdit, &QLineEdit::returnPressed, this, &MainWidget::onSearchEditReturnPressed);
+}
+
+void MainWidget::onSearchEditReturnPressed()
+{
+    // 1. 获取用户输入的内容
+    QString text = searchEdit->text().trimmed();
+
+    // 如果是空的，可能只是想过滤列表(本地搜索)，或者什么都不做
+    if (text.isEmpty()) {
+        // 这里可以写清除搜索/恢复列表的逻辑
+        return;
+    }
+
+    // 2. 核心联动：打开 AddFriendDialog 并自动搜索
+    // 假设你有一个成员变量 addFriendDialog 指向那个弹窗
+    // 如果没有，可能需要 new 一个，或者用单例，或者从某处获取
+    // 这里假设你是在点击 addFriendBtn 时创建的它，建议把它变为 MainWidget 的成员变量以便复用
+
+    AddFriendDialog* addFriendDialog = new AddFriendDialog(this);
+
+
+    // 3. 设置弹窗里的搜索框内容 (我们需要在 AddFriendDialog 里加个接口，或者直接操作)
+    // 比较优雅的方式是在 AddFriendDialog 里加一个 public 函数：setSearchKeyword(const QString& text)
+    addFriendDialog->setSearchKeyword(text);
+
+    // 4. 展示弹窗
+    addFriendDialog->show();
+
+    // 5. 自动触发搜索 (可选)
+    // 如果 setKeyword 里已经包含触发搜索的逻辑，这里就不用写了
+    // 或者手动调用 addFriendDialog->doSearch();
+    addFriendDialog->doSearch();
+
+    // 6. (可选) 清空主界面的输入框，防止误解
+    searchEdit->clear();
 }
 
 
