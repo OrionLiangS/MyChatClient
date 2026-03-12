@@ -33,6 +33,7 @@ qt_add_executable(ChatClient
     floatingscrollarea.h floatingscrollarea.cpp
     toolswidget.h
     toolswidget.cpp
+    addfrienddialog.h addfrienddialog.cpp
 )
 
 target_link_libraries(ChatClient

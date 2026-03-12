@@ -21,6 +21,7 @@
 
 #include "chatdetailspage.h"
 
+#include "addfrienddialog.h"
 
 /**
  * @brief The MainWidget class
@@ -108,6 +109,7 @@ private:
     // ============================================
 
     void initSignalSlots();     ///< 初始化信号槽
+    void onSearchEditReturnPressed(); ///<槽
 
     // 切换标签页
     void switchTabToSession();  ///< 切换至会话标签页
@@ -146,7 +148,6 @@ private:
     void loadSessionList();     ///< 加载会话列表
     void loadFriendList();      ///< 加载好友列表
     void loadApplyList();       ///< 加载好友申请列表
-
 
 
 
