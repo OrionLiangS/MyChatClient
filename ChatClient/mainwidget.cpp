@@ -67,6 +67,7 @@ MainWidget::MainWidget(QWidget *parent)
     //  初始化信号槽
     // ===========================
     initSignalSlots();
+    initSetWindowFocus();
 
 }
 
@@ -551,6 +552,13 @@ void MainWidget::loadApplyList()
      */
     LOG()<<"INFO - loadApplyList()";
 
+}
+
+void MainWidget::initSetWindowFocus()
+{
+    leftWindow->setFocusPolicy(Qt::ClickFocus);
+    midWindow->setFocusPolicy(Qt::ClickFocus);
+    rightWindow->setFocusPolicy(Qt::ClickFocus);
 }
 
 MainWidget::~MainWidget() {}

@@ -81,14 +81,12 @@ InfoWidget::InfoWidget(QWidget*parent, bool isModal):QDialog(parent),m_isModal(i
         this->setWindowModality(Qt::ApplicationModal); // 设置模态属性
         this->setFixedSize(667,533);
 
-        // 【注意】把原来这里写的 if(parent) { ... this->move(...) } 代码全部删掉！
-        // 构造的时候父窗口可能还没准备好，不要在这里计算位置。
     }
     else{
-        this->setAttribute(Qt::WA_DeleteOnClose);
         this->setFixedSize(320, 360);
         this->move(QCursor::pos());
     }
+    this->setAttribute(Qt::WA_DeleteOnClose);
 
     // =========================================
     // 1. 创建内部容器与特效
