@@ -16,7 +16,7 @@
 
 #include "debug.h"
 
-
+#include "historymessagewidget.h"
 
 // #####################################################
 // 构造函数(初始化MessagEditArea输入区域)
@@ -134,6 +134,16 @@ MessageEditArea::MessageEditArea(QWidget *parent)
     // messageTextEditArea绑定信号判断是否启用sendMessageBtn
     // ==============================================================================
     connect(messageTextEditArea, &QTextEdit::textChanged,this, &MessageEditArea::enableSendMessageBtn);
+
+    // ==============================================================================
+    // 信号槽绑定
+    // ==============================================================================
+    // - HistoryBtn绑定
+    connect(historyMessageBtn, &QPushButton::clicked, this, [=](){
+        HistoryMessageWidget* historyMsgWidget = new HistoryMessageWidget(this);
+        historyMsgWidget->setObjectName("historyMsgWidget");
+        historyMsgWidget->show();
+    });
 }
 
 

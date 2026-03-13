@@ -39,6 +39,7 @@ private:
 
     QScrollBar *m_vScrollBar;
     bool m_isHover; // 记录当前鼠标是否在区域内
+    bool m_isSyncing = false; // 防止滚动条信号乒乓
 
 
     // [新增] 动画对象

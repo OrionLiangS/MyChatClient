@@ -1,5 +1,6 @@
 /* ========================================================
    全局样式
+   说明: 通过 main.cpp 加载，作用于整个应用程序的所有控件
    ======================================================== */
 QWidget {
     font-family: "思源黑体"; /* 全局字体: 思源黑体 */
@@ -8,27 +9,30 @@ QWidget {
 
 /* ========================================================
    主窗口区域 (MainWidget)
+   来源: mainwidget.cpp — MainWidget 构造函数
+   结构: 左侧导航栏 | 中间列表栏 | 右侧聊天栏
    ======================================================== */
-/* 主窗口圆角 */
+
+/* 主窗口圆角 — MainWidget::setObjectName("MainWidget") */
 QWidget#MainWidget {
     border-radius: 10px;
 }
 
-/* 左侧侧边栏: 深灰色背景 + 右侧分割线 */
+/* 左侧导航栏: 深灰色背景 + 右侧分割线 — leftWindow */
 QWidget#leftWindow {
     background-color: #ECECEC; 
     border: none; 
     border-right: 1px solid #D5D5D5;
 }
 
-/* 中间列表栏: 浅白色背景 + 右侧分割线 */
+/* 中间列表栏: 浅白色背景 + 右侧分割线 — midWindow */
 QWidget#midWindow {
     background-color: #F7F7F7; 
     border: none; 
     border-right: 1px solid #D5D5D5;
 }
 
-/* 右侧聊天栏: 浅灰色背景 */
+/* 右侧聊天栏: 浅灰色背景 — rightWindow */
 QWidget#rightWindow {
     background-color: #EDEDED; 
     border: none;
@@ -36,8 +40,11 @@ QWidget#rightWindow {
 
 /* ========================================================
    左侧按钮组 (头像 & 标签页)
+   来源: mainwidget.cpp — initLeftWindow()
+   控件: userAvatar, sessionTab, friendTab, applyTab
    ======================================================== */
-/* 用户头像按钮 */
+
+/* 用户头像按钮 — userAvatar */
 QPushButton#userAvatar {
     border: none; 
     margin: 0px; 
@@ -46,7 +53,7 @@ QPushButton#userAvatar {
     border-radius: 5px;         /* 圆角 */
 }
 
-/* 侧边栏三大金刚: 会话、好友、申请 */
+/* 侧边栏三大标签: 会话、好友、申请 — sessionTab / friendTab / applyTab */
 QPushButton#sessionTab,
 QPushButton#friendTab,
 QPushButton#applyTab {
@@ -65,8 +72,11 @@ QPushButton#applyTab:hover {
 
 /* ========================================================
    分割器样式 (Splitter)
+   来源: mainwidget.cpp — 主窗口中间/右侧分割器
+   控件: mainSplitter
    ======================================================== */
-/* 分割器主体 */
+
+/* 分割器主体 — mainSplitter */
 QSplitter#mainSplitter {
     border: none;
 }
@@ -78,13 +88,16 @@ QSplitter#mainSplitter::handle {
 
 /* ========================================================
    中间窗口区域组件 (搜索 & 列表)
+   来源: mainwidget.cpp — initMidWindow()
+   控件: searchWidget, searchEdit, addFriendBtn
    ======================================================== */
-/* 搜索栏背景容器 */
+
+/* 搜索栏背景容器 — searchWidget */
 QWidget#searchWidget {
     background:transparent;
 }
 
-/* 搜索输入框 */
+/* 搜索输入框 — searchEdit */
 QLineEdit#searchEdit {
     border: none;
     border-radius: 5px;
@@ -99,7 +112,7 @@ QLineEdit#searchEdit:focus {
     background-color: #FFFFFF;
 }
 
-/* 添加好友按钮 (+) */
+/* 添加好友按钮 (+) — addFriendBtn */
 QPushButton#addFriendBtn {
     border: none;
     margin: 0px;
@@ -113,29 +126,33 @@ QPushButton#addFriendBtn:hover {
 }
 
 /* ========================================================
-   垂直滚动条样式 (核心修复部分) 此处的QSS样式通过函数setStyleSheet硬编码
+   垂直滚动条样式
+   说明: FloatingScrollArea 的自定义滚动条通过
+         floatingscrollarea.cpp 中 setStyleSheet 硬编码设置，
+         此处不再重复定义。
    ======================================================== */
  
 
 /* ========================================================
-    SessionFriendItem 样式
-    ======================================================== */
+   SessionFriendItem 样式
+   来源: sessionfriendarea.cpp — SessionFriendItem 构造函数
+   控件: sessionFriendItem, avatarBtn, nameLabel, messageLabel
+   说明: 会话/好友/申请列表中的单条条目
+   ======================================================== */
 
-
-/* 条目样式 */
+/* 条目默认样式 — sessionFriendItem */
 SessionFriendItem#sessionFriendItem {
     border: none;
     background-color: #F7F7F7;
     margin: 0;
 }
 
-/* 条目样式(悬停) */
+/* 条目悬停 */
 SessionFriendItem#sessionFriendItem:hover {
         background-color: #eaeaea;
 }
 
-
-/* 头像样式 */
+/* 条目头像 — avatarBtn */
 QPushButton#avatarBtn {
     border: none; 
     margin: 0px; 
@@ -144,24 +161,21 @@ QPushButton#avatarBtn {
     border-radius: 5px;         /* 圆角 */
 }
 
-
-/* 姓名样式 */
+/* 条目姓名 — nameLabel */
 QLabel#nameLabel {
     color: #161616;
     font-size: 14px;
     font-weight: normal;
 }
 
-/* 消息内容样式*/
+/* 条目消息预览 — messageLabel */
 QLabel#messageLabel {
     color: #9e9e9e;
     font-size: 12px;
     font-weight: normal;
 }
 
-
-
-/* 选中状态  */
+/* 条目选中状态 (通过动态属性 selected="true" 控制) */
 SessionFriendItem#sessionFriendItem[selected = "true"]{
     background-color: #dddddd;
 }
@@ -170,27 +184,31 @@ SessionFriendItem#sessionFriendItem[selected = "true"]:hover{
     background-color: #d1d1d1;
 }
 
-
-
-
 /* ========================================================
-    ApplyItem acceptBtn/rejectBtn样式
-    ======================================================== */
+   ApplyItem 接受/拒绝按钮样式
+   来源: sessionfriendarea.cpp — ApplyItem 构造函数
+   控件: acceptBtn, rejectBtn
+   说明: 好友申请列表项中的操作按钮，使用 border-image 切换图片
+   ======================================================== */
 
-    QPushButton#acceptBtn {
+/* 接受按钮 — acceptBtn */
+QPushButton#acceptBtn {
     border: none;
-    /* 默认状态图片 - 读取 qrc 资源 */
     border-image: url(:/resource/image/accept.png);
     width: 19px;
     height: 19px;
 }
 
-/* 悬停状态 - 换一张图 */
 QPushButton#acceptBtn:hover {
     border-image: url(:/resource/image/accept_hover.png);
 }
 
+QPushButton#acceptBtn:pressed {
+    margin-top: 1px; 
+    margin-left: 1px;
+}
 
+/* 拒绝按钮 — rejectBtn */
 QPushButton#rejectBtn {
     border: none;
     border-image: url(:/resource/image/reject.png);
@@ -202,25 +220,18 @@ QPushButton#rejectBtn:hover {
     border-image: url(:/resource/image/reject_hover.png);
 }
 
-
 QPushButton#rejectBtn:pressed {
     margin-top: 1px; 
     margin-left: 1px;
 }
 
-QPushButton#acceptBtn:pressed {
-    /* border-image: url(:/resource/image/accept_press.png); */
-    margin-top: 1px; 
-    margin-left: 1px;
-}
-
-
-
-
-
 /* ========================================================
-        rightWindowTitle 样式
-    ======================================================== */
+   右侧聊天栏标题区域
+   来源: mainwidget.cpp — initRightWindow() 中的标题栏部分
+   控件: titleExtraBtn (更多按钮), titleWidgetTitle (标题文字)
+   ======================================================== */
+
+/* 标题栏更多按钮 — titleExtraBtn */
 QPushButton#titleExtraBtn{
     border: none; 
     margin: 0px; 
@@ -233,26 +244,34 @@ QPushButton#titleExtraBtn:hover{
     background-color: #e0e0e0;
 }
 
+/* 标题栏标题文字 — titleWidgetTitle */
 QLabel#titleWidgetTitle{
     font-size: 17px;
 }
 
 /* ========================================================
-        ShowMessageArea 样式
-    ======================================================== */
+   消息展示区 (MessageShowArea)
+   来源: messageshowarea.cpp — MessageShowArea 构造函数
+   控件: messageShowContainer (内部容器)
+   ======================================================== */
 
+/* 消息展示区内部容器 — messageShowContainer */
 QWidget#messageShowContainer{
     background:transparent;
 }
 
-
+/* 消息编辑区外层容器 — messageEditArea */
 QWidget#messageEditArea{
     background:none;
 }
 
 /* ========================================================
-        ShowMessageAreaItem样式
-    ======================================================== */
+   消息条目样式 (MessageItem)
+   来源: messageshowarea.cpp — MessageItem::makeMessageItem()
+   控件: messageAvatar (头像), nameAndTimeLabel (昵称+时间)
+   ======================================================== */
+
+/* 消息头像 — messageAvatar */
 QPushButton#messageAvatar{
     border: none; 
     margin: 0px; 
@@ -261,29 +280,32 @@ QPushButton#messageAvatar{
     border-radius: 5px;         /* 圆角 */
 }
 
+/* 消息昵称+时间标签 — nameAndTimeLabel (代码中通过内联样式设置，此处作为备用) */
 QLabel#nameAndTimeLabel{
     font-size: 3px;
     color: #9e9e9e;
     background: transparent;
 }
 
-
 /* ========================================================
-        ShowMessageAreaItem中的单条消息样式(TEXT_MESSAGE)
-    ======================================================== */
+   文本消息气泡样式 (MessageContentLabel)
+   来源: messageshowarea.cpp — MessageContentLabel 构造函数
+   控件: messageContentLabel
+   ======================================================== */
 
 QLabel#messageContentLabel{
     background: transparent;
     padding: 0 10xp;
     line-height: 1.2;
-
 }
 
-
-
 /* ========================================================
-        设置右侧窗口splitter中的把手样式
-    ======================================================== */
+   右侧窗口分割器 (聊天区 / 编辑区)
+   来源: mainwidget.cpp — initRightWindow()
+   控件: rightWindowSplitter
+   说明: 消息展示区与消息编辑区之间的垂直分割器
+   ======================================================== */
+
 QSplitter#rightWindowSplitter{
     border: none;
     background-color: transparent;
@@ -294,18 +316,22 @@ QSplitter#rightWindowSplitter::handle {
     height: 1px;               /* 只有 1px 高 */
 }
 
-
 /* ========================================================
-        messagEditArea 的样式
-    ======================================================== */
-    /* 输入框样式 */
+   消息编辑区 (MessageEditArea)
+   来源: messageeditarea.cpp
+   控件: messageTextEditArea (文本输入框),
+         sendSpeechBtn / sendImageBtn / sendFileBtn / historyMessageBtn (工具按钮),
+         sendMessageBtn (发送按钮)
+   ======================================================== */
+
+/* 文本输入框 — messageTextEditArea */
 QTextEdit#messageTextEditArea{
     border-radius: 0px;
     border:none;
     background: transparent;
 }
 
-/* Tool按钮样式(图片/文件/语音/历史消息) */
+/* 工具栏按钮 (发送图片/文件/语音/历史消息) */
 QPushButton#sendSpeechBtn,
 QPushButton#sendImageBtn,
 QPushButton#sendFileBtn,
@@ -331,7 +357,7 @@ QPushButton#historyMessageBtn:pressed{
 background-color: #d4d4d4;
 }
 
-/* 消息发送按钮样式 */
+/* 消息发送按钮 — sendMessageBtn */
 QPushButton#sendMessageBtn{
     background-color: #1296db;
     color:white;
@@ -347,20 +373,21 @@ QPushButton#sendMessageBtn:pressed{
     background-color: #0f81bd;
 }
  
+/* 发送按钮禁用态 (输入框为空时) */
 QPushButton#sendMessageBtn:disabled{
     background-color: #e0e0e0;
     color: #9c9c9c;
 }
 
+/* ========================================================
+   个人信息弹窗 (SelfInfoWidget)
+   来源: selfinfowidget.cpp — setObjectNameForSelf()
+   说明: 点击左侧头像弹出的个人信息编辑窗口
+   ======================================================== */
 
-/* ================================ 
-            selfinfo
-================================ */
+/* --- 顶部区域: 头像 + 昵称 + ID --- */
 
-
-/*TOP*/
-
-
+/* 个人头像 — selfInfoAvatar */
 QPushButton#selfInfoAvatar{
     border: none; 
     margin: 0px; 
@@ -374,9 +401,10 @@ QPushButton#selfInfoAvatar:pressed {
     border: none;
     margin: 0px; /* 锁死 */
     padding: 0px;
-    background-color: transparent; /* 或者你想要的深色 */
+    background-color: transparent;
 }
 
+/* ID 标签和值 — selfInfoIdTag / selfInfoId */
 QLabel#selfInfoIdTag{
     color: #9e9e9e;
 }
@@ -385,47 +413,42 @@ QLabel#selfInfoId{
     color: #9e9e9e;
 }
 
+/* 昵称展示 — selfInfoNameShow */
 QLabel#selfInfoNameShow{
     color: #161616;
     font-size: 15px;
 }
 
-
-
+/* 所有可编辑输入框统一样式 (昵称/签名/手机号/验证码) */
 QLineEdit#selfInfoTelVerifyCode,
 QLineEdit#selfInfoTelEdit,
 QLineEdit#selfInfoSignEdit,
 QLineEdit#selfInfoNameEdit {
     border: 1px solid  rgb(225,225,225); /* 统一设为 1px 实线，浅灰色 */
-    border-radius: 5px;        /*稍微加一点圆角更现代 */
+    border-radius: 5px;        /* 稍微加一点圆角更现代 */
     background-color: #FFFFFF; /* 纯白背景 */
     color: #333333;            /* 文字颜色 */
     padding-left: 8px;         /* 文字离左边稍微有点距离 */
     font-size: 13px;
 }
 
+/* --- 中部区域: 个性签名 --- */
 
-/*MID*/
-
+/* 签名标签 — selfInfoSignTag */
 QLabel#selfInfoSignTag{color: #9e9e9e;}
 
+/* 签名展示 — selfInfoSignShow */
 QLabel#selfInfoSignShow{color: #9e9e9e;}
 
+/* --- 底部区域: 手机号 --- */
 
-
-
-
-
-
-/*BOTTOM*/
-
+/* 手机号标签 — selfInfoTelTag */
 QLabel#selfInfoTelTag{color: #9e9e9e;}
 
+/* 手机号展示 — selfInfoTelShow */
 QLabel#selfInfoTelShow{color: #9e9e9e;}
 
-
-
-
+/* 编辑/提交按钮统一样式 (昵称编辑、签名编辑、手机号编辑等) */
 QPushButton#selfInfoNameSubmitBtn,
 QPushButton#selfInfoNameEditBtn,
 QPushButton#selfInfoSignEditBtn,
@@ -436,14 +459,13 @@ QPushButton#selfInfoSubmitBtn{
     padding: 0px;
     background-size: 100% 100%;
     border-radius: 5px;
-    outline: none; /* 再次确认去掉焦点虚线框 */
-    min-width: 30px;  /* 🔥 强制给一个最小宽高，防止被布局挤压 */
+    outline: none; /* 去掉焦点虚线框 */
+    min-width: 30px;  /* 强制最小宽高，防止被布局挤压 */
     min-height: 30px;
-    max-width: 30px;  /* 🔥 锁死最大宽高 */
+    max-width: 30px;  /* 锁死最大宽高 */
     max-height: 30px;
     border:none; background:transparent;
 }
-
 
 QPushButton#selfInfoNameSubmitBtn:hover,
 QPushButton#selfInfoNameEditBtn:hover,
@@ -454,7 +476,6 @@ QPushButton#selfInfoSubmitBtn:hover{
 background-color: #d7d7d7;
 }
 
-
 QPushButton#selfInfoNameSubmitBtn:pressed,
 QPushButton#selfInfoNameEditBtn:pressed,
 QPushButton#selfInfoSignEditBtn:pressed,
@@ -464,7 +485,7 @@ QPushButton#selfInfoSubmitBtn:pressed{
 background-color: #9e9e9e;
 }
 
-
+/* 获取验证码按钮 — selfInfoGetVerifyCode */
 QPushButton#selfInfoGetVerifyCode{
     background-color: #FFFFFF;
 }
@@ -475,12 +496,13 @@ QPushButton#selfInfoGetVerifyCode:pressed{
     background-color:#9e9e9e;
 }
 
+/* ========================================================
+   用户信息卡片弹窗 (UserInfoWidget)
+   来源: userinfowidget.cpp — setObjectNameForSelf()
+   说明: 点击消息区头像弹出的他人信息卡片
+   ======================================================== */
 
-
-
-/* ================================ 
-            UserInfoWidegt
-================================ */
+/* ID/手机号 标签和值 */
 QLabel#userInfoIdTag,
 QLabel#userInfoTelTag,
 QLabel#userInfoId,
@@ -489,28 +511,29 @@ QLabel#userInfoTel{
     font-size: 13px;
     color:#9e9e9e;
     font-family: "思源黑体";
-
 }
 
+/* 昵称 — userInfoNikeName */
 QLabel#userInfoNikeName{
     font-size: 15px;
     font-weight: auto;
     font-family: "思源黑体";
 }
 
+/* 头像 — userInfoAvatar */
 QPushButton#userInfoAvatar{
     border: none;
-    margin: 0px; /* 锁死 */
+    margin: 0px;
     padding: 0px;
-    background-color: transparent; /* 或者你想要的深色 */
+    background-color: transparent;
 }
 
+/* 底部操作按钮: 申请好友 / 发消息 / 删除好友 */
 QPushButton#userInfoApplyFriendBtn,
 QPushButton#userInfoSendMessageBtn,
 QPushButton#userInfoDeleteFriendBtn{
     background-color: #FFFFFF;
 }
-
 
 QPushButton#userInfoApplyFriendBtn:hover,
 QPushButton#userInfoSendMessageBtn:hover,
@@ -518,31 +541,34 @@ QPushButton#userInfoDeleteFriendBtn:hover{
     background-color:#d7d7d7;
 }
 
-
 QPushButton#userInfoApplyFriendBtn:pressed,
 QPushButton#userInfoSendMessageBtn:pressed,
 QPushButton#userInfoDeleteFriendBtn:pressed{
     background-color:#9e9e9e;
 }
 
+/* ========================================================
+   侧边抽屉 (Sidebar)
+   来源: sidebar.cpp — 构造函数
+   控件: Sidebar
+   说明: 右侧滑出式抽屉容器，承载 ChatDetailsPage
+   ======================================================== */
 
-
-/* ================================ 
-            Sidebar
-================================ */
 QWidget#Sidebar{
     background-color:#FFFFFF;
     border: 1px solid #e0e0e0;
 }
 
 
+/* ========================================================
+   会话详情页 (ChatDetailsPage / GroupChatDetailsPage / PrivateChatDetailsPage)
+   来源: chatdetailspage.cpp
+   说明: Sidebar 内部的详情页内容
+   ======================================================== */
 
+/* --- 头像组件 (AvatarItem) --- */
 
-/* ================================ 
-        SessionDetailsPage
-================================ */
-
-/* 设置头像样式 */
+/* 头像按钮 — AvatarItem_avatarBtn */
 QPushButton#AvatarItem_avatarBtn{
     border: none; 
     margin: 0px; 
@@ -551,230 +577,57 @@ QPushButton#AvatarItem_avatarBtn{
     border-radius: 5px;         /* 圆角 */
 }
 
-/* 设置名字显示样式 */
+/* 头像下方名字 — AvatarItem_nameLabel */
 QLabel#AvatarItem_nameLabel{
-color:#9e9e9e;
-    
-    /* 🔥 新增：显式指定小字体，覆盖全局的 14px */
-    font-size: 12px;  /* 建议用 10px 或 11px，5px 太小看不清，且有些屏幕不支持 */
-    
-    /* 确保背景透明，防止遮挡 */
+    color:#9e9e9e;
+    font-size: 12px;
     background: transparent; 
-    border: none;}
+    border: none;
+}
 
+/* --- 添加/移除成员按钮 (群聊详情页头像区) --- */
 
-/* 1. 基础样式 (清除所有干扰) */
+/* 基础样式 (清除所有干扰) */
 QPushButton#detailsPageAddFriendBtn, 
 QPushButton#detailsPageRemoveFriendBtn {
-    border: none;           /* 关掉代码边框 */
-    background: transparent;/* 背景透明 */
-    icon: none;             /* 关掉 icon 属性，防止图标重复显示 */
-    qproperty-icon: none;   /* 确保彻底关掉图标 */
+    border: none;
+    background: transparent;
+    icon: none;
+    qproperty-icon: none;
 }
-/* ========================================================
-   添加按钮 (Add)
-   ======================================================== */
 
-/* 正常状态 */
+/* 添加按钮 [+] — detailsPageAddFriendBtn */
 QPushButton#detailsPageAddFriendBtn {
-    /* 核心：用图片铺满按钮 */
     image: url(:/resource/image/add_normal.png); 
     padding: 2px;
-
 }
 
-/* 悬停状态 */
 QPushButton#detailsPageAddFriendBtn:hover {
     image: url(:/resource/image/add_hover.png);
     padding: 2px;
-
 }
 
-
-/* ========================================================
-   移除按钮 (Remove)
-   ======================================================== */
-
-/* 正常状态 */
+/* 移除按钮 [-] — detailsPageRemoveFriendBtn */
 QPushButton#detailsPageRemoveFriendBtn {
     image: url(:/resource/image/remove_normal.png);
 }
 
-/* 悬停状态 */
 QPushButton#detailsPageRemoveFriendBtn:hover {
     image: url(:/resource/image/remove_hover.png);
 }
 
-
+/* 详情页外层容器 — SessionDetailsPage */
 QWidget#SessionDetailsPage{
     background-color: #FFFFFF;
     border: 1px solid #d5d5d5;
 }
 
+/* ========================================================
+   群聊详情页内部组件 (GroupChatDetailsPage)
+   来源: chatdetailspage.cpp — initGroupInfo() / initFooter()
+   ======================================================== */
 
-
-/* ###########################
-    ChooseFriendWidget
-########################### */
-
-/*------------------------
-    TotalContainer 左侧布局
---------------------------*/
-
-QLineEdit#totalContSearchEdit{
-    background-color: #F7F7F7;
-    border:none;
-    padding-left: 10px; 
-    padding-right: 10px;
-    border-radius: 5px;
-}
-
-QLineEdit#totalContSearchEdit:focus {
-    border: 1.5px solid #0078d7; /* 获得焦点时边框变蓝 */
-    background-color: #FFFFFF; /* 获得焦点时背景色微变 */
-}
-
-
-
-
-/*
-    chooseFriendItem
-*/
-
-QPushButton#chooseFriendItem{
-    background-color:#FFFFFF;
-    border: none;
-}
-
-QPushButton#chooseFriendItem:hover{
-    background-color: #f2f2f2;
-}
-
-QPushButton#chooseFriendItem:pressed{
-    background-color: #e5e5e5;
-}
-
-
-QPushButton#chooseFriendAvatar{
-    border: none; 
-    margin: 0px; 
-    padding: 0px;
-    background-size: 100% 100%; /* 图片填满 */
-    border-radius: 5px;         /* 圆角 */
-}
-
-
-/* 1. 基础样式 (正确) */
-QCheckBox#chooseFriendCheckBox {
-    spacing: 8px;
-    color: #333333;
-    font-size: 14px;
-    background: transparent;
-}
-
-
-
-/* 3. 未选中状态 - 直接在 indicator 后面加伪状态 */
-QCheckBox#chooseFriendCheckBox::indicator:unchecked {
-    width: 20px;
-    height: 20px;
-    image: url(:/resource/image/unchecked.png);
-}
-
-/* 4. 选中状态 */
-QCheckBox#chooseFriendCheckBox::indicator:checked {
-    width: 18px;
-    height: 18px;
-    image: url(:/resource/image/checked.png);
-}
-
-QWidget#totalScrollWidget {
-    background-color: #FFFFFF;
-    border: none;
-}
-
-
-QWidget#selectedScrollWidget{
-    background-color:#FFFFFF;
-    border: none;
-}
-
-QWidget#selectedBottomGropWidget{
-    background:transparent;
-    border: none;
-}
-
-QPushButton#selectedFinishBtn{
-    border: none;
-    border-radius: 6px;
-    color: #FFFFFF;
-    background-color: #1296db;    
-}
-
-QPushButton#selectedFinishBtn:hover{
-    background-color: #108bcb;    
-}
-
-QPushButton#selectedFinishBtn:pressed{
-    background-color: #0f81bd;    
-}
-
-QPushButton#selectedCancelBtn{
-    border: none;
-    border-radius: 6px;    
-    background-color: #f2f2f2;
-}
-
-QPushButton#selectedCancelBtn:hover{
-background-color: #ebebeb;
-}
-
-QPushButton#selectedCancelBtn:pressed{
-background-color: #e5e5e5;
-}
-
-QLabel#selectedContTitleTag{
-    border: none;
-    font-family: "思源黑体";
-    font-weight: auto;
-}
-
-QLabel#selectedContNumLabel{
-    border: none;
-    font-size: 12px;
-    font-family: "思源黑体";
-    color: #9e9e9e;
-    font-weight: auto;
-}
-
-
-
-QWidget#totalContainer {
-    background-color: #FFFFFF;
-}
-
-QWidget#selectedContainer {
-    background-color: #FFFFFF;
-}
-
-
-QPushButton#SelectedFriendItemDelBtn{
-    border: none; 
-    margin: 0px; 
-    padding: 0px;
-    background-size: 100% 100%; /* 图片填满 */
-    border-radius: 5px;         /* 圆角 */
-}
-
-QPushButton#selectedFriendItem{
-
-    background-color:#FFFFFF;
-    border: none;
-}
-
-
-
-
+/* 群成员搜索框 — groupChatSearch */
 QLineEdit#groupChatSearch{
     border:none;
     background-color: #f2f2f2;
@@ -783,52 +636,47 @@ QLineEdit#groupChatSearch{
     font-family: "思源黑体";
 }
 
-
 QLineEdit#groupChatSearch:focus{
     background-color: #ffffff;
     border: 2px solid #1296db;
 }
 
+/* 滚动区域内容容器 — groupChatDetailsScrollContainer */
 QWidget#groupChatDetailsScrollContainer{
     background: transparent;
     border: none;
 }
 
-
-
+/* 群名称/群公告 标签 — groupNameTag / groupAnnouncementTag */
 QLabel#groupAnnouncementTag,
 QLabel#groupNameTag{
     border: none;
     font-size: 12px;
 }
 
-
+/* 群名称按钮 (点击进入编辑模式) — groupName */
 QPushButton#groupName{
         border: none;   
         background-color: transparent;
         text-align: left;
-        /* 默认状态：不显示图片 */
         image: none;
 }
 
-
-
-
+/* 群公告按钮 — groupAnnouncement */
 QPushButton#groupAnnouncement{
     border: none;
 }
 
-/* 测试 */
-/* QPushButton#groupName:hover,
-QPushButton#groupAnnouncement:hover{
-    background-color: #333333;
-} */
+/* 群名称编辑输入框 — groupNameEdit */
+QLineEdit#groupNameEdit{
+    background-color:#f7f7f7;
+    border:none;
+    font-size: 12px;
+}
 
+/* --- 底部危险操作按钮 (红色文字) --- */
 
-
-
-
-
+/* 删除好友 / 清空聊天记录 / 退出群聊 */
 QPushButton#privateDeleteFriend, 
 QPushButton#clearChatHistory,
 QPushButton#exitGroupChatBtn{
@@ -838,23 +686,9 @@ QPushButton#exitGroupChatBtn{
     font-size: 12px;
 }
 
+/* --- 修改群名称确认弹窗按钮 --- */
 
- /* 测试 */
-
-/* QPushButton#clearChatHistory:hover,
-QPushButton#exitGroupChatBtn:hover{
-    background-color:#d4d4d4;
-} */
-
-
-QLineEdit#groupNameEdit{
-    background-color:#f7f7f7;
-    border:none;
-    font-size: 12px;
-}
-
-
-
+/* 确认修改按钮 — acceptModifyNameBtn */
 QPushButton#acceptModifyNameBtn{
     border: none;
     border-radius: 5px;
@@ -869,8 +703,7 @@ QPushButton#acceptModifyNameBtn:pressed{
     background-color: #0f81bd;
 }
 
-
-
+/* 取消修改按钮 — cancelModifyNameBtn */
 QPushButton#cancelModifyNameBtn{
     border: none;
     border-radius: 5px;
@@ -885,40 +718,33 @@ QPushButton#cancelModifyNameBtn:pressed{
     background-color: #dddddd;
 }
 
+/* ========================================================
+   单聊详情页 (PrivateChatDetailsPage)
+   来源: chatdetailspage.cpp — initFindHistoryBtn()
+   ======================================================== */
 
-
-
-
-
-
-
-
-
+/* 查找聊天记录按钮 — privateChatFindHistory */
 QPushButton#privateChatFindHistory{
     background: transparent;
     border: none;
 }
 
 
+/* ========================================================
+   添加好友弹窗 (AddFriendDialog)
+   来源: addfrienddialog.cpp
+   控件: addFriendTitleWidget, closeAddFriendBtn,
+         addFriendSearchEdit, addFriendSearchBtn
+   ======================================================== */
 
-
-
- /* 测试 */
- /* QPushButton#privateChatFindHistory:hover{
-    background-color: #9e9e9e;
-    border: none;
-}   */
-
-
+/* 标题栏容器 — addFriendTitleWidget */
 QWidget#addFriendTitleWidget{
     border: none;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-
-    /*test*/
-    /* background-color: red; */
 }
 
+/* 关闭按钮 — closeAddFriendBtn */
 QPushButton#closeAddFriendBtn{
     border: none;
     border-top-right-radius: 10px;
@@ -933,6 +759,7 @@ QPushButton#closeAddFriendBtn:hover{
     color: white;
 }
 
+/* 搜索输入框 — addFriendSearchEdit */
 QLineEdit#addFriendSearchEdit{
     border: none;
     background-color: #eaeaea;
@@ -944,7 +771,7 @@ QLineEdit#addFriendSearchEdit:focus{
     background-color: #ffffff;
 }
 
-
+/* 搜索按钮 — addFriendSearchBtn */
 QPushButton#addFriendSearchBtn{
     border: none;
     border-radius: 5px;
@@ -960,7 +787,15 @@ QPushButton#addFriendSearchBtn:pressed{
     background-color: #0f81bd;
 }
 
+/* ========================================================
+   搜索结果卡片 (FriendResultCard)
+   来源: addfrienddialog.cpp — FriendResultCard 构造函数
+   控件: friendResultCardAvatar, friendResultCardDialog,
+         friendResultCardAddBtn / DelBtn / SendBtn
+   说明: 添加好友弹窗中的搜索结果展示卡片
+   ======================================================== */
 
+/* 结果卡片头像 — friendResultCardAvatar */
 QPushButton#friendResultCardAvatar{
     border: none; 
     margin: 0px; 
@@ -969,18 +804,16 @@ QPushButton#friendResultCardAvatar{
     border-radius: 5px;         /* 圆角 */
 }
 
+/* 结果卡片容器 — friendResultCardDialog */
 QWidget#friendResultCardDialog{
     background-color: #FFFFFF;
     border-radius: 10px;
     border: none;
 }
 
+/* --- 卡片底部操作按钮 (上图下文布局) --- */
 
-/* --------------- */
-
-/* ==============================================
-   通用基础样式
-   ============================================== */
+/* 通用基础样式: 添加好友 / 删除好友 / 发消息 */
 QPushButton#friendResultCardAddBtn, 
 QPushButton#friendResultCardDelBtn, 
 QPushButton#friendResultCardSendBtn {
@@ -988,32 +821,25 @@ QPushButton#friendResultCardSendBtn {
     border-radius: 7px;
     background-color: #ffffff;
     
-    /* 1. 字体样式 */
+    /* 字体样式 */
     color: #333333;
-    font-size: 13px; /* 根据实际调整 */
+    font-size: 13px;
     
-    /* 2. 【关键】布局控制 (上图下文) */
-    /* 给顶部留出 35px 空间放图标，文字会被挤到下面 */
+    /* 布局控制 (上图下文): 顶部留出 35px 放图标，文字被挤到下面 */
     padding-top: 35px; 
     padding-bottom: 5px;
     padding-left: 5px;
     padding-right: 5px;
     
-    /* 3. 文字水平居中 */
+    /* 文字水平居中 */
     text-align: center;
 
-    /* 4. 背景图通用设置 */
+    /* 背景图通用设置: 图标水平居中，垂直靠上 (距顶部 10px) */
     background-repeat: no-repeat;
-    /* 【关键】图标水平居中，垂直靠上 (距离顶部 10px) */
     background-position: center top 10px; 
-    
-    /* 5. 【关键】去掉 background-origin: content */
-    /* 默认是 padding-box，这样图标才不会被 padding-top 挤下去 */
 }
 
-/* ==============================================
-   鼠标交互状态 (Hover / Pressed)
-   ============================================== */
+/* 鼠标交互状态 */
 QPushButton#friendResultCardAddBtn:hover, 
 QPushButton#friendResultCardDelBtn:hover, 
 QPushButton#friendResultCardSendBtn:hover {
@@ -1026,6 +852,228 @@ QPushButton#friendResultCardSendBtn:pressed {
     background-color: rgb(229, 229, 229);
 }
 
-/* ==============================================
-   给每个按钮指定具体的图标
-   ============================================== */
+/* ========================================================
+   历史消息弹窗 (HistoryMessageWidget)
+   来源: historymessagewidget.cpp
+   控件: closeHistoryMsgBtn, HistoryMessageSearchEdit,
+         historyDateConfirmBtn, historyMsgAvatar
+   ======================================================== */
+
+/* 关闭按钮 — closeHistoryMsgBtn */
+QPushButton#closeHistoryMsgBtn{
+    border: none;
+    border-top-right-radius: 10px;
+    background: transparent;
+    font-size: 20px;
+    color: #757575;
+}
+
+QPushButton#closeHistoryMsgBtn:hover{
+    border: none;
+    background-color: #ed4c4c;
+    color: white;
+}
+
+/* 搜索输入框 — HistoryMessageSearchEdit */
+QLineEdit#HistoryMessageSearchEdit{
+    border: none;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+QLineEdit#HistoryMessageSearchEdit:focus{
+    border: 2px solid #1296db;
+    background-color: #ffffff;
+}
+
+/* 日期确认按钮 — historyDateConfirmBtn */
+QPushButton#historyDateConfirmBtn{
+    border: none;
+    border-radius: 5px;
+    background-color: #1296db;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+QPushButton#historyDateConfirmBtn:hover{
+    background-color: #108bcb;
+}
+QPushButton#historyDateConfirmBtn:pressed{
+    background-color: #0f81bd;
+}
+
+/* 历史消息条目头像 — historyMsgAvatar */
+QPushButton#historyMsgAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+    outline: none; /* 去掉焦点虚线框 */
+}
+
+/* ========================================================
+   选择好友弹窗 (ChooseFriendWidget)
+   来源: choosefriendwidget.cpp
+   说明: 发起群聊时的好友选择窗口，左右双栏联动
+   ======================================================== */
+
+/* --- 左侧容器 (TotalContainer) --- */
+
+/* 左侧容器背景 — totalContainer */
+QWidget#totalContainer {
+    background-color: #FFFFFF;
+}
+
+/* 左侧搜索框 — totalContSearchEdit */
+QLineEdit#totalContSearchEdit{
+    background-color: #F7F7F7;
+    border:none;
+    padding-left: 10px; 
+    padding-right: 10px;
+    border-radius: 5px;
+}
+
+QLineEdit#totalContSearchEdit:focus {
+    border: 1.5px solid #0078d7; /* 获得焦点时边框变蓝 */
+    background-color: #FFFFFF;
+}
+
+/* 左侧滚动区域内容容器 — totalScrollWidget */
+QWidget#totalScrollWidget {
+    background-color: #FFFFFF;
+    border: none;
+}
+
+/* --- 左侧好友列表项 (ChooseFriendItem) --- */
+
+/* 列表项容器 — chooseFriendItem */
+QPushButton#chooseFriendItem{
+    background-color:#FFFFFF;
+    border: none;
+}
+
+QPushButton#chooseFriendItem:hover{
+    background-color: #f2f2f2;
+}
+
+QPushButton#chooseFriendItem:pressed{
+    background-color: #e5e5e5;
+}
+
+/* 列表项头像 — chooseFriendAvatar */
+QPushButton#chooseFriendAvatar{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+/* 列表项复选框 — chooseFriendCheckBox */
+QCheckBox#chooseFriendCheckBox {
+    spacing: 8px;
+    color: #333333;
+    font-size: 14px;
+    background: transparent;
+}
+
+/* 复选框未选中状态 (自定义图片) */
+QCheckBox#chooseFriendCheckBox::indicator:unchecked {
+    width: 20px;
+    height: 20px;
+    image: url(:/resource/image/unchecked.png);
+}
+
+/* 复选框选中状态 (自定义图片) */
+QCheckBox#chooseFriendCheckBox::indicator:checked {
+    width: 18px;
+    height: 18px;
+    image: url(:/resource/image/checked.png);
+}
+
+/* --- 右侧容器 (SelectedContainer) --- */
+
+/* 右侧容器背景 — selectedContainer */
+QWidget#selectedContainer {
+    background-color: #FFFFFF;
+}
+
+/* 右侧滚动区域内容容器 — selectedScrollWidget */
+QWidget#selectedScrollWidget{
+    background-color:#FFFFFF;
+    border: none;
+}
+
+/* 右侧标题 — selectedContTitleTag */
+QLabel#selectedContTitleTag{
+    border: none;
+    font-family: "思源黑体";
+    font-weight: auto;
+}
+
+/* 右侧已选计数 — selectedContNumLabel */
+QLabel#selectedContNumLabel{
+    border: none;
+    font-size: 12px;
+    font-family: "思源黑体";
+    color: #9e9e9e;
+    font-weight: auto;
+}
+
+/* --- 右侧已选列表项 (SelectedFriendItem) --- */
+
+/* 已选列表项容器 — selectedFriendItem */
+QPushButton#selectedFriendItem{
+    background-color:#FFFFFF;
+    border: none;
+}
+
+/* 已选列表项删除按钮 — SelectedFriendItemDelBtn */
+QPushButton#SelectedFriendItemDelBtn{
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+/* --- 底部按钮组 --- */
+
+/* 底部按钮容器 — selectedBottomGropWidget */
+QWidget#selectedBottomGropWidget{
+    background:transparent;
+    border: none;
+}
+
+/* 完成按钮 — selectedFinishBtn */
+QPushButton#selectedFinishBtn{
+    border: none;
+    border-radius: 6px;
+    color: #FFFFFF;
+    background-color: #1296db;    
+}
+
+QPushButton#selectedFinishBtn:hover{
+    background-color: #108bcb;    
+}
+
+QPushButton#selectedFinishBtn:pressed{
+    background-color: #0f81bd;    
+}
+
+/* 取消按钮 — selectedCancelBtn */
+QPushButton#selectedCancelBtn{
+    border: none;
+    border-radius: 6px;    
+    background-color: #f2f2f2;
+}
+
+QPushButton#selectedCancelBtn:hover{
+background-color: #ebebeb;
+}
+
+QPushButton#selectedCancelBtn:pressed{
+background-color: #e5e5e5;
+}

@@ -18,7 +18,7 @@ FloatingScrollArea::FloatingScrollArea(QWidget *parent)
     // 缓动曲线：OutQuint (五次曲线) 是一种非常接近物理惯性的减速效果
     m_scrollAnimation->setEasingCurve(QEasingCurve::OutQuint);
     // 动画时长：400毫秒，这个时间越长，惯性感觉越重
-    m_scrollAnimation->setDuration(800);
+    m_scrollAnimation->setDuration(700);
 
     initScrollBar();
 }
@@ -55,7 +55,7 @@ void FloatingScrollArea::wheelEvent(QWheelEvent *event)
 
     // 2. 计算滚动的距离
     // 这里设置步长，比如每次滚动 80 像素，配合动画会很舒服
-    int scrollStep = 60;
+    int scrollStep = 80;
     int delta = event->angleDelta().y();
     int direction = (delta > 0) ? -1 : 1; // >0 向上滚(值变小), <0 向下滚(值变大)
 
@@ -88,7 +88,7 @@ void FloatingScrollArea::resizeEvent(QResizeEvent *event)
 
     // 1. 定义你想要的尺寸
     int barWidth = 10;      // 滚动条宽度
-    int bottomMargin = 70;  // 🔥🔥🔥 核心参数：底部留白距离 🔥🔥🔥
+    int bottomMargin = 0;  //  核心参数：底部留白距离
     // 如果觉得还是越界，把这个数字改大（比如 30 或 40）
 
     // 2. 计算几何位置
@@ -174,10 +174,20 @@ void FloatingScrollArea::initScrollBar()
     )");
 
     connect(this->verticalScrollBar(), &QScrollBar::valueChanged,
-            m_vScrollBar, &QScrollBar::setValue);
+            this, [=](int value){
+                if (m_isSyncing) return;
+                m_isSyncing = true;
+                m_vScrollBar->setValue(value);
+                m_isSyncing = false;
+            });
 
     connect(m_vScrollBar, &QScrollBar::valueChanged,
-            this->verticalScrollBar(), &QScrollBar::setValue);
+            this, [=](int value){
+                if (m_isSyncing) return;
+                m_isSyncing = true;
+                this->verticalScrollBar()->setValue(value);
+                m_isSyncing = false;
+            });
 
     //  5. 范围改变时，不再直接 setVisible，而是通过 updateScrollBarVisible 判断
     connect(this->verticalScrollBar(), &QScrollBar::rangeChanged,

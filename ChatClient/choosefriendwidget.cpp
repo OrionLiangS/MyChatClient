@@ -31,6 +31,9 @@ ChooseFriendWidget::ChooseFriendWidget(QWidget* parent)
     // -------------------------------------------
     // 1) 创建最外层布局管理器
     // -------------------------------------------
+
+    this->setAttribute(Qt::WA_DeleteOnClose); // 修复模态对话框不释放内存导致的内存泄漏
+
     QHBoxLayout *mainLayout = new QHBoxLayout(mainFrame);
     mainLayout->setContentsMargins(0,10,0,10);
     mainLayout->setSpacing(0); // 左右容器紧贴

@@ -151,6 +151,8 @@ private:
 
 
 
+    // 允许任何主窗口抢占焦点
+    void initSetWindowFocus();
 
 };
 #endif // MAINWIDGET_H

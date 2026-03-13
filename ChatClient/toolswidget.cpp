@@ -2,6 +2,7 @@
 #include <QLineEdit>
 
 LineEditFocus::LineEditFocus(QWidget *parent)
+    :QLineEdit(parent), m_focus(false)
 {
 
 }
