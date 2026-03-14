@@ -16,7 +16,7 @@ using model::MessageType;
 // 函数: HistoryMessageWidget (构造函数)
 // 描述: 依次初始化各区域，并在 TEST_UI 模式下填充测试数据
 // ================================================================================
-HistoryMessageWidget::HistoryMessageWidget(QWidget* parent) :InfoWidget(parent, true){
+HistoryMessageWidget::HistoryMessageWidget(QWidget* parent) :InfoWidget(parent, WindowModal::IS_MODAL){
     // 1) 外框初始化
     initHistoryMsgWidget();
 

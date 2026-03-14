@@ -22,7 +22,7 @@
 // 构造函数
 // ================================================================================
 AddFriendDialog::AddFriendDialog(QWidget *parent)
-    :InfoWidget(parent, true)
+    :InfoWidget(parent, WindowModal::IS_MODAL)
 {
     initMainWidget();
 
