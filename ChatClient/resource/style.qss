@@ -1077,3 +1077,21 @@ background-color: #ebebeb;
 QPushButton#selectedCancelBtn:pressed{
 background-color: #e5e5e5;
 }
+
+
+
+
+/* 关闭按钮 — mainTitleCloseBtn */
+QPushButton#mainTitleCloseBtn{
+    border: none;
+    border-top-right-radius: 10px;
+    background: transparent;
+    font-size: 20px;
+    color: #757575;
+}
+
+QPushButton#mainTitleCloseBtn:hover{
+    border: none;
+    background-color: #ed4c4c;
+    color: white;
+}

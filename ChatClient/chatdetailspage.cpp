@@ -341,7 +341,7 @@ void GroupChatDetailsPage::addSeparator()
 void GroupChatDetailsPage::initConfirmModifygroupName()
 {
     // 创建模态弹窗
-    confirmModifyGroupName = new InfoWidget(this,true);
+    confirmModifyGroupName = new InfoWidget(this,WindowModal::IS_MODAL);
     confirmModifyGroupName->setFixedSize(320,200);
 
     // 获取通用容器并布局

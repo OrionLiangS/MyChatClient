@@ -26,7 +26,7 @@
 // 描述: 初始化窗口，构建左右布局，并设置模态状态
 // ================================================================================
 ChooseFriendWidget::ChooseFriendWidget(QWidget* parent)
-    :InfoWidget(parent, true)
+    :InfoWidget(parent, WindowModal::IS_MODAL)
 {
     // -------------------------------------------
     // 1) 创建最外层布局管理器
