@@ -10,6 +10,8 @@
 
 #include "debug.h"
 
+#include "loginwindow.h"
+
 // 测试日志
 void totest(){
     LOG()<<"hello world";
@@ -32,14 +34,15 @@ int main(int argc, char *argv[])
         qDebug() << "Failed to load QSS: "<<qss.errorString();
     }
 
-#if TEST_UI
-    InfoWidget *testWidget = new InfoWidget(nullptr, WindowModal::IS_MAIN);
-    testWidget->setTitleText("测试登录窗口");
-    testWidget->show();
-#endif
-
+#if TEST_SKIP_LOGIN
     // 获取单例
     MainWidget *instance = MainWidget::getInstance();
     instance->show();
+#else
+    LoginWindow *loginWindow = new LoginWindow();
+    loginWindow->show();
+#endif
+
+
     return a.exec();
 }

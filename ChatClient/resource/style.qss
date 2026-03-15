@@ -1081,6 +1081,13 @@ background-color: #e5e5e5;
 
 
 
+/* ========================================================
+   InfoWidget 主窗口模式标题栏 (IS_MAIN)
+   来源: infowidget.cpp — initModalMain()
+   控件: mainTitleCloseBtn
+   说明: IS_MAIN 模式下的标题栏关闭按钮
+   ======================================================== */
+
 /* 关闭按钮 — mainTitleCloseBtn */
 QPushButton#mainTitleCloseBtn{
     border: none;
@@ -1094,4 +1101,103 @@ QPushButton#mainTitleCloseBtn:hover{
     border: none;
     background-color: #ed4c4c;
     color: white;
+}
+
+/* ========================================================
+   登录窗口 (LoginWindow)
+   来源: loginwindow.cpp
+   控件: loginAvatarOrQRcode, loginAccountEdti, loginPasswdEdit,
+         imgVerifyCodeEdit, loginPhoneEdit, phoneVerifyCodeEdit,
+         sendVerifyCodeBtn, loginSubmitBtn,
+         switchRegisterOrLogin, switchPhoneOrAccount
+   说明: 登录/注册主窗口，支持账号登录和手机号登录两种模式
+   ======================================================== */
+
+/* --- 头像/二维码区域 --- */
+
+/* 头像按钮 — loginAvatarOrQRcode */
+QPushButton#loginAvatarOrQRcode {
+    border: none; 
+    margin: 0px; 
+    padding: 0px;
+    background-size: 100% 100%; /* 图片填满 */
+    border-radius: 5px;         /* 圆角 */
+}
+
+/* --- 输入框统一样式 --- */
+
+/* 所有输入框默认状态 (账号/密码/图形验证码/手机号/短信验证码) */
+QLineEdit#phoneVerifyCodeEdit,
+QLineEdit#loginPhoneEdit,
+QLineEdit#imgVerifyCodeEdit,
+QLineEdit#loginPasswdEdit,
+QLineEdit#loginAccountEdti{
+    border: 2px solid transparent;  /* 透明边框占位，防止聚焦时尺寸变化 */
+    background-color: #eaeaea;
+    border-radius: 5px;
+    padding-left: 12px;   /* 左侧内边距 */
+    padding-right: 12px;  /* 右侧内边距 */
+    letter-spacing: 1px;  /* 字符间距增加 1px */
+}
+
+/* 输入框聚焦状态 */
+QLineEdit#phoneVerifyCodeEdit:focus,
+QLineEdit#loginPhoneEdit:focus,
+QLineEdit#imgVerifyCodeEdit:focus,
+QLineEdit#loginPasswdEdit:focus,
+QLineEdit#loginAccountEdti:focus{
+    border: 2px solid #1296db;  /* 蓝色边框 */
+    background-color: #ffffff;  /* 白色背景 */
+}
+
+/* --- 按钮样式 --- */
+
+/* 发送验证码按钮 — sendVerifyCodeBtn */
+QPushButton#sendVerifyCodeBtn{
+    border: none;
+    border-radius: 5px;
+    background-color: #1296db;
+    color: white;
+    font-size: 14px;
+}
+
+/* 提交按钮 (登录/注册) — loginSubmitBtn */
+QPushButton#loginSubmitBtn{
+    border: none;
+    border-radius: 5px;
+    background-color: #1296db;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+/* 按钮悬停状态 */
+QPushButton#sendVerifyCodeBtn:hover,
+QPushButton#loginSubmitBtn:hover{
+    background-color: #108bcb;
+}
+
+/* 按钮按下状态 */
+QPushButton#sendVerifyCodeBtn:pressed,
+QPushButton#loginSubmitBtn:pressed{
+    background-color: #0f81bd;
+}
+
+/* --- 切换按钮样式 --- */
+
+/* 切换按钮默认状态 (切换登录/注册、切换账号/手机) */
+QPushButton#switchPhoneOrAccount,
+QPushButton#switchRegisterOrLogin {
+    border: none;
+    background: transparent;
+    color: #757575;
+}
+
+/* 切换按钮按下状态 (文字变蓝 + 下划线) */
+QPushButton#switchPhoneOrAccount:pressed,
+QPushButton#switchRegisterOrLogin:pressed{
+    border: none;
+    background: transparent;
+    color: #449ff6;
+    text-decoration: underline;
 }

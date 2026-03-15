@@ -40,7 +40,7 @@ InfoWidget::InfoWidget(QWidget*parent, WindowModal modal):
     }
     else if(windowModal == WindowModal::IS_MAIN){
         // 主窗口模式：屏幕居中，固定尺寸 315x430
-        this->setFixedSize(315, 430);
+        this->setFixedSize(340, 450);
     }
     else{
         LOG()<<"错误的模态属性";
