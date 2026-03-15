@@ -36,6 +36,7 @@ qt_add_executable(ChatClient
     addfrienddialog.h addfrienddialog.cpp
     historymessagewidget.h historymessagewidget.cpp
     loginwindow.h loginwindow.cpp
+    toast.h toast.cpp
 )
 
 target_link_libraries(ChatClient

@@ -2,6 +2,7 @@
 
 #include "debug.h"
 
+#include "toast.h"
 
 // ################################################################################
 // 类: LoginWindow
@@ -366,4 +367,13 @@ void LoginWindow::initSignal()
         isAccountMode = !isAccountMode;  // 切换账号/手机状态
         updateUI();                      // 更新界面
     });
+
+    // -------------------------------------------
+    // 3. 连接登录/注册 成功 or 失败
+    // -------------------------------------------
+    connect(loginSubmitBtn, &QPushButton::clicked, this, [=](){
+        Toast::showMessage("测试弹窗");
+    });
+
+
 }
