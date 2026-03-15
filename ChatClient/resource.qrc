@@ -37,5 +37,7 @@
         <file>resource/image/cardAddFriend.svg</file>
         <file>resource/image/cardDelFriend.svg</file>
         <file>resource/image/cardSendFriend.svg</file>
+        <file>resource/image/closeEye.svg</file>
+        <file>resource/image/openEye.svg</file>
     </qresource>
 </RCC>
