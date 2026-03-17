@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 project(ChatClient LANGUAGES CXX)
 
 
@@ -6,9 +6,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)  # <--- 必须显式为 ON，强制编译 .qrc
 
+file(GLOB PB_FILES "./proto/*.proto")
+
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Protobuf)
 
 qt_standard_project_setup()
 
@@ -38,6 +40,8 @@ qt_add_executable(ChatClient
     loginwindow.h loginwindow.cpp
     toast.h toast.cpp
 )
+
+qt_add_protobuf(ChatClient PROTO_FILES ${PB_FILES})
 
 target_link_libraries(ChatClient
     PRIVATE
