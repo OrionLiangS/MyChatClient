@@ -18,6 +18,9 @@
 
 #include <QFileInfo>
 
+
+#include "base.qpb.h"  // Protobuf 自动生成的头文件 (由 qt_add_protobuf 根据 base.proto 生成)
+
 namespace model { // - namespace model
 
 
@@ -205,6 +208,27 @@ public:
     QString description = "";   ///< 用户签名
     QIcon avatar;          ///< 用户头像
 
+    /**
+     * @brief load 从 Protobuf 的 UserInfo 对象加载数据到当前实例
+     * @param userInfo Protobuf 生成的 my_im::UserInfo 对象
+     * @details
+     * 将服务端返回的 Protobuf 用户信息逐字段映射到客户端的 model::UserInfo。
+     * 头像字段: 若服务端返回的 avatar 为空 (未设置头像)，则使用默认头像；
+     *          否则通过 makeIcon() 将二进制数据转为 QIcon。
+     */
+    void load(const my_im::UserInfo& userInfo){
+        this->userId = userInfo.userId();
+        this->nickname = userInfo.nickname();
+        this->phone = userInfo.phone();
+        this->description = userInfo.description();
+
+        if(userInfo.avatar().isEmpty()){
+            this->avatar = QIcon(":/resource/image/defaultAvatar.png");
+        }else{
+            this->avatar = makeIcon(userInfo.avatar());
+        }
+    }
+
 }; // UserInfo
 
 
@@ -297,6 +321,66 @@ public:
         return Message();
 
     }
+
+
+    /**
+     * @brief load 从 Protobuf 的 MessageInfo 对象加载数据到当前实例
+     * @param messageInfo Protobuf 生成的 my_im::MessageInfo 对象
+     * @details
+     * 将服务端返回的 Protobuf 消息信息映射到客户端的 model::Message。
+     * 解析流程:
+     *   1. 提取消息元数据 (messageId, chatSessionId, timestamp, sender)
+     *   2. 根据 messageType 分支解析对应的消息体:
+     *      - STRING: 直接取 content 文本
+     *      - IMAGE:  通过 hasFileId/hasImageContent 判断字段是否存在
+     *                (实时转发时两者都有，历史拉取时只有 fileId)
+     *      - FILE:   同上，额外提取 fileName
+     *      - SPEECH: 同上
+     *   3. optional 字段必须先用 has*() 判断再取值，避免读到默认空值
+     */
+    void load(const my_im::MessageInfo &messageInfo){
+        this->messageId = messageInfo.messageId();
+        this->chatSessionId = messageInfo.chatSessionId();
+        this->time = formatTime(messageInfo.timestamp());
+        this->sender.load(messageInfo.sender());
+
+        auto type = messageInfo.message().messageType();
+        if(my_im::MessageTypeGadget::MessageType::STRING == type){
+            this->messageType = TEXT_TYPE;
+            this->content = messageInfo.message().stringMessage().content().toUtf8();
+        }
+        else if(my_im::MessageTypeGadget::MessageType::IMAGE == type){
+            this->messageType = IMAGE_TYPE;
+            if(messageInfo.message().imageMessage().hasFileId()){
+                this->fileId = messageInfo.message().imageMessage().fileId();
+            }
+            if(messageInfo.message().imageMessage().hasImageContent()){
+                this->content = messageInfo.message().imageMessage().imageContent();
+            }
+        }
+        else if(my_im::MessageTypeGadget::MessageType::FILE == type){
+            this->messageType = FILE_TYPE;
+            if(messageInfo.message().fileMessage().hasFileId()){
+                this->fileId = messageInfo.message().fileMessage().fileId();
+            }
+            if(messageInfo.message().fileMessage().hasFileContents()){
+                this->content = messageInfo.message().fileMessage().fileContents();
+            }
+        }
+        else if(my_im::MessageTypeGadget::MessageType::SPEECH == type){
+            this->messageType = SPEECH_TYPE;
+            if(messageInfo.message().speechMessage().hasFileId()){
+                this->fileId = messageInfo.message().speechMessage().fileId();
+            }
+            if(messageInfo.message().speechMessage().hasFileContents()){
+                this->content = messageInfo.message().speechMessage().fileContents();
+            }
+        }
+        else{
+            LOG()<<"Unknow messageType for \"Message::load\"";
+        }
+
+}
 
 private:
     // -------------------------------------------------------------------------
@@ -432,6 +516,39 @@ public:
     QString chatSessionName = "";    ///< 会话昵称(单聊/群聊)
     QIcon avatar;               ///< 会话头像
     QString userId = "";             ///< 用户id
+
+
+    /**
+     * @brief load 从 Protobuf 的 ChatSessionInfo 对象加载数据到当前实例
+     * @param chatSessionInfo Protobuf 生成的 my_im::ChatSessionInfo 对象
+     * @details
+     * 将服务端返回的 Protobuf 会话信息映射到客户端的 model::ChatSessionInfo。
+     * 解析逻辑:
+     *   - singleChatFriendId: optional 字段，单聊时为对方用户ID，群聊时不存在
+     *   - avatar: 有头像数据则转换，无则根据是否为单聊/群聊设置不同的默认头像
+     *   - prevMessage: optional 字段，新建会话可能没有最新消息，
+     *                  存在时递归调用 Message::load() 解析
+     */
+    void load(const my_im::ChatSessionInfo &chatSessionInfo){
+        this->chatSessionId = chatSessionInfo.chatSessionId();
+        this->chatSessionName = chatSessionInfo.chatSessionName();
+        if(chatSessionInfo.hasSingleChatFriendId()){
+            this->userId = chatSessionInfo.singleChatFriendId();
+        }
+
+        if(chatSessionInfo.hasAvatar()&&(!chatSessionInfo.avatar().isEmpty())){
+            // 有头像数据
+            this->avatar = makeIcon(chatSessionInfo.avatar());
+        }else{
+            // 无头像数据 - 判别为单聊/群聊 - 分别设置单聊和群聊的默认头像
+            if(chatSessionInfo.singleChatFriendId() == ""){
+                this->avatar = QIcon(":/resource/image/defaultAvatar.png");
+            }else this->avatar = QIcon(":/resource/image/groupChatSessionAvatar.svg");
+        }
+        if(chatSessionInfo.hasPrevMessage()){
+            lastMessage.load(chatSessionInfo.prevMessage());
+        }
+    }
 
 }; // ChatSessionInfo
 
