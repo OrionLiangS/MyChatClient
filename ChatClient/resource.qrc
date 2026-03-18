@@ -39,5 +39,6 @@
         <file>resource/image/cardSendFriend.svg</file>
         <file>resource/image/closeEye.svg</file>
         <file>resource/image/openEye.svg</file>
+        <file>resource/image/groupChatSessionAvatar.svg</file>
     </qresource>
 </RCC>

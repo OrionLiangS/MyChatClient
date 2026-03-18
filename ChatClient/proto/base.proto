@@ -1,5 +1,5 @@
 syntax = "proto3";
-package bite_im;
+package my_im;
 
 option cc_generic_services = true;
 
@@ -19,6 +19,14 @@ message ChatSessionInfo {
     string chat_session_name = 3;//会话名称git 
     optional MessageInfo prev_message = 4;//会话上一条消息，新建的会话没有最新消息
     optional bytes avatar = 5;//会话头像 --群聊会话不需要，直接由前端固定渲染，单聊就是对方的头像
+/*
+    QString chatSessionId = "";      ///< 标识会话的唯一性
+    Message lastMessage;        ///< 当前会话中最新的消息
+    QString chatSessionName = "";    ///< 会话昵称(单聊/群聊)
+    QIcon avatar;               ///< 会话头像
+    QString userId = "";             ///< 用户id
+*/
+
 }
 
 //消息类型
