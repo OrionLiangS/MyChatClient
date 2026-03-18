@@ -39,6 +39,7 @@ qt_add_executable(ChatClient
     historymessagewidget.h historymessagewidget.cpp
     loginwindow.h loginwindow.cpp
     toast.h toast.cpp
+    model/datacenter.h model/datacenter.cpp
 )
 
 qt_add_protobuf(ChatClient PROTO_FILES ${PB_FILES})
