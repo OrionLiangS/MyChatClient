@@ -1,6 +1,7 @@
 #include "datacenter.h"
 
 
+
 // ################################################################################
 // 类: DataCenter
 // 描述: 全局数据中心 (单例模式)
@@ -64,6 +65,64 @@ namespace model{
         memberList = new QHash<QString, QList<UserInfo>>();
 
         unReadMessageCount = new QHash<QString, int>();
+    }
+
+    // ================================================================================
+    // 函数: initDataFile
+    // 描述: 初始化本地数据文件 (AppData/ChatClient.json)
+    //       首次运行或文件丢失时调用，创建目录并写入空 JSON 骨架。
+    // ================================================================================
+    void DataCenter::initDataFile()
+    {
+        // -----------------------------------------------------------
+        // 1. 构造文件路径 (使用系统 AppData 目录)
+        // -----------------------------------------------------------
+        QString basePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) ;
+        QString filePath = basePath+ "/ChatClient.json";
+        LOG()<<"filePath: "<<filePath;
+
+        // -----------------------------------------------------------
+        // 2. 确保目录存在 (不存在则递归创建)
+        // -----------------------------------------------------------
+        QDir dir;
+        if(!dir.exists(basePath)){
+            dir.mkpath(basePath);
+        }
+
+        // -----------------------------------------------------------
+        // 3. 创建文件并写入空 JSON 骨架
+        // -----------------------------------------------------------
+        QFile file(filePath);
+        if(!file.open(QIODevice::WriteOnly|QIODevice::Text)){
+            LOG()<<"文件打开失败"<<file.errorString();
+            return;
+        }
+        QString data = "{\n\n}";
+        file.write(data.toUtf8());
+        file.close();
+    }
+
+
+    // ================================================================================
+    // 函数: saveDataFile
+    // 描述: 将内存中需要持久化的数据序列化为 JSON 写入本地文件。
+    //       @todo 待实现: 序列化 loginSessionId、unReadMessageCount 等字段
+    // ================================================================================
+    void DataCenter::saveDataFile()
+    {
+
+    }
+
+
+    // ================================================================================
+    // 函数: loadDataFile
+    // 描述: 从本地 JSON 文件加载持久化数据到内存。
+    //       在 DataCenter 构造时调用，若文件不存在则先 initDataFile()。
+    //       @todo 待实现: 反序列化 loginSessionId、unReadMessageCount 等字段
+    // ================================================================================
+    void DataCenter::loadDataFile()
+    {
+
     }
 
 } // end namespace model
