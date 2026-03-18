@@ -6,6 +6,13 @@
 
 #include"data.h"
 
+
+#include <QStandardPaths> // 获取系统目录 - AppData
+
+#include <QJsonDocument> // 使用Qt中的Json内置功能
+#include <QJsonObject>
+#include <QDir>
+
 namespace model{
 
 /**
@@ -92,6 +99,39 @@ private:
     // 短信验证码
     // ============================================
     QString currentVerifyCodeId = "";             ///< 验证码凭证ID (第一次请求由服务端返回，第二次请求携带做校验关联)
+
+
+
+public:
+    // ============================================
+    // 数据持久化
+    // ============================================
+
+    /**
+     * @brief initDataFile 初始化本地数据文件
+     * @details
+     * 在 AppData 目录下创建 ChatClient.json，写入空 JSON 骨架。
+     * 若目录不存在则自动创建。仅在首次运行或文件丢失时调用。
+     */
+    void initDataFile();
+
+    /**
+     * @brief saveDataFile 将内存数据持久化到本地文件
+     * @details
+     * 将 loginSessionId、unReadMessageCount 等需要跨会话保留的数据
+     * 序列化为 JSON 写入 ChatClient.json。
+     * 在关键数据变更时 (如登录、未读计数变化) 主动调用。
+     */
+    void saveDataFile();
+
+    /**
+     * @brief loadDataFile 从本地文件加载数据到内存
+     * @details
+     * 在 DataCenter 构造时调用，读取 ChatClient.json 并反序列化，
+     * 恢复 loginSessionId、unReadMessageCount 等持久化字段。
+     * 若文件不存在则先调用 initDataFile() 创建。
+     */
+    void loadDataFile();
 
 signals:
 };

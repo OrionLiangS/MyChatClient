@@ -12,6 +12,7 @@
 
 #include "loginwindow.h"
 
+#include "model/datacenter.h"
 // 测试日志
 void totest(){
     LOG()<<"hello world";
@@ -43,6 +44,8 @@ int main(int argc, char *argv[])
     loginWindow->show();
 #endif
 
+    model::DataCenter *dataCenter = model::DataCenter::getInstance();
+    dataCenter->initDataFile();
 
     return a.exec();
 }
