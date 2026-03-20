@@ -65,6 +65,11 @@ namespace model{
         memberList = new QHash<QString, QList<UserInfo>>();
 
         unReadMessageCount = new QHash<QString, int>();
+
+        // -----------------------------------------------------------
+        // 从本地文件恢复持久化数据 (loginSessionId, unReadMessageCount)
+        // -----------------------------------------------------------
+        loadDataFile();
     }
 
     // ================================================================================
@@ -106,11 +111,46 @@ namespace model{
     // ================================================================================
     // 函数: saveDataFile
     // 描述: 将内存中需要持久化的数据序列化为 JSON 写入本地文件。
-    //       @todo 待实现: 序列化 loginSessionId、unReadMessageCount 等字段
+    //       持久化字段: loginSessionId, unReadMessageCount
     // ================================================================================
     void DataCenter::saveDataFile()
     {
+        // -----------------------------------------------------------
+        // 1. 构建文件路径，文件不存在则初始化
+        // -----------------------------------------------------------
+        QString filePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/ChatClient.json";
 
+        QDir dir;
+        if(!dir.exists(filePath)){
+            initDataFile();
+        }
+
+        // -----------------------------------------------------------
+        // 2. 构造 JSON 对象 (序列化内存数据)
+        // -----------------------------------------------------------
+        QJsonObject jsonObj;
+        jsonObj["loginSessionId"] = loginSessionId;
+
+        // 将 unReadMessageCount (QHash) 转为嵌套 JSON 对象
+        QJsonObject unRead;
+        for(auto it = unReadMessageCount->begin();it!=unReadMessageCount->end();++it){
+            unRead[it.key()] = it.value();
+        }
+        jsonObj["unReadMessageCount"] = unRead;
+
+        // -----------------------------------------------------------
+        // 3. 以文本方式写入本地文件
+        // -----------------------------------------------------------
+        QFile file(filePath);
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+            LOG()<< "Open \""<<filePath<<"\" faild: "<<file.errorString();
+            return;
+        }
+
+        QJsonDocument jsonDoc;
+        jsonDoc.setObject(jsonObj);
+        file.write(jsonDoc.toJson());
+        file.close();
     }
 
 
@@ -118,11 +158,58 @@ namespace model{
     // 函数: loadDataFile
     // 描述: 从本地 JSON 文件加载持久化数据到内存。
     //       在 DataCenter 构造时调用，若文件不存在则先 initDataFile()。
-    //       @todo 待实现: 反序列化 loginSessionId、unReadMessageCount 等字段
+    //       恢复字段: loginSessionId, unReadMessageCount
     // ================================================================================
     void DataCenter::loadDataFile()
     {
+        // -----------------------------------------------------------
+        // 1. 构建文件路径，文件不存在则初始化
+        // -----------------------------------------------------------
+        QString filePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/ChatClient.json";
 
+        QDir dir;
+        if(!dir.exists(filePath)){
+            initDataFile();
+        }
+
+        // -----------------------------------------------------------
+        // 2. 以只读文本方式打开文件
+        // -----------------------------------------------------------
+        QFile file(filePath);
+        if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+            LOG()<< "Open \""<<filePath<<"\" faild: "<<file.errorString();
+            return;
+        }
+
+        // -----------------------------------------------------------
+        // 3. 解析 JSON 文档
+        //    isNull(): 解析本身失败 (非法 JSON 格式)
+        //    isEmpty(): 解析成功但内容为空 (如 "{}")
+        // -----------------------------------------------------------
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+        if(jsonDoc.isNull()){
+            LOG()<<"Open \""<<filePath<<"\" faild: "<<file.errorString()<<" - "<<"The Json format is wrong";
+            file.close();
+            return;
+        }
+
+        // -----------------------------------------------------------
+        // 4. 反序列化: 将 JSON 字段恢复到内存成员
+        // -----------------------------------------------------------
+        QJsonObject jsonObj = jsonDoc.object();
+
+        // 恢复登录会话ID
+        this->loginSessionId = jsonObj["loginSessionId"].toString();
+
+        // 恢复未读消息计数 (嵌套 JSON 对象 → QHash)
+        QJsonObject unRead = jsonObj["unReadMessageCount"].toObject();
+        unReadMessageCount->clear();
+        for(auto beg = unRead.begin();beg!=unRead.end();++beg){
+            unReadMessageCount->insert(beg.key(), beg.value().toInt());
+        }
+
+        LOG()<<"loginSessionId: "<<this->loginSessionId;
+
+        file.close();
     }
-
 } // end namespace model

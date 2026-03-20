@@ -47,5 +47,7 @@ int main(int argc, char *argv[])
     model::DataCenter *dataCenter = model::DataCenter::getInstance();
     dataCenter->initDataFile();
 
+    dataCenter->saveDataFile();
+
     return a.exec();
 }

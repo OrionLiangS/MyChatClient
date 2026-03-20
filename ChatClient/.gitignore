@@ -80,3 +80,22 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+
+
+# 彻底屏蔽 Node.js 杂物
+node_modules/
+package-lock.json
+package.json
+
+# 屏蔽 Qt Creator 和 CMake 产生的构建目录
+build/
+.qtcreator/
+*.user
+
+# 屏蔽编译生成的文件
+*.obj
+*.exe
+*.pdb
+*.a
+*.o
+
